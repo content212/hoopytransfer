@@ -7,5 +7,5 @@ COPY . /app
 RUN composer install
 
 
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+CMD composer config-cache && php artisan serve --host=0.0.0.0 --port=$PORT
 EXPOSE $PORT
