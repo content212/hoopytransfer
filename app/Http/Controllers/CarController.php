@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
 
-class UsersController extends Controller
+class CarController extends Controller
 {
     protected function role()
     {
@@ -38,7 +38,7 @@ class UsersController extends Controller
 
         if ($role) {
             if ($role === 'Admin') {
-                return view('users', ['role' => $role, 'name' => $name]);
+                return view('cars', ['role' => $role, 'name' => $name]);
             } else {
                 return redirect('/forbidden');
             }

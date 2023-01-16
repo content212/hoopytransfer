@@ -490,7 +490,7 @@
                         <div class="col-md-6">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> © Norrbudet - norrbudet.se
+                            </script> © HoopyTransfer
                         </div>
                     </div>
                 </div>

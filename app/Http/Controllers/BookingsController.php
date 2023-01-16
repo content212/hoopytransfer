@@ -3,42 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
+use Utils;
 
 class BookingsController extends Controller
 {
     protected function role()
     {
-        try {
-            if (isset($_COOKIE['token'])) {
-                $headers = [
-                    'Authorization' => 'Bearer ' . $_COOKIE['token'],
-                ];
-                $client = new \GuzzleHttp\Client([
-                    'headers' => $headers
-                ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getRole');
-                $role = $response->getBody();
-                return $role;
-            }
-        } catch (\Exception $exception) {
-            return null;
-        }
+        return Utils::getRole();
+        #try {
+        #    if (isset($_COOKIE['token'])) {
+        #        
+        #    }
+        #} catch (\Exception $exception) {
+        #    return null;
+        #}
     }
     protected function name()
     {
         try {
             if (isset($_COOKIE['token'])) {
-                $headers = [
-                    'Authorization' => 'Bearer ' . $_COOKIE['token'],
-                ];
-                $client = new \GuzzleHttp\Client([
-                    'headers' => $headers
-                ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getName');
-                $name = $response->getBody();
-                return $name;
+                return Utils::getName();
             }
         } catch (\Exception $exception) {
             return null;

@@ -32,13 +32,13 @@ class BookingsController extends Controller
         $bookings = Booking::select(
             'id',
             DB::raw('(CASE status
-            when 0 then "Waiting for confirmation"
-            when 1 then " Order confirmed"
-            when 2 then "To be delivered"
-            when 3 then "Will be delivered"
-            when 4 then "Delivered"
-            when 5 then "Cancelled"
-            when 6 then "Rejected" END) as status'),
+            when 0 then \'Waiting for confirmation\'
+            when 1 then \' Order confirmed\'
+            when 2 then \'To be delivered\'
+            when 3 then \'Will be delivered\'
+            when 4 then \'Delivered\'
+            when 5 then \'Cancelled\'
+            when 6 then \'Rejected\' END) as status'),
             'track_code',
             'from',
             'from_name',
@@ -322,7 +322,7 @@ class BookingsController extends Controller
     {
         $booking = Booking::select(
             'sender_name',
-            DB::raw('(CASE status when 0 then "Waiting" when 1 then "Preparing" when 2 then "Shipped" when 3 then "Delivered" END) as status'),
+            DB::raw('(CASE status when 0 then \'Waiting\' when 1 then \'Preparing\' when 2 then \'Shipped\' when 3 then \'Delivered\' END) as status'),
             'track_code',
             'company_name',
         )
@@ -356,13 +356,13 @@ class BookingsController extends Controller
             'from_name',
             'to_name',
             DB::raw('(CASE status
-        when 0 then "Waiting for confirmation"
-        when 1 then " Order confirmed"
-        when 2 then "To be delivered"
-        when 3 then "Will be delivered"
-        when 4 then "Delivered"
-        when 5 then "Cancelled"
-        when 6 then "Rejected" END) as status')
+        when 0 then \'Waiting for confirmation\'
+        when 1 then \' Order confirmed\'
+        when 2 then \'To be delivered\'
+        when 3 then \'Will be delivered\'
+        when 4 then \'Delivered\'
+        when 5 then \'Cancelled\'
+        when 6 then \'Rejected\' END) as status')
         )
             ->join('booking_packets', 'booking_packets.bookingId', '=', 'bookings.id')
             ->where('bookings.user_id', $user->id)
@@ -376,13 +376,13 @@ class BookingsController extends Controller
         if (!$booking = Booking::select(
             'bookings.*',
             DB::raw('(CASE status
-        when 0 then "Waiting for confirmation"
-        when 1 then " Order confirmed"
-        when 2 then "To be delivered"
-        when 3 then "Will be delivered"
-        when 4 then "Delivered"
-        when 5 then "Cancelled"
-        when 6 then "Rejected" END) as status')
+        when 0 then \'Waiting for confirmation\'
+        when 1 then \' Order confirmed\'
+        when 2 then \'To be delivered\'
+        when 3 then \'Will be delivered\'
+        when 4 then \'Delivered\'
+        when 5 then \'Cancelled\'
+        when 6 then \'Rejected\' END) as status')
         )->where('id', $id)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         $user = Auth::user();

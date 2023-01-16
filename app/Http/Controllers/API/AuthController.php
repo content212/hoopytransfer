@@ -24,31 +24,27 @@ class AuthController extends Controller
             return response(['message' => "Could not connect to the database."], 422);
         }
 
-        try {
-            if (Auth::attempt($data)) {
-                $user = Auth::user();
-                if (!$user->status) {
-                    return response(['message' => 'Your account is not active!'], 422);
-                }
-                $userRole = $user->role()->first();
 
-                if ($userRole) {
-                    $this->scope = $userRole->role;
-                }
-
-                $token = $user->createToken($user->email . '-' . now(), [$this->scope]);
-
-                return response()->json([
-                    'token' => $token->accessToken,
-                    'role' => $userRole->role
-                ]);
-            } else {
-                return response(['message' => 'Incorrect Details.
-                Please try again'], 422);
+        if (Auth::attempt($data)) {
+            $user = Auth::user();
+            if (!$user->status) {
+                return response(['message' => 'Your account is not active!'], 422);
             }
-        } catch (\Throwable $th) {
+            $userRole = $user->role()->first();
+
+            if ($userRole) {
+                $this->scope = $userRole->role;
+            }
+
+            $token = $user->createToken($user->email . '-' . now(), [$this->scope]);
+
+            return response()->json([
+                'token' => $token->accessToken,
+                'role' => $userRole->role
+            ]);
+        } else {
             return response(['message' => 'Incorrect Details.
-            Please try again'], 422);
+                Please try again'], 422);
         }
     }
     public function logout(Request $request)

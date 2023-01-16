@@ -24,8 +24,8 @@ class UserController extends Controller
             ->select(
                 'users.id',
                 DB::raw('(CASE users.status
-                when 0 then "Passive"
-                when 1 then "Active" END) as status'),
+                when 0 then \'Passive\'
+                when 1 then \'Active\' END) as status'),
                 'users.name',
                 'users.email',
                 'users.phone',
@@ -57,8 +57,8 @@ class UserController extends Controller
     public function getCustomers()
     {
         $drivers = User::select(DB::raw('(CASE users.status
-        when 0 then "Passive"
-        when 1 then "Active" END) as status'), 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount')
+        when 0 then \'Passive\'
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->join('customers', 'customers.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');

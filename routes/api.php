@@ -28,11 +28,6 @@ Route::post('/bookings', 'API\BookingsController@store');
 Route::post('/track', "API\BookingsController@track");
 
 
-Route::post('/test', "API\SalaryController@store");
-
-Route::get('/exec', function () {
-    return Artisan::call("cache:clear");
-});
 Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/users', 'API\UserController@index');
     Route::middleware(['scope:admin'])->post('/users', 'API\UserController@store');
@@ -111,6 +106,12 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/pricestruncate', 'API\PriceController@truncate');
 
     Route::middleware(['scope:admin'])->get('/logs', 'API\LogsController@index');
+
+    Route::middleware(['scope:admin'])->get('/cars', 'API\CarController@index');
+    Route::middleware(['scope:admin'])->post('/cars', 'API\CarController@store');
+    Route::middleware(['scope:admin'])->get('/cars/{car}', 'API\CarController@show');
+    Route::middleware(['scope:admin'])->post('/cars/{car}', 'API\CarController@update');
+    Route::middleware(['scope:admin'])->delete('/cars/{car}', 'API\CarController@destroy');
 
     Route::post('/logout', 'API\AuthController@logout');
     Route::get('/getRole', 'API\AuthController@getrole');

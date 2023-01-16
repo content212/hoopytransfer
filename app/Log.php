@@ -9,7 +9,7 @@ class Log extends Model
     protected $table = 'logs';
     protected $guarded = array();
 
-    protected $fillable = ['subject', 'query_type', 'url', 'ip', 'user_id'];
+    protected $fillable = ['subject', 'query_request', 'query_type', 'url', 'method', 'ip', 'agent', 'user_id'];
 
     static function addToLog($subject, $queryRequest, $queryType)
     {

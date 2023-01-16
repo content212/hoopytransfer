@@ -18,7 +18,17 @@ class CreateBookingsTable extends Migration
             $table->integer('status');
             $table->text('track_code');
             $table->string('from');
+            $table->integer('km');
+            $table->integer('duration');
+            $table->text('from_name');
+            $table->text('from_address');
+            $table->text('from_lat', 255);
+            $table->text('from_lng', 255);
             $table->string('to');
+            $table->text('to_name');
+            $table->text('to_address');
+            $table->text('to_lat', 255);
+            $table->text('to_lng', 255);
             $table->string('delivery_type');
             $table->date('delivery_date');
             $table->time('delivery_time');

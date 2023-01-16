@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    protected $fillable = ['from', 'km', 'duration', 'from_name', 'from_address', 'from_lat', 'from_lng', 'to', 'to_name', 'to_address', 'to_lat', 'to_lng', 'status', 'delivery_type', 'delivery_date', 'delivery_time', 'sender_name', 'sender_phone', 'sender_mail', 'customer_name', 'customer_phone', 'customer_mail', 'company_name', 'user_id', 'user_type'];
+    protected $fillable = ['from', 'km', 'duration', 'from_name', 'from_address', 'from_lat', 'from_lng', 'to', 'to_name', 'to_address', 'to_lat', 'to_lng', 'status'];
     public static function getCount($status)
     {
         try {
