@@ -30,7 +30,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getName');
+                $response = $client->get(config('app.url') . '/api/getName');
                 $role = $response->getBody();
                 return $role;
             }
@@ -49,7 +49,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getdriversedit');
+                $response = $client->get(config('app.url') . '/api/getdriversedit');
                 $drivers = $response->getBody();
                 return $drivers;
             }
@@ -67,7 +67,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getdrivers');
+                $response = $client->get(config('app.url') . '/api/getdrivers');
                 $drivers = $response->getBody();
                 return $drivers;
             }
@@ -85,7 +85,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getyears');
+                $response = $client->get(config('app.url') . '/api/getyears');
                 $drivers = $response->getBody();
                 return $drivers;
             }
@@ -103,7 +103,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getmonths');
+                $response = $client->get(config('app.url') . '/api/getmonths');
                 $drivers = $response->getBody();
                 return $drivers;
             }
@@ -121,7 +121,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getlagers');
+                $response = $client->get(config('app.url') . '/api/getlagers');
                 $drivers = $response->getBody();
                 return $drivers;
             }
@@ -139,7 +139,7 @@ class CalendarController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/pricecompanies');
+                $response = $client->get(config('app.url') . '/api/pricecompanies');
                 $drivers = $response->getBody();
                 return $drivers;
             }

@@ -37,7 +37,7 @@ class PriceListController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getcompanies');
+                $response = $client->get(config('app.url') . '/api/getcompanies');
                 $companies = $response->getBody();
                 return $companies;
             }

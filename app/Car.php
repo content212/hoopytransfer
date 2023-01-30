@@ -8,5 +8,5 @@ class Car extends Model
 {
     protected $table = 'cars';
 
-    protected $fillable = ['name', 'type', 'person_capacity', 'baggage_capacity'];
+    protected $fillable = ['plate', 'type', 'person_capacity', 'baggage_capacity', 'insurance_date', 'inspection_date', 'station_id'];
 }

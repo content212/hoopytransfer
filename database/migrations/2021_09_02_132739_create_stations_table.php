@@ -13,11 +13,18 @@ class CreateLagersTable extends Migration
      */
     public function up()
     {
-        Schema::create('lagers', function (Blueprint $table) {
+        Schema::create('stations', function (Blueprint $table) {
             $table->id();
             $table->text('name');
-            $table->boolean('isOvertime');
-            $table->tinyInteger('overtime')->nullable();
+            $table->string('official_name');
+            $table->string('official_phone');
+            $table->bigInteger('country');
+            $table->foreign('country')->references('id')->on('countries');
+            $table->bigInteger('state');
+            $table->foreign('state')->references('id')->on('states');
+            $table->string('address');
+            $table->string('latitude', 255);
+            $table->string('longitude', 255);
             $table->timestamps();
         });
     }

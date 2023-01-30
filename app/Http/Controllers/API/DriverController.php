@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Car;
+use App\Driver;
 use App\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class CarController extends Controller
+class DriverController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,16 +19,19 @@ class CarController extends Controller
      */
     public function index()
     {
-        $cars = Car::select(
-            'cars.id',
+        $drivers = Driver::select(
+            'drivers.id',
+            'users.name',
             'cars.plate',
-            DB::raw('car_types.name as type'),
-            'cars.person_capacity',
-            'cars.baggage_capacity'
+            'users.phone',
+            'countries.name',
+            'states.name',
         )
-            ->join('car_types', 'car_types.id', '=', 'cars.type');
-
-        return DataTables::of($cars)
+            ->join('cars', 'cars.id', '=', 'drivers.car_id')
+            ->join('users', 'users.id', '=', 'drivers.user_d')
+            ->join('countries', 'countries.id', '=', 'drivers.country')
+            ->join('states', 'states.id', '=', 'drivers.state');
+        return DataTables::of($drivers)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
@@ -47,9 +50,9 @@ class CarController extends Controller
     public function store(Request $request)
     {
         try {
-            $car = Car::create($request->all());
-            Log::addToLog('Car Log.', $request->all(), 'Create');
-            return response($car->toJson(JSON_PRETTY_PRINT), 200);
+            $driver = Driver::create($request->all());
+            Log::addToLog('Driver Log.', $request->all(), 'Create');
+            return response($driver->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -58,43 +61,43 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Car  $car
+     * @param  \App\Driver  $driver
      * @return \Illuminate\Http\Response
      */
-    public function show(int $car)
+    public function show(int $driver)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        return response($cars->toJson(JSON_PRETTY_PRINT), 200);
+        return response($drivers->toJson(JSON_PRETTY_PRINT), 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Car  $car
+     * @param  \App\Driver  $driver
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $car)
+    public function update(Request $request, int $driver)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $cars->update($request->all());
-            Log::addToLog('Car Log.', $request->all(), 'Edit');
-            return response($cars->toJson(JSON_PRETTY_PRINT), 200);
+            $drivers->update($request->all());
+            Log::addToLog('Driver Log.', $request->all(), 'Edit');
+            return response($drivers->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
 
-    public function destroy(int $car)
+    public function destroy(int $driver)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $cars->delete();
-            Log::addToLog('Car Log.',  $cars, 'Delete');
+            $drivers->delete();
+            Log::addToLog('Driver Log.',  $drivers, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);

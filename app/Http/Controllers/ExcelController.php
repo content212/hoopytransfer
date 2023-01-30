@@ -18,7 +18,7 @@ class ExcelController extends Controller
             $client = new \GuzzleHttp\Client([
                 'headers' => $headers
             ]);
-            $response = $client->post(env("APP_URL", 'http://localhost') . '/api/pricesimport', ['form_params' => ['data' => $data]]);
+            $response = $client->post(config('app.url') . '/api/pricesimport', ['form_params' => ['data' => $data]]);
             $role = $response->getBody();
             error_log($role);
             return $role;

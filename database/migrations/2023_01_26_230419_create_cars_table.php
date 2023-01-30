@@ -15,10 +15,15 @@ class CreateCarsTable extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('type', ['Sedan', 'VIP']);
+            $table->string('plate');
+            $table->bigInteger('type');
+            $table->foreign('type')->references('id')->on('car_types')->onDelete('cascade');
             $table->integer('person_capacity');
             $table->integer('baggage_capacity');
+            $table->date('insurance_date');
+            $table->date('inspection_date');
+            $table->bigInteger('station_id');
+            $table->foreign('station_id')->references('id')->on('stations')->onDelete('cascade');
             $table->timestamps();
         });
     }

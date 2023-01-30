@@ -46,9 +46,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/pricecompanies', 'API\PriceListController@getUsingComapnies');
     Route::middleware(['scope:admin'])->post('/addcorp', 'API\PriceListController@addCorp');
 
-    Route::middleware(['scope:admin'])->get('/lagers', 'API\LagerController@index');
-    Route::middleware(['scope:admin'])->get('/lagers/{id}', 'API\LagerController@show');
-    Route::middleware(['scope:admin'])->post('/lagersaction', 'API\LagerController@action');
+
 
 
     Route::middleware(['scope:admin,driver,driver_manager'])->get('/jobs', 'API\DriverWorkController@index');
@@ -112,6 +110,24 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/cars/{car}', 'API\CarController@show');
     Route::middleware(['scope:admin'])->post('/cars/{car}', 'API\CarController@update');
     Route::middleware(['scope:admin'])->delete('/cars/{car}', 'API\CarController@destroy');
+
+    Route::middleware(['scope:admin'])->get('/cartypes', 'API\CarTypeController@index');
+    Route::middleware(['scope:admin'])->post('/cartypes', 'API\CarTypeController@store');
+    Route::middleware(['scope:admin'])->get('/cartypes/{cartype}', 'API\CarTypeController@show');
+    Route::middleware(['scope:admin'])->post('/cartypes/{cartype}', 'API\CarTypeController@update');
+    Route::middleware(['scope:admin'])->delete('/cartypes/{cartype}', 'API\CarTypeController@destroy');
+
+    Route::middleware(['scope:admin'])->get('/drivers', 'API\DriverController@index');
+    Route::middleware(['scope:admin'])->post('/drivers', 'API\DriverController@store');
+    Route::middleware(['scope:admin'])->get('/drivers/{driver}', 'API\DriverController@show');
+    Route::middleware(['scope:admin'])->post('/drivers/{driver}', 'API\DriverController@update');
+    Route::middleware(['scope:admin'])->delete('/drivers/{driver}', 'API\DriverController@destroy');
+
+    Route::middleware(['scope:admin'])->get('/stations', 'API\StationController@index');
+    Route::middleware(['scope:admin'])->post('/stations', 'API\StationController@store');
+    Route::middleware(['scope:admin'])->get('/stations/{station}', 'API\StationController@show');
+    Route::middleware(['scope:admin'])->post('/stations/{station}', 'API\StationController@update');
+    Route::middleware(['scope:admin'])->delete('/stations/{station}', 'API\StationController@destroy');
 
     Route::post('/logout', 'API\AuthController@logout');
     Route::get('/getRole', 'API\AuthController@getrole');

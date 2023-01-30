@@ -27,7 +27,7 @@ class HomeController extends Controller
                 $client = new \GuzzleHttp\Client([
                     'headers' => $headers
                 ]);
-                $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getName');
+                $response = $client->get(config('app.url') . '/api/getName');
                 $role = $response->getBody();
                 return $role;
             }
@@ -48,7 +48,7 @@ class HomeController extends Controller
                     $client = new \GuzzleHttp\Client([
                         'headers' => $headers
                     ]);
-                    $response = $client->get(env("APP_URL", 'http://localhost') . '/api/getRole');
+                    $response = $client->get(config('app.url') . '/api/getRole');
                     $role = $response->getBody();
                     return $role;
                 } else {
@@ -84,7 +84,7 @@ class HomeController extends Controller
             $client = new \GuzzleHttp\Client([
                 'headers' => $headers
             ]);
-            $response = $client->post(env("APP_URL", 'http://localhost') . '/api/logout');
+            $response = $client->post(config('app.url') . '/api/logout');
             unset($_COOKIE['token']);
             setcookie('token', null, -1, '/');
             return redirect('/');

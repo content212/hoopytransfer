@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Car;
+use App\Station;
 use App\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Illuminate\Database\QueryException;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 
-class CarController extends Controller
+class StationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,16 +19,16 @@ class CarController extends Controller
      */
     public function index()
     {
-        $cars = Car::select(
-            'cars.id',
-            'cars.plate',
-            DB::raw('car_types.name as type'),
-            'cars.person_capacity',
-            'cars.baggage_capacity'
+        $stations = Station::select(
+            'stations.id',
+            'stations.official_name',
+            'stations.official_phone',
+            'countries.name',
+            'states.name',
         )
-            ->join('car_types', 'car_types.id', '=', 'cars.type');
-
-        return DataTables::of($cars)
+            ->join('countries', 'countries.id', '=', 'stations.country')
+            ->join('states', 'states.id', '=', 'stations.state');
+        return DataTables::of($stations)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
@@ -47,9 +47,9 @@ class CarController extends Controller
     public function store(Request $request)
     {
         try {
-            $car = Car::create($request->all());
-            Log::addToLog('Car Log.', $request->all(), 'Create');
-            return response($car->toJson(JSON_PRETTY_PRINT), 200);
+            $station = Station::create($request->all());
+            Log::addToLog('Station Log.', $request->all(), 'Create');
+            return response($station->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -58,43 +58,43 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Car  $car
+     * @param  \App\Station  $station
      * @return \Illuminate\Http\Response
      */
-    public function show(int $car)
+    public function show(int $station)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$stations = Station::where('id', '=', $station)->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        return response($cars->toJson(JSON_PRETTY_PRINT), 200);
+        return response($stations->toJson(JSON_PRETTY_PRINT), 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Car  $car
+     * @param  \App\Station  $station
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $car)
+    public function update(Request $request, int $station)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$stations = Station::where('id', '=', $station)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $cars->update($request->all());
-            Log::addToLog('Car Log.', $request->all(), 'Edit');
-            return response($cars->toJson(JSON_PRETTY_PRINT), 200);
+            $stations->update($request->all());
+            Log::addToLog('Station Log.', $request->all(), 'Edit');
+            return response($stations->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
 
-    public function destroy(int $car)
+    public function destroy(int $station)
     {
-        if (!$cars = Car::where('id', '=', $car)->first())
+        if (!$stations = Station::where('id', '=', $station)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $cars->delete();
-            Log::addToLog('Car Log.',  $cars, 'Delete');
+            $stations->delete();
+            Log::addToLog('Station Log.',  $stations, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
