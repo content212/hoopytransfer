@@ -1,5 +1,5 @@
 name: "Laravel" #set whatevername you want to your github job
-on: {} # set the events you would like to trigger this job
+#on: {} # set the events you would like to trigger this job
 jobs:
   build:
     runs-on: ubuntu-latest
