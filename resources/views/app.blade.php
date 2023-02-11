@@ -195,7 +195,7 @@
 
     <header class="navbar navbar sticky-top flex-md-nowrap p-0 shadow" style="background-color: #3a0a3c ">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3"
-            href="#">{{ Html::image('img/norrbudet-min-light.png', 'logo', ['class' => 'img-fluid', 'width' => 125, 'height' => 200]) }}</a>
+            href="#">{{ Html::image('img/hoopy-transfer-admin-logo.png', 'logo', ['class' => 'img-fluid', 'width' => 125, 'height' => 200]) }}</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -224,25 +224,25 @@
                             <li class="nav-item">
                                 <a class="nav-link text-success" id="count" aria-current="page"
                                     href="/bookings?status=0">
-                                    &emsp;- Waiting for confirmation({{ App\Booking::getCount(0) }})
+                                    &emsp;- Waiting for Booking({{ App\Booking::getCount(0) }})
                                 </a>
                                 <a class="nav-link " aria-current="page" href="/bookings?status=1">
-                                    &emsp;- Order confirmed({{ App\Booking::getCount(1) }})
+                                    &emsp;- Trip is expected({{ App\Booking::getCount(1) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=2">
-                                    &emsp;- To be delivered({{ App\Booking::getCount(2) }})
+                                    &emsp;- Waiting for Confirmation({{ App\Booking::getCount(2) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=3">
-                                    &emsp;- Will be delivered({{ App\Booking::getCount(3) }})
+                                    &emsp;- Trip is completed({{ App\Booking::getCount(3) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=4">
-                                    &emsp;- Delivered({{ App\Booking::getCount(4) }})
+                                    &emsp;- Trip is not Completed({{ App\Booking::getCount(4) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=5">
-                                    &emsp;- Cancelled({{ App\Booking::getCount(5) }})
+                                    &emsp;- Canceled by Customer({{ App\Booking::getCount(5) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=6">
-                                    &emsp;- Rejected({{ App\Booking::getCount(6) }})
+                                    &emsp;- Canceled by System({{ App\Booking::getCount(6) }})
                                 </a>
                             </li>
 

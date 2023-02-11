@@ -197,6 +197,7 @@
     <!--<link href="https://getbootstrap.com/docs/5.0/examples/dashboard/dashboard.css" rel="stylesheet">-->
 
     @yield('css')
+    @livewireStyles
 </head>
 
 
@@ -211,10 +212,10 @@
         <div class="leftside-menu">
             <a href="/bookings" class="logo text-center logo-light">
                 <span class="logo-lg">
-                    {{ Html::image('img/norrbudet-min-light.png', 'logo', ['class' => 'img-fluid', 'width' => 125, 'height' => 16]) }}
+                    {{ Html::image('img/hoopy-transfer-admin-logo-light.png', 'logo', ['class' => 'img-fluid', 'width' => 175, 'height' => 16]) }}
                 </span>
                 <span class="logo-sm">
-                    {{ Html::image('img/icon-sm.png', 'logo', ['height' => 16]) }}
+                    {{ Html::image('img/icon-sm.png', 'logo', ['height' => 26]) }}
                 </span>
             </a>
 
@@ -239,37 +240,42 @@
                                     </li>
                                     <li>
                                         <a id="count0" aria-current="page" href="/bookings?status=0">
-                                            Waiting for confirmation({{ App\Booking::getCount(0) }})
+                                            Waiting for Booking({{ App\Booking::getCount(0) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count1" aria-current="page" href="/bookings?status=1">
-                                            Order confirmed({{ App\Booking::getCount(1) }})
+                                            Trip is expected({{ App\Booking::getCount(1) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count2" aria-current="page" href="/bookings?status=2">
-                                            To be delivered({{ App\Booking::getCount(2) }})
+                                            Waiting for Confirmation({{ App\Booking::getCount(2) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count3" aria-current="page" href="/bookings?status=3">
-                                            Will be delivered({{ App\Booking::getCount(3) }})
+                                            Trip is completed({{ App\Booking::getCount(3) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count4" aria-current="page" href="/bookings?status=4">
-                                            Delivered({{ App\Booking::getCount(4) }})
+                                            Trip is not Completed({{ App\Booking::getCount(4) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count5" aria-current="page" href="/bookings?status=5">
-                                            Cancelled({{ App\Booking::getCount(5) }})
+                                            Canceled by Customer({{ App\Booking::getCount(5) }})
                                         </a>
                                     </li>
                                     <li>
                                         <a id="count6" aria-current="page" href="/bookings?status=6">
-                                            Rejected({{ App\Booking::getCount(6) }})
+                                            Canceled by System({{ App\Booking::getCount(6) }})
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="count7" aria-current="page" href="/bookings?status=7">
+                                            Completed({{ App\Booking::getCount(7) }})
                                         </a>
                                     </li>
                                 </ul>
@@ -293,12 +299,20 @@
                         </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Driver') || trim($__env->yieldContent('role') == 'DriverManager'))
-                        <li class="side-nav-title side-nav-item">Worker</li>
+                        <li class="side-nav-title side-nav-item">Services</li>
+                    @endif
+                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                        <li class="side-nav-item">
+                            <a href="/vehicles" class="side-nav-link">
+                                <i class="uil-truck"></i>
+                                <span>Vehicles</span>
+                            </a>
+                        </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a href="/drivers" class="side-nav-link">
-                                <i class="uil-truck"></i>
+                                <i class="uil-user"></i>
                                 <span>Drivers</span>
                             </a>
                         </li>
@@ -313,22 +327,33 @@
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
-                            <a href="/pricelist" class="side-nav-link">
-                                <i class="uil-dollar-alt"></i>
-                                <span>Price List</span>
+                            <a href="/stations" class="side-nav-link">
+                                <i class="mdi mdi-bus-stop"></i>
+                                <span>Stations</span>
                             </a>
                         </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
+                        <li class="side-nav-title side-nav-item">Accounting</li>
+                    @endif
+                    @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
-                            <a href="/lager" class="side-nav-link">
-                                <i class="mdi mdi-warehouse"></i>
-                                <span>Lager</span>
+                            <a href="/users" class="side-nav-link">
+                                <i class="mdi mdi-safe"></i>
+                                <span>Kasa</span>
                             </a>
                         </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-title side-nav-item">System</li>
+                    @endif
+                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                        <li class="side-nav-item">
+                            <a href="/users" class="side-nav-link">
+                                <i class="mdi mdi-cogs"></i>
+                                <span>Setting</span>
+                            </a>
+                        </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
@@ -581,7 +606,7 @@
         });
         var role = '{{ trim($__env->yieldContent('role')) }}';
     </script>
-
+@livewireScripts
 </body>
 
 </html>

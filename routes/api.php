@@ -98,10 +98,6 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/prices/{price}', 'API\PriceController@show');
     Route::middleware(['scope:admin'])->post('/prices/{price}', 'API\PriceController@update');
     Route::middleware(['scope:admin'])->delete('/prices/{price}', 'API\PriceController@destroy');
-    Route::middleware(['scope:admin'])->post('/pricesimport', 'API\PriceController@import');
-    Route::middleware(['scope:admin'])->get('/pricesexport', 'API\PriceController@export');
-
-    Route::middleware(['scope:admin'])->get('/pricestruncate', 'API\PriceController@truncate');
 
     Route::middleware(['scope:admin'])->get('/logs', 'API\LogsController@index');
 

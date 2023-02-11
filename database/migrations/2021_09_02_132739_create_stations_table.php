@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLagersTable extends Migration
+class CreateStationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,9 +18,9 @@ class CreateLagersTable extends Migration
             $table->text('name');
             $table->string('official_name');
             $table->string('official_phone');
-            $table->bigInteger('country');
+            $table->integer('country')->unsigned();
             $table->foreign('country')->references('id')->on('countries');
-            $table->bigInteger('state');
+            $table->integer('state')->unsigned();
             $table->foreign('state')->references('id')->on('states');
             $table->string('address');
             $table->string('latitude', 255);
@@ -36,6 +36,6 @@ class CreateLagersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lagers');
+        Schema::dropIfExists('stations');
     }
 }

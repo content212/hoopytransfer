@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
+use App\CarType;
 
 use Yajra\DataTables\DataTables;
 
@@ -13,7 +14,7 @@ class PricesController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -34,9 +35,11 @@ class PricesController extends Controller
         $role = $this->role();
         $role = str_replace(' ', '', $role);
         $name = $this->name();
+
+        $car_types = CarType::pluck('name', 'id');
         if ($role) {
             if ($role == 'Admin') {
-                return view('prices', ['role' => $role, 'name' => $name]);
+                return view('prices', ['role' => $role, 'name' => $name, 'car_types' => $car_types]);
             } else {
                 return redirect('/forbidden');
             }

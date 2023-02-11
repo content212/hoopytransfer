@@ -11,7 +11,7 @@ class HomeController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -21,15 +21,7 @@ class HomeController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                $headers = [
-                    'Authorization' => 'Bearer ' . $_COOKIE['token'],
-                ];
-                $client = new \GuzzleHttp\Client([
-                    'headers' => $headers
-                ]);
-                $response = $client->get(config('app.url') . '/api/getName');
-                $role = $response->getBody();
-                return $role;
+                return Utils::getName($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -38,27 +30,7 @@ class HomeController extends Controller
 
     public function index()
     {
-        function role()
-        {
-            try {
-                if (isset($_COOKIE['token'])) {
-                    $headers = [
-                        'Authorization' => 'Bearer ' . $_COOKIE['token'],
-                    ];
-                    $client = new \GuzzleHttp\Client([
-                        'headers' => $headers
-                    ]);
-                    $response = $client->get(config('app.url') . '/api/getRole');
-                    $role = $response->getBody();
-                    return $role;
-                } else {
-                    return null;
-                }
-            } catch (\Exception $exception) {
-                return null;
-            }
-        }
-        $role = role();
+        $role = $this->role();
         $role = str_replace(' ', '', $role);
         if ($role == 'Admin' || $role == 'Editor') {
             return redirect('/bookings?status=0');
@@ -68,6 +40,10 @@ class HomeController extends Controller
             return view('login');
         }
     }
+    public function otplogin()
+    {
+        return view('OTPlogin');
+    }
     public function forbidden()
     {
         $role = $this->role();
@@ -75,16 +51,17 @@ class HomeController extends Controller
         $name = $this->name();
         return view('forbidden', ['role' => $role, 'name' => $name]);
     }
-    public function logout()
+    public function logout(Request $request)
     {
         try {
-            $headers = [
-                'Authorization' => 'Bearer ' . $_COOKIE['token'],
-            ];
-            $client = new \GuzzleHttp\Client([
-                'headers' => $headers
-            ]);
-            $response = $client->post(config('app.url') . '/api/logout');
+            #$headers = [
+            #    'Authorization' => 'Bearer ' . $_COOKIE['token'],
+            #];
+            #$client = new \GuzzleHttp\Client([
+            #    'headers' => $headers
+            #]);
+            #$response = $client->post(config('app.url') . '/api/logout');
+            Utils::logout($_COOKIE['token']);
             unset($_COOKIE['token']);
             setcookie('token', null, -1, '/');
             return redirect('/');

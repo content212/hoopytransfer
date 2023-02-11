@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DriverController extends Controller
 {
@@ -20,15 +22,15 @@ class DriverController extends Controller
     public function index()
     {
         $drivers = Driver::select(
-            'drivers.id',
-            'users.name',
-            'cars.plate',
-            'users.phone',
-            'countries.name',
-            'states.name',
+            'drivers.id as id',
+            'users.name as name',
+            'cars.plate as plate',
+            'users.phone as phone',
+            'countries.name as country',
+            'states.name as state',
         )
             ->join('cars', 'cars.id', '=', 'drivers.car_id')
-            ->join('users', 'users.id', '=', 'drivers.user_d')
+            ->join('users', 'users.id', '=', 'drivers.user_id')
             ->join('countries', 'countries.id', '=', 'drivers.country')
             ->join('states', 'states.id', '=', 'drivers.state');
         return DataTables::of($drivers)
@@ -50,7 +52,13 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         try {
-            $driver = Driver::create($request->all());
+            $user = (new UserController)->storeDriver($request->all());
+            if ($user['message'])
+                return response()->json(['message' => $user['message']], 400);
+            $input = $request->all();
+            $input['user_id'] = $user->id;
+            $input['car_id'] = $input['car'];
+            $driver = Driver::create($input);
             Log::addToLog('Driver Log.', $request->all(), 'Create');
             return response($driver->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
@@ -68,7 +76,8 @@ class DriverController extends Controller
     {
         if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        return response($drivers->toJson(JSON_PRETTY_PRINT), 200);
+        $user = User::where('id', '=', $drivers['user_id'])->first();
+        return response(json_encode(array_merge($user->toArray(), $drivers->toArray())), 200);
     }
 
     /**
@@ -83,7 +92,18 @@ class DriverController extends Controller
         if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $drivers->update($request->all());
+            $user = User::where('id', '=', $drivers['user_id']);
+            $input = $request->all();
+            $user_array = [
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'phone' => $input['phone'],
+                'password' => $input['password'] ? Hash::make($input['password']) : ''
+            ];
+            $user->update(array_filter($user_array));
+
+            $input['car_id'] = $input['car'];
+            $drivers->update($input);
             Log::addToLog('Driver Log.', $request->all(), 'Edit');
             return response($drivers->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
@@ -96,7 +116,9 @@ class DriverController extends Controller
         if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
+            $user = User::where('id', '=', $drivers['user_id']);
             $drivers->delete();
+            $user->delete();
             Log::addToLog('Driver Log.',  $drivers, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
         } catch (QueryException $e) {

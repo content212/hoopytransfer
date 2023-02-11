@@ -2,19 +2,19 @@
 
 @if (app('request')->input('status') != '')
 @if (app('request')->input('status') == 0)
-@section('title', 'Bookings - Waiting for confirmation')
+@section('title', 'Bookings - Waiting for Booking')
 @elseif (app('request')->input('status') == 1)
-@section('title', 'Bookings - Order confirmed')
+@section('title', 'Bookings - Trip is expected')
 @elseif (app('request')->input('status') == 2)
-@section('title', 'Bookings - To be delivered')
+@section('title', 'Bookings - Waiting for Confirmation')
 @elseif (app('request')->input('status') == 3)
-@section('title', 'Bookings - Will be delivered')
+@section('title', 'Bookings - Trip is completed')
 @elseif (app('request')->input('status') == 4)
-@section('title', 'Bookings - Delivered')
+@section('title', 'Bookings - Trip is not Completed')
 @elseif (app('request')->input('status') == 5)
-@section('title', 'Bookings - Cancelled')
+@section('title', 'Bookings - Canceled by Customer')
 @elseif (app('request')->input('status') == 6)
-@section('title', 'Bookings - Rejected')
+@section('title', 'Bookings - Canceled by System')
 @endif
 @else
 @section('title', 'Bookings')
@@ -293,7 +293,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="0">
                                 <label class="form-check-label" for="0">
-                                    Waiting for confirmation
+                                    Waiting for Booking
                                 </label>
                             </div>
                         </div>
@@ -301,7 +301,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="1">
                                 <label class="form-check-label" for="1">
-                                    Order confirmed
+                                    Trip is expected
                                 </label>
                             </div>
                         </div>
@@ -309,7 +309,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="2">
                                 <label class="form-check-label" for="2">
-                                    To be delivered
+                                    Waiting for Confirmation
                                 </label>
                             </div>
                         </div>
@@ -317,7 +317,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="3">
                                 <label class="form-check-label" for="3">
-                                    Will be delivered
+                                    Trip is completed
                                 </label>
                             </div>
                         </div>
@@ -325,7 +325,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="4">
                                 <label class="form-check-label" for="4">
-                                    Delivered
+                                    Trip is not Completed
                                 </label>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="5">
                                 <label class="form-check-label" for="5">
-                                    Cancelled
+                                    Canceled by Customer
                                 </label>
                             </div>
                         </div>
@@ -341,7 +341,7 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="status" value="6">
                                 <label class="form-check-label" for="6">
-                                    Rejected
+                                    Canceled by System
                                 </label>
                             </div>
                         </div>
@@ -689,49 +689,49 @@
                     count ', '
                     0 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count0').html('Waiting for confirmation(' +
+                    $('#count0').html('Waiting for Booking(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     1 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count1').html('Order confirmed(' +
+                    $('#count1').html('Trip is expected(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     2 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count2').html('To be delivered(' +
+                    $('#count2').html('Waiting for Confirmation(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     3 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count3').html('Will be delivered(' +
+                    $('#count3').html('Trip is completed(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     4 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count4').html('Delivered(' +
+                    $('#count4').html('Trip is not Completed(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     5 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count5').html('Cancelled(' +
+                    $('#count5').html('Canceled by Customer(' +
                         response + ')')
                 });
                 $.get('{{ route('
                     count ', '
                     6 ') }}').then(function(response) {
                     response = response.replace(/\s/g, '');
-                    $('#count6').html('Rejected(' +
+                    $('#count6').html('Canceled by System(' +
                         response + ')')
                 });
             },

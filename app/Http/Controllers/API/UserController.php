@@ -293,17 +293,15 @@ class UserController extends Controller
             return response()->json($request);
         }
     }
-    public function storeDriver(Request $request)
+    public function storeDriver($input)
     {
         try {
-            $input = $request->all();
             $input['password'] = Hash::make($input['password']);
             $user = User::create($input);
             $user->role()->save(Role::create(['role' => 'driver', 'user_id' => $user->id]));
-            Log::addToLog('Driver Log.', $request->all(), 'Create');
-            return response($user->toJson(JSON_PRETTY_PRINT), 200);
+            return $user;
         } catch (QueryException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return ['message' => $e->errorInfo];
         }
     }
     public function storeCustomer(Request $request)

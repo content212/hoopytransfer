@@ -8,5 +8,5 @@ class CarType extends Model
 {
     protected $table = 'car_types';
 
-    protected $fillable = ['name', 'opening_fee', 'km'];
+    protected $fillable = ['name'];
 }

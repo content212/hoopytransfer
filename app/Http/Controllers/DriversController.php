@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Car;
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
+use Illuminate\Support\Facades\DB;
 
 class DriversController extends Controller
 {
@@ -11,7 +13,7 @@ class DriversController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -33,9 +35,15 @@ class DriversController extends Controller
         $role = str_replace(' ', '', $this->role());
 
         $name = $this->name();
+
+        $cars = Car::pluck('plate', 'id');
         if ($role) {
             if ($role == 'Admin' || $role == 'Driver' || $role == 'DriverManager') {
-                return view('drivers', ['role' => $role, 'name' => $name]);
+                return view('drivers', [
+                    'role' => $role,
+                    'name' => $name,
+                    'cars' => $cars
+                ]);
             } else {
                 return redirect('/forbidden');
             }

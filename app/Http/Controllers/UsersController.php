@@ -11,7 +11,7 @@ class UsersController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;

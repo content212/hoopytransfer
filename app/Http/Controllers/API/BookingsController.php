@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Log;
-use App\Price;
 use App\Booking;
-use App\BookingPacketDetails;
+use App\BookingUserInfo;
 use Carbon\Carbon;
 use App\BookingPackets;
 use Illuminate\Http\Request;
@@ -30,27 +29,32 @@ class BookingsController extends Controller
     public function index(Request $request)
     {
         $bookings = Booking::select(
-            'id',
-            DB::raw('(CASE status
-            when 0 then \'Waiting for confirmation\'
-            when 1 then \' Order confirmed\'
-            when 2 then \'To be delivered\'
-            when 3 then \'Will be delivered\'
-            when 4 then \'Delivered\'
-            when 5 then \'Cancelled\'
-            when 6 then \'Rejected\' END) as status'),
-            'track_code',
-            'from',
-            'from_name',
-            'to',
-            'to_name',
-            'sender_name',
-            'customer_name',
-            'created_at'
-
-        );
+            'bookings.id',
+            DB::raw('(CASE bookings.status
+            when 0 then \'Waiting for Booking\'
+            when 1 then \'Trip is expected\'
+            when 2 then \'Waiting for Booking\'
+            when 3 then \'Trip is completed\'
+            when 4 then \'Trip is not Completed\'
+            when 5 then \'Canceled by Customer\'
+            when 6 then \'Canceled by System\'
+            when 7 then \'Completed\' END) as status'),
+            'bookings.track_code',
+            'bookings.from',
+            'bookings.from_name',
+            'bookings.to',
+            'bookings.to_name',
+            DB::raw('(CASE
+            WHEN bookings.user_id IS NULL THEN booking_user_infos.name
+            ELSE users.name END ) as user_name'),
+            'bookings.created_at'
+        )
+            ->leftJoin('users', function ($join) {
+                $join->on('users.id', '=', 'bookings.user_id')->whereNotNull('bookings.user_id');
+            })
+            ->leftJoin('booking_user_infos', 'booking_user_infos.booking_id', '=', 'bookings.id');
         if ($request->get('status') != '') {
-            $bookings = $bookings->where('status', $request->get('status'));
+            $bookings = $bookings->where('bookings.status', $request->get('status'));
         }
         return DataTables::of($bookings)
             ->addColumn('edit', function ($row) {
@@ -64,134 +68,9 @@ class BookingsController extends Controller
             ->make(true);
     }
 
-    public function getPacketsDatatable($id, $type)
-    {
-        $packets = BookingPackets::select('id', 'price', 'discount', 'tax', 'final_price')->where('bookingId', $id)->where('type', $type)->first();
-        $packet_id = -1;
-        $price = 0;
-        $discount = 0;
-        $tax = 0;
-        $final_price = 0;
-        if ($packets) {
-            $packet_id = $packets->id;
-            $price = $packets->price;
-            $discount = $packets->discount;
-            $tax = $packets->tax;
-            $final_price = $packets->final_price;
-        }
-        $details = BookingPacketDetails::select('id', 'width', 'size', 'height', 'weight')->where('packet_id', $packet_id);
-
-        return DataTables::of($details)
-            ->addColumn('edit', function ($row) {
-                $btn = '<a data-id="' . $row->id . '" class="packet-edit booking-form m-1 btn btn-primary btn-sm">View</a>';
-                return $btn;
-            })
-            ->with('subtotal', $price)
-            ->with('discount', $discount)
-            ->with('tax', $tax)
-            ->with('total', $final_price)
-            ->with('packet_id', $packet_id)
-            ->rawColumns(['edit'])
-            ->make();
-    }
-    public function getPacket($id)
-    {
-        if (!$packet = BookingPackets::where('id', '=', $id)->first())
-            return response()->json(['message' => 'Not Found!'], 404);
-        return response($packet->toJson(JSON_PRETTY_PRINT), 200);
-    }
-    public function getPacketDetail($id)
-    {
-        if (!$packet = BookingPacketDetails::where('id', '=', $id)->first())
-            return response()->json(['message' => 'Not Found!'], 404);
-        return response($packet->toJson(JSON_PRETTY_PRINT), 200);
-    }
-
-    public function packetsDetailUpdate(Request $request)
-    {
-        if (!$packetdetail = BookingPacketDetails::where('id', '=', $request->id)->first())
-            return response()->json(['message' => 'Not Found!'], 404);
-
-        $input = $request->all();
-        try {
-            $packetdetail->update($input);
-        } catch (QueryException $e) {
-            return response()->json(['message' => 'Database error. Code:' . $e->getCode()], 400);
-        }
-        $packetdetails = BookingPacketDetails::select('cubic_meters', 'weight')->where('packet_id', $packetdetail->packet_id)->where('type', $packetdetail->type)->get();
-        $cubic_meters = 0;
-        $kg = 0;
-        foreach ($packetdetails as $detail) {
-            $cubic_meters += $detail->cubic_meters;
-            $kg += $detail->weight;
-        }
-        $packet = BookingPackets::where('id', $packetdetail->packet_id)->first();
-        $booking = Booking::where('id', $packet->bookingId)->first();
-        $price = Price::where('zip_code', $booking->from)->first();
-        $user = User::where('id', $booking->user_id)->first();
-        $userType = null;
-        if ($booking->user_type)
-            $userType = $booking->user_type;
-        $item = new stdClass;
-        $item->id = 1;
-        $item->type = $packetdetail->type;
-        $item->cubic_meters = $cubic_meters;
-        $item->kg = $kg;
-        $lastdata = app('App\Http\Controllers\API\PriceCalculateController')->calculatePrice($item, $price, (int)$booking->km, $booking->delivery_type, $user, $userType);
-
-        $packet->update(
-            [
-                'cubic_meters'  => $cubic_meters,
-                'kg'            => $kg,
-                'price'         => $lastdata['price'],
-                'tax_rate'      => $lastdata['tax_rate'],
-                'tax'           => $lastdata['tax'],
-                'discount'      => $lastdata['discount'],
-                'discount_rate' => $lastdata['discount_rate'],
-                'final_price'   => $lastdata['final_price']
-            ]
-        );
-        return response()->json(['ok'], 200);
-    }
-
-    public function packetUpdate(Request $request)
-    {
-        $subtotal = $request->price;
-        $d_rate = $request->discount_rate;
-        $t_rate = $request->tax_rate;
-
-        $discount = ($subtotal * $d_rate) / 100.00;
-        $tax = (($subtotal - $discount) * $t_rate) / 100.00;
-
-        $total = $subtotal - $discount + $tax;
-
-        $data = array(
-            'price'         => $subtotal,
-            'discount_rate' => $d_rate,
-            'discount'      => '-' . $discount,
-            'tax_rate'      => $t_rate,
-            'tax'           => $tax,
-            'final_price'   => $total
-        );
-        try {
-            BookingPackets::where('id', $request->id)
-                ->update($data);
-            Log::addToLog('Packet Log.', $request->all(), 'Edit');
-        } catch (QueryException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
     protected function generateRandomNumber($length)
     {
-        $track_code = "NB";
+        $track_code = "HPT";
         srand((float) microtime() * 1000000);
 
         $data = "123456123456789071234567890890";
@@ -217,41 +96,9 @@ class BookingsController extends Controller
             $booking = Booking::where('id', $booking->id);
             $booking->update(['track_code' => $track_code]);
             $booking = $booking->first();
-            $price = Price::where('zip_code', $request->from)->first();
-            $list = json_decode($request->list);
-            $userType = null;
-            if ($request->user_type)
-                $userType = $request->user_type;
-
-            foreach ($list as $item) {
-                $lastdata = app('App\Http\Controllers\API\PriceCalculateController')->calculatePrice($item, $price, (int)$request->km, $request->delivery_type, $request->user('api'), $userType);
-                $packet = BookingPackets::create(
-                    [
-                        'bookingId'     => $booking->id,
-                        'cubic_meters'  => $item->cubic_meters,
-                        'kg'            => $item->kg,
-                        'type'          => $item->type,
-                        'price'         => $lastdata['price'],
-                        'tax_rate'      => $lastdata['tax_rate'],
-                        'tax'           => $lastdata['tax'],
-                        'discount'      => $lastdata['discount'],
-                        'discount_rate' => $lastdata['discount_rate'],
-                        'final_price'   => $lastdata['final_price']
-                    ]
-                );
-                $details = json_decode($item->details);
-                foreach ($details as $detail) {
-                    BookingPacketDetails::create(
-                        [
-                            'packet_id'     => $packet->id,
-                            'type'          => $detail->type,
-                            'size'          => $detail->size,
-                            'height'        => $detail->height,
-                            'weight'        => $detail->weight,
-                            'cubic_meters'  => $detail->cubic_meters
-                        ]
-                    );
-                }
+            if ($user_id == null) {
+                $input['booking_id'] = $booking->id;
+                BookingUserInfo::create($input);
             }
             Log::addToLog('Booking Log.', $request->all(), 'Create');
             return response($booking->toJson(JSON_PRETTY_PRINT), 200);
@@ -270,7 +117,18 @@ class BookingsController extends Controller
     {
         if (!$bookings = Booking::where('id', '=', $booking)->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
+        if ($bookings->user_id)
+            $user = User::where('id', $bookings->user_id)->first();
+        else
+            $user = BookingUserInfo::where('booking_id', $bookings->id)->first();
+
+        $user = [
+            'name' => $user->name . $user->surname,
+            'phone' => $user->phone,
+            'email' => $user->email
+        ];
+
+        return response(json_encode(array_merge($user, $bookings->toarray())), 200);
     }
 
     /**
@@ -322,7 +180,7 @@ class BookingsController extends Controller
     {
         $booking = Booking::select(
             'sender_name',
-            DB::raw('(CASE status when 0 then \'Waiting\' when 1 then \'Preparing\' when 2 then \'Shipped\' when 3 then \'Delivered\' END) as status'),
+            DB::raw('(CASE status when 0 then \'Waiting\' when 1 then \'Preparing\' when 2 then \'Shipped\' when 3 then \'Trip is not Completed\' END) as status'),
             'track_code',
             'company_name',
         )
@@ -356,13 +214,14 @@ class BookingsController extends Controller
             'from_name',
             'to_name',
             DB::raw('(CASE status
-        when 0 then \'Waiting for confirmation\'
-        when 1 then \' Order confirmed\'
-        when 2 then \'To be delivered\'
-        when 3 then \'Will be delivered\'
-        when 4 then \'Delivered\'
-        when 5 then \'Cancelled\'
-        when 6 then \'Rejected\' END) as status')
+        when 0 then \'Waiting for Booking\'
+        when 1 then \' Trip is expected\'
+        when 2 then \'Waiting for Confirmation\'
+        when 3 then \'Trip is completed\'
+        when 4 then \'Trip is not Completed\'
+        when 5 then \'Canceled by Customer\'
+        when 6 then \'Canceled by System\'
+        when 7 then \'Completed\' END) as status'),
         )
             ->join('booking_packets', 'booking_packets.bookingId', '=', 'bookings.id')
             ->where('bookings.user_id', $user->id)
@@ -376,13 +235,14 @@ class BookingsController extends Controller
         if (!$booking = Booking::select(
             'bookings.*',
             DB::raw('(CASE status
-        when 0 then \'Waiting for confirmation\'
-        when 1 then \' Order confirmed\'
-        when 2 then \'To be delivered\'
-        when 3 then \'Will be delivered\'
-        when 4 then \'Delivered\'
-        when 5 then \'Cancelled\'
-        when 6 then \'Rejected\' END) as status')
+        when 0 then \'Waiting for Booking\'
+        when 1 then \' Trip is expected\'
+        when 2 then \'Waiting for Confirmation\'
+        when 3 then \'Trip is completed\'
+        when 4 then \'Trip is not Completed\'
+        when 5 then \'Canceled by Customer\'
+        when 6 then \'Canceled by System\'
+        when 7 then \'Completed\' END) as status'),
         )->where('id', $id)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         $user = Auth::user();

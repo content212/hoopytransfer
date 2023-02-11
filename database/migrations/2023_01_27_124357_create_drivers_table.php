@@ -15,16 +15,16 @@ class CreateDriversTable extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
+            $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->bigInteger('car_id');
+            $table->bigInteger('car_id')->unsigned();
             $table->foreign('car_id')->references('id')->on('cars');
             $table->date('license_date');
             $table->string('license_class', 5);
             $table->string('license_no');
-            $table->bigInteger('country');
+            $table->integer('country')->unsigned();
             $table->foreign('country')->references('id')->on('countries');
-            $table->bigInteger('state');
+            $table->integer('state')->unsigned();
             $table->foreign('state')->references('id')->on('states');
             $table->string('address');
             $table->timestamps();

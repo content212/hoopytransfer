@@ -16,8 +16,6 @@ class CreateCarTypesTable extends Migration
         Schema::create('car_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('opening_fee', 9, 3);
-            $table->decimal('km_fee', 9, 3);
             $table->timestamps();
         });
     }

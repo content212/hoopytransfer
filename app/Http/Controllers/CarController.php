@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\CarType;
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
+use App\Station;
 
 class CarController extends Controller
 {
@@ -11,7 +13,7 @@ class CarController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -34,11 +36,18 @@ class CarController extends Controller
         $role = str_replace(' ', '', $role);
 
         $name = $this->name();
-
+        $car_types = CarType::pluck('name', 'id');
+        $stations = Station::pluck('name', 'id');
 
         if ($role) {
             if ($role === 'Admin') {
-                return view('cars', ['role' => $role, 'name' => $name]);
+
+                return view('vehicles', [
+                    'role' => $role,
+                    'name' => $name,
+                    'car_types' => $car_types,
+                    'stations' => $stations
+                ]);
             } else {
                 return redirect('/forbidden');
             }

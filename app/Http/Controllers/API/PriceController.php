@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Log;
 use App\Price;
-use App\Exports\PriceExport;
+use App\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use App\Http\Controllers\Controller;
-use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Database\QueryException;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PriceController extends Controller
 {
@@ -20,7 +19,16 @@ class PriceController extends Controller
      */
     public function index()
     {
-        $prices = Price::query();
+        $prices = Price::select(
+            'prices.id',
+            DB::raw('car_types.name as type'),
+            'prices.start_km',
+            'prices.finish_km',
+            'prices.opening_fee',
+            'prices.km_fee'
+        )
+            ->join('car_types', 'car_types.id', '=', 'prices.car_type');
+
         return DataTables::of($prices)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
@@ -46,71 +54,6 @@ class PriceController extends Controller
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
-    }
-
-    public function import(Request $request)
-    {
-
-        $this->validate($request, [
-            'select_file'  => 'required|mimes:xls,xlsx'
-        ]);
-
-        $path = $request->file('select_file')->getRealPath();
-
-        $data = (new FastExcel)->import($path);
-        if ($data->count() > 0) {
-            foreach ($data->toArray() as $key => $value) {
-                $insert_data[] = array(
-                    'area'              => $value['bolge'],
-                    'zip_code'          => $value['posta_kodu'],
-                    'bp_km_price'       => $value['bp_km_fiyat'],
-                    'bp_small_6'        => $value['bp_small_6_saat'],
-                    'bp_small_3'        => $value['bp_small_3_saat'],
-                    'bp_small_2'        => $value['bp_small_2_saat'],
-                    'bp_small_express'  => $value['bp_small_express'],
-                    'bp_small_timed'    => $value['bp_small_zamanli'],
-                    'bp_medium_6'       => $value['bp_medium_6_saat'],
-                    'bp_medium_3'       => $value['bp_medium_3_saat'],
-                    'bp_medium_2'       => $value['bp_medium_2_saat'],
-                    'bp_medium_express' => $value['bp_medium_express'],
-                    'bp_medium_timed'   => $value['bp_medium_zamanli'],
-                    'bp_large_6'        => $value['bp_large_6_saat'],
-                    'bp_large_3'        => $value['bp_large_3_saat'],
-                    'bp_large_2'        => $value['bp_large_2_saat'],
-                    'bp_large_express'  => $value['bp_large_express'],
-                    'bp_large_timed'    => $value['bp_large_zamanli'],
-                    'lp_km'             => $value['lp_km'],
-                    'lp_price'          => $value['lp_price'],
-                    'lp_extra'          => $value['lp_extra'],
-                );
-                //error_log(json_encode($insert_data));
-            }
-        }
-        $prices = $insert_data;
-        foreach (Price::all('zip_code') as $price) {
-            if (array_search($price->zip_code, array_column($prices, 'zip_code')) !== false) {
-            } else {
-                Price::where('zip_code', '=', $price->zip_code)->first()->delete();
-            }
-        }
-        foreach ($prices as $price) {
-            try {
-                Price::updateOrCreate([
-                    'zip_code' => $price['zip_code']
-                ], $price);
-            } catch (QueryException $e) {
-                return response()->json(['message' => $e->getMessage()], 400);
-            }
-        }
-        Log::addToLog('Price Log.', $prices, 'Import');
-        return response(['success' => 'ok'], 200);
-    }
-    public function export(Request $request)
-    {
-        ob_end_clean();
-        ob_start();
-        Log::addToLog('Price Log.', 'price_list_' . date("Y_m_d") . '.xlsx', 'Export');
-        return (new PriceExport())->download('price_list_' . date("Y_m_d") . '.xlsx');
     }
 
     /**
@@ -146,13 +89,7 @@ class PriceController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Price  $price
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($price)
+    public function destroy(int $price)
     {
         if (!$prices = Price::where('id', '=', $price)->first())
             return response()->json(['message' => 'Not Found!'], 404);
@@ -160,17 +97,6 @@ class PriceController extends Controller
             $prices->delete();
             Log::addToLog('Price Log.',  $prices, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
-        } catch (QueryException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
-        }
-    }
-
-    public function truncate()
-    {
-        try {
-            Price::query()->truncate();
-            Log::addToLog('Price Log.',  Price::query()->truncate(), 'Truncate');
-            return response()->json(['message' => 'Data truncate'], 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }

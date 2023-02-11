@@ -43,7 +43,7 @@
             width: 40px;
             height: 40px;
             border: 4px #ddd solid;
-            border-top: 4px #3c0c3c solid;
+            border-top: 4px #00b9ff solid;
             border-radius: 50%;
             animation: sp-anime 0.8s infinite linear;
         }
@@ -65,8 +65,8 @@
         }
 
         .form-control:focus {
-            border-color: #3c0c3c;
-            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(255, 100, 255, 0.5);
+            border-color: #00b9ff;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(0, 185, 255, 0.5);
         }
 
     </style>
@@ -81,11 +81,11 @@
             <span class="spinner"></span>
         </div>
     </div>
-    <main class="form-signin">
+    <div class="form-signin">
 
         <form id="signinform">
-            {{ Html::image(asset('img/norrbudet-min.png'), 'logo') }}
-            <h1 class="h3 mb-3 fw-bold mx-auto" style="color: #3c0c3c">Please sign in</h1>
+            {{ Html::image(asset('img/hoopy-transfer-admin-logo.png'), 'logo',  array( 'width' => 300, 'height' => 60 )) }}
+            <h1 class="h3 mb-3 fw-bold mx-auto"></h1>
             <span id="form_result"></span>
 
             <label for="inputEmail" class="visually-hidden">Email address</label>
@@ -95,9 +95,9 @@
             <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password"
                 required>
             <button id="signin" class="w-100 btn btn-lg" type="button"
-                style="background-color: #fccc0b;color: #3c0c3c">Sign in</button>
+                style="background-color: #00b9ff;color: #202020">Sign in</button>
         </form>
-    </main>
+    </div>
 </body>
 
 </html>

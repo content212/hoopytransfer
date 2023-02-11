@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
+use Illuminate\Support\Facades\DB;
 
-class LagerController extends Controller
+class StationController extends Controller
 {
     protected function role()
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getRole();
+                return Utils::getRole($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -31,9 +32,14 @@ class LagerController extends Controller
     {
         $role = str_replace(' ', '', $this->role());
         $name = $this->name();
+        $countries = DB::table('countries')->pluck('name', 'id');
         if ($role) {
             if ($role == 'Admin') {
-                return view('lager', ['role' => $role, 'name' => $name]);
+                return view('stations', [
+                    'role' => $role,
+                    'name' => $name,
+                    'countries' => $countries
+                ]);
             } else {
                 return redirect('/forbidden');
             }

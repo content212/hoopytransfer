@@ -16,7 +16,13 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->integer('status');
-            $table->text('track_code');
+            $table->bigInteger('user_id')->nullable()->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->bigInteger('driver_id')->unsigned()->nullable();
+            $table->foreign('driver_id')->references('id')->on('drivers');
+            $table->bigInteger('car_type')->unsigned();
+            $table->foreign('car_type')->references('id')->on('car_types');
+            $table->text('track_code')->nullable();
             $table->string('from');
             $table->integer('km');
             $table->integer('duration');
@@ -29,16 +35,8 @@ class CreateBookingsTable extends Migration
             $table->text('to_address');
             $table->text('to_lat', 255);
             $table->text('to_lng', 255);
-            $table->string('delivery_type');
-            $table->date('delivery_date');
-            $table->time('delivery_time');
-            $table->string('sender_name');
-            $table->string('sender_phone');
-            $table->string('sender_mail');
-            $table->string('customer_name');
-            $table->string('customer_phone');
-            $table->string('customer_mail');
-            $table->string('company_name')->nullable();
+            $table->date('booking_date');
+            $table->time('booking_time');
             $table->timestamps();
         });
     }

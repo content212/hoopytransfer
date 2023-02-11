@@ -21,7 +21,7 @@ class AuthController extends Controller
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            return response(['message' => "Could not connect to the database."], 422);
+            return response(['message' => $e->getMessage()], 422);
         }
 
 

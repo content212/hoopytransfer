@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWorkNotesTable extends Migration
+class CreateUserOtpsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateWorkNotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_notes', function (Blueprint $table) {
+        Schema::create('user_otps', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('group_id');
-            $table->text('note')->nullable();
-            $table->text('admin_note')->nullable();
+            $table->bigInteger('user_id');
+            $table->string('otp');
+            $table->timestamp('expire_at')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateWorkNotesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_notes');
+        Schema::dropIfExists('user_otps');
     }
-}
+};

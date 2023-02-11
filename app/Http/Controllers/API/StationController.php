@@ -21,10 +21,11 @@ class StationController extends Controller
     {
         $stations = Station::select(
             'stations.id',
+            'stations.name',
             'stations.official_name',
             'stations.official_phone',
-            'countries.name',
-            'states.name',
+            'countries.name as country',
+            'states.name as state',
         )
             ->join('countries', 'countries.id', '=', 'stations.country')
             ->join('states', 'states.id', '=', 'stations.state');
