@@ -7,6 +7,8 @@
 
     <title>Sign In</title>
 
+    @livewireStyles
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;600&display=swap" rel="stylesheet">
     <!-- CSS -->
@@ -73,7 +75,7 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
-    @livewireStyles
+    
 </head>
 
 <body class="text-center">

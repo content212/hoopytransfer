@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\Netgsm;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Exception;
@@ -24,11 +25,12 @@ class UserOtp extends Model
      */
     public function sendSMS($receiverNumber)
     {
-        $message = "Login OTP is " . $this->otp;
+        $message = "Login verification number is " . $this->otp;
 
         try {
 
-            //SMS Gönderme işleme yapılacak
+            $client = new Netgsm();
+            $response = $client->sendSMS($receiverNumber, $message);
             error_log($message);
             info('SMS Sent Successfully.');
         } catch (Exception $e) {

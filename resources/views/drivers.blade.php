@@ -104,7 +104,9 @@
                                     placeholder="License No">
                             </div>
                             <div class="form-group">
+
                                 @livewire('dropdowns') 
+                                
                             </div>
                             <div class="form-group">
                                 <label for="address">Address</label>
