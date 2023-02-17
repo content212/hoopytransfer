@@ -11,8 +11,6 @@ class Car extends Model
     protected $fillable = [
         'plate',
         'type',
-        'person_capacity',
-        'baggage_capacity',
         'insurance_date',
         'inspection_date',
         'station_id'

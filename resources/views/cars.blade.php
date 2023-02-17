@@ -75,16 +75,6 @@
                                     <option value="VIP">VIP</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label for="person_capacity">Person Capacity</label>
-                                <input type="text" class="form-control" name="person_capacity" id="person_capacity"
-                                    placeholder="Person Capacity">
-                            </div>
-                            <div class="form-group">
-                                <label for="baggage_capacity">Baggage Capacity</label>
-                                <input type="text" class="form-control" name="baggage_capacity" id="baggage_capacity"
-                                    placeholder="Baggage Capacity">
-                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default pull-left"
                                     data-bs-dismiss="modal">Close</button>

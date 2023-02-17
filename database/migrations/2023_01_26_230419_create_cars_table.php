@@ -17,13 +17,9 @@ class CreateCarsTable extends Migration
             $table->id();
             $table->string('plate');
             $table->bigInteger('type')->unsigned();
-            $table->foreign('type')->references('id')->on('car_types')->onDelete('cascade');
-            $table->integer('person_capacity');
-            $table->integer('baggage_capacity');
             $table->date('insurance_date');
             $table->date('inspection_date');
             $table->bigInteger('station_id')->unsigned();
-            $table->foreign('station_id')->references('id')->on('stations')->onDelete('cascade');
             $table->timestamps();
         });
     }

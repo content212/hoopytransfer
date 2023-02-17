@@ -23,8 +23,8 @@ class CarController extends Controller
             'cars.id',
             'cars.plate',
             DB::raw('car_types.name as type'),
-            'cars.person_capacity',
-            'cars.baggage_capacity'
+            'car_types.person_capacity',
+            'car_types.baggage_capacity'
         )
             ->join('car_types', 'car_types.id', '=', 'cars.type');
 

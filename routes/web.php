@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\CustomClass\CalculateSalary;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,3 +54,7 @@ Route::get('/forbidden', 'HomeController@forbidden');
 Route::get('/logout', 'HomeController@logout');
 
 Route::post('/test', 'BookingsController@test');
+
+Route::get('/symlink', function () {
+    Artisan::call('storage:link --relative');
+});

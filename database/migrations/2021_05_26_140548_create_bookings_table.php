@@ -17,11 +17,8 @@ class CreateBookingsTable extends Migration
             $table->id();
             $table->integer('status');
             $table->bigInteger('user_id')->nullable()->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
             $table->bigInteger('driver_id')->unsigned()->nullable();
-            $table->foreign('driver_id')->references('id')->on('drivers');
             $table->bigInteger('car_type')->unsigned();
-            $table->foreign('car_type')->references('id')->on('car_types');
             $table->text('track_code')->nullable();
             $table->string('from');
             $table->integer('km');

@@ -20,7 +20,7 @@
 
     <span id="form_result"></span>
     <div class="table-responsive">
-        <table id="cars_table" class="table table-striped table-sm" style="width: 100%">
+        <table id="cars_table" class="table table-striped table-sm nowrap" style="width: 100%">
             <thead>
                 <tr>
                     <th>#</th>
@@ -73,16 +73,6 @@
                             <div class="form-group">
                                 <label for="type">Car Type</label>
                                 {{ Form::select('type', [null=>'Please Select'] + $car_types->toarray(), null, array('class' => 'form-control', 'id' => 'type')) }}
-                            </div>
-                            <div class="form-group">
-                                <label for="person_capacity">Person Capacity</label>
-                                <input type="text" class="form-control" name="person_capacity" id="person_capacity"
-                                    placeholder="Person Capacity">
-                            </div>
-                            <div class="form-group">
-                                <label for="baggage_capacity">Baggage Capacity</label>
-                                <input type="text" class="form-control" name="baggage_capacity" id="baggage_capacity"
-                                    placeholder="Baggage Capacity">
                             </div>
                             <div class="form-group">
                                 <label for="insurance_date">Insurance Date</label>

@@ -16,7 +16,6 @@ class CreatePricesTable extends Migration
         Schema::create('prices', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('car_type')->unsigned();
-            $table->foreign('car_type')->references('id')->on('car_types')->onDelete('cascade');
             $table->integer('start_km');
             $table->integer('finish_km');
             $table->decimal('opening_fee', 9, 3);

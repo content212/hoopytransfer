@@ -16,7 +16,6 @@ class CreateBookingUserInfosTable extends Migration
         Schema::create('booking_user_infos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('booking_id')->unsigned();
-            $table->foreign('booking_id')->references('id')->on('bookings');
             $table->string('name', 255);
             $table->string('surname', 255);
             $table->string('email');

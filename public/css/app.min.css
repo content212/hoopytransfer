@@ -599,6 +599,7 @@ progress {
   -webkit-box-flex: 1;
   -ms-flex: 1 0 0%;
   flex: 1 0 0%;
+  padding: 10px;
 }
 .row-cols-auto > * {
   -webkit-box-flex: 0;

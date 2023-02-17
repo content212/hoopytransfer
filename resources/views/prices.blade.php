@@ -1,6 +1,6 @@
 @extends('test')
 
-@section('title', 'Prices')
+@section('title', 'Prices' . storage_path())
 
 @section('role', $role)
 
@@ -24,11 +24,10 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Type</th>
-                    <th>Start Km</th>
-                    <th>Finish Km</th>
-                    <th>Opening Fee</th>
-                    <th>Km Fee</th>
+                    <th>Name</th>
+                    <th>Person Capacity</th>
+                    <th>Baggage Capacity</th>
+                    <th>Discount Rate</th>
                     <th>Edit/Delete</th>
                 </tr>
             </thead>
@@ -55,49 +54,10 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="edit-modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="edit_modal_label">Edit Prices</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form role="form" method="POST" action="" id="prices_form">
-                        <div class="box-body">
-                            <span id="modal_result"></span>
-                            <div class="form-group">
-                                <label for="car_type">Car Type</label>
-                                {{ Form::select('car_type', $car_types, null, array('class' => 'form-control', 'id' => 'car_type')) }}
-                            </div>
-                            <div class="form-group">
-                                <label for="start_km">Start Km</label>
-                                <input type="text" class="form-control" name="start_km" id="start_km"
-                                    placeholder="Start Km">
-                            </div>
-                            <div class="form-group">
-                                <label for="finish_km">Finish Km</label>
-                                <input type="text" class="form-control" name="finish_km" id="finish_km"
-                                    placeholder="Finish Km">
-                            </div>
-                            <div class="form-group">
-                                <label for="opening_fee">Opening Fee</label>
-                                <input type="text" class="form-control" name="opening_fee" id="opening_fee"
-                                    placeholder="Opening Fee">
-                            </div>
-                            <div class="form-group">
-                                <label for="km_fee">Km Fee</label>
-                                <input type="text" class="form-control" name="km_fee" id="km_fee"
-                                    placeholder="Km Fee">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default pull-left"
-                                    data-bs-dismiss="modal">Close</button>
-                                <button type="button" id="save" class="btn btn-primary">Save changes</button>
-                            </div>
-                    </form>
-                </div>
-            </div>
+    <div class="modal top fade" id="edit-modal" tabindex="-1" aria-labelledby="editmodalLabel" aria-hidden="true"
+            data-bs-backdrop="static" data-bs-keyboard="true">
+        <div class="modal-dialog modal-xl  modal-dialog-centered">
+            <livewire:servicesmodal :car_type_id="-1">
         </div>
     </div>
     <div id="overlay">
@@ -131,7 +91,7 @@
             $("#overlay").fadeIn(300);
 
             $.ajax({
-                url: 'api/prices/' + id,
+                url: 'api/cartypes/' + id,
                 type: "DELETE",
                 success: function(data) {
                     $('#confirm_modal').modal('hide');
@@ -148,77 +108,20 @@
                 }, 500);
             });
         });
-        $('#save').on('click', function(e) {
-            e.preventDefault();
-
-            var form = $('#prices_form');
-            $("#overlay").fadeIn(300);
-            $.ajax({
-                url: document.getElementById('prices_form').action,
-                type: "POST",
-                data: form.serialize(),
-                success: function(data) {
-                    html = '<div class="alert alert-success">';
-                    html += '<p>Save Success</p>'
-                    html += '</div>';
-                    $('#modal_result').html(html);
-                    $('#edit-modal').animate({
-                        scrollTop: $("#modal_result").offset().top
-                    }, 'slow');
-                    $('#prices_table').DataTable().ajax.reload();
-                },
-                error: function(data) {
-                    if (data.responseJSON.message) {
-                        html = '<div class="alert alert-danger">';
-                        html += '<p>' + data.responseJSON.message + '</p>'
-                        html += '</div>';
-                        $('#modal_result').html(html);
-                    }
-                }
-            }).done(function() {
-                setTimeout(function() {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            }).fail(function() {
-                setTimeout(function() {
-                    $("#overlay").fadeOut(300);
-                }, 500);
-            });
-        });
         $('#edit-modal').on('show.bs.modal', function() {
             var el = $(".edit-item-trigger-clicked");
             var row = el.closest(".data-row");
 
             var id = el.data('id');
-            if(id)
-            {
-                document.getElementById('prices_form').action = "/api/prices/" + id;
-                $.ajax({
-                    url: "/api/prices/" + id,
-                    type: "GET",
-                    headers: {
-                        "accept": "application/json",
-                        "content-type": "application/json",
-                    },
-                    success: function(data) {
-                        obj = JSON.parse(data);
-                        $('#car_type').val(obj.car_type);
-                        $('#start_km').val(obj.start_km)
-                        $('#finish_km').val(obj.finish_km)
-                        $('#opening_fee').val(obj.opening_fee)
-                        $('#km_fee').val(obj.km_fee)
-                    }
-                });
-            }
-            else{
-                document.getElementById('prices_form').action = "/api/prices";
-            }
+            Livewire.emit('setId', id);
             
         });
 
         $('#edit-modal').on('hide.bs.modal', function() {
             $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
             $("#prices_form").trigger("reset");
+            $('input[type=file]').val('');
+            $('#prices_table').DataTable().ajax.reload();
             $('#modal_result').empty();
         });
 
@@ -235,10 +138,11 @@
                 buttons: [
                     {
                     className: 'btn-primary',
-                    text: 'Add New Prices',
+                    text: 'Add New Service',
                     action: function(e, dt, node, config) {
                         $('#edit_modal_label').text('Add Prices');
-                        $('#id').val(-1);
+                        $(node).addClass('edit-item-trigger-clicked');
+                        $(node).data('id', -1);
                         $('#edit-modal').modal('show');
                     }
                 }
@@ -253,7 +157,7 @@
                 }
             },
             ajax: {
-                url: "/api/prices",
+                url: "/api/cartypes",
                 type: 'get',
             },
             columns: [{
@@ -261,24 +165,20 @@
                     name: 'id'
                 },
                 {
-                    data: 'type',
-                    name: 'type'
+                    data: 'name',
+                    name: 'name'
                 },
                 {
-                    data: 'start_km',
-                    name: 'start_km'
+                    data: 'person_capacity',
+                    name: 'person_capacity'
                 },
                 {
-                    data: 'finish_km',
-                    name: 'finish_km',
+                    data: 'baggage_capacity',
+                    name: 'baggage_capacity',
                 },
                 {
-                    data: 'opening_fee',
-                    name: 'opening_fee',
-                },
-                {
-                    data: 'km_fee',
-                    name: 'km_fee',
+                    data: 'discount_rate',
+                    name: 'discount_rate',
                 },
                 {
                     data: 'edit',

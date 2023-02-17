@@ -282,11 +282,11 @@
                             </div>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Driver') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
-                            <a href="/prices" class="side-nav-link">
-                                <i class="uil-dollar-alt"></i>
-                                <span>Prices</span>
+                            <a href="/calendar" class="side-nav-link">
+                                <i class="uil-calender"></i>
+                                <span>Calendar</span>
                             </a>
                         </li>
                     @endif
@@ -317,11 +317,11 @@
                             </a>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Driver') || trim($__env->yieldContent('role') == 'DriverManager'))
+                    @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
-                            <a href="/calendar" class="side-nav-link">
-                                <i class="uil-calender"></i>
-                                <span>Calendar</span>
+                            <a href="/prices" class="side-nav-link">
+                                <i class="uil-dollar-alt"></i>
+                                <span>Services & Prices</span>
                             </a>
                         </li>
                     @endif
