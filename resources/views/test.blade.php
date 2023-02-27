@@ -189,7 +189,6 @@
         .modal {
             background: rgba(0, 0, 0, 0.5);
         }
-
     </style>
 
 
@@ -197,7 +196,7 @@
     <!--<link href="https://getbootstrap.com/docs/5.0/examples/dashboard/dashboard.css" rel="stylesheet">-->
 
     @yield('css')
-    
+
 </head>
 
 
@@ -282,7 +281,9 @@
                             </div>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Driver') || trim($__env->yieldContent('role') == 'DriverManager'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') ||
+                            trim($__env->yieldContent('role') == 'Driver') ||
+                            trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a href="/calendar" class="side-nav-link">
                                 <i class="uil-calender"></i>
@@ -298,7 +299,9 @@
                             </a>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Driver') || trim($__env->yieldContent('role') == 'DriverManager'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') ||
+                            trim($__env->yieldContent('role') == 'Driver') ||
+                            trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-title side-nav-item">Services</li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
@@ -338,7 +341,7 @@
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
-                            <a href="/users" class="side-nav-link">
+                            <a href="/accounting" class="side-nav-link">
                                 <i class="mdi mdi-safe"></i>
                                 <span>Kasa</span>
                             </a>
@@ -349,7 +352,7 @@
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin'))
                         <li class="side-nav-item">
-                            <a href="/users" class="side-nav-link">
+                            <a href="/settings" class="side-nav-link">
                                 <i class="mdi mdi-cogs"></i>
                                 <span>Setting</span>
                             </a>
@@ -432,81 +435,78 @@
                         </div>
                     </div>
                     <!-- end page title -->
-                    <div class="row">
-                        <div class="col-12">
+                    @if (!empty($accounting))
+                        @yield('content')
+                    @else
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @yield('content')
+                                        </div> <!-- end row -->
+                                    </div> <!-- end card body-->
+                                </div> <!-- end card -->
+                                <!-- Add New Event MODAL -->
+                            </div>
+                            <!-- end col-12 -->
+                        </div> <!-- end row -->
+                    @endif
 
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        @yield('content')
-                                        <div class="modal top fade" id="acc_modal" tabindex="-1"
-                                            aria-labelledby="edit_modal_label" aria-hidden="true"
-                                            data-bs-backdrop="true" data-bs-keyboard="true">
-                                            <div class="modal-dialog modal-lg ">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="edit_modal_label">My Account</h5>
-                                                        <button type="button" class="btn-close"
-                                                            data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <span id="acc_result"></span>
-                                                        <form id="acc_form" method="GET">
-                                                            <div class="row ">
-                                                                <div class="col-md-6">
-                                                                    <label for="email">Email</label>
-                                                                    <input type="email" class="form-control"
-                                                                        name="email" id="acc_email">
-                                                                </div>
-
-                                                                <div class="col-md-6">
-                                                                    <label for="phone">Phone</label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="phone" id="acc_phone">
-                                                                </div>
-
-                                                            </div>
-                                                            <hr class="mt-2 mb-3" />
-                                                            <div class="row ">
-
-                                                                <div class="col-md-6">
-                                                                    <label for="password">New Password</label>
-                                                                    <input type="password" class="form-control"
-                                                                        name="password" id="acc_password">
-                                                                </div>
-
-                                                                <div class="col-md-6">
-                                                                    <label for="password_confirm">Password Again</label>
-                                                                    <input type="password" class="form-control"
-                                                                        name="password_confirm">
-                                                                </div>
-
-                                                            </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">
-                                                            Close
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            id="accSubmitBtn">Save changes</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end row -->
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-
-                            <!-- Add New Event MODAL -->
-                        </div>
-                        <!-- end col-12 -->
-                    </div> <!-- end row -->
 
                 </div> <!-- container -->
 
             </div> <!-- content -->
+            <div class="modal top fade" id="acc_modal" tabindex="-1" aria-labelledby="edit_modal_label"
+                aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+                <div class="modal-dialog modal-lg ">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="edit_modal_label">My Account</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <span id="acc_result"></span>
+                            <form id="acc_form" method="GET">
+                                <div class="row ">
+                                    <div class="col-md-6">
+                                        <label for="email">Email</label>
+                                        <input type="email" class="form-control" name="email" id="acc_email">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="phone">Phone</label>
+                                        <input type="text" class="form-control" name="phone" id="acc_phone">
+                                    </div>
+
+                                </div>
+                                <hr class="mt-2 mb-3" />
+                                <div class="row ">
+
+                                    <div class="col-md-6">
+                                        <label for="password">New Password</label>
+                                        <input type="password" class="form-control" name="password"
+                                            id="acc_password">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="password_confirm">Password Again</label>
+                                        <input type="password" class="form-control" name="password_confirm">
+                                    </div>
+
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                            <button type="button" class="btn btn-primary" id="accSubmitBtn">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Footer Start -->
             <footer class="footer">
@@ -552,6 +552,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
 
     @yield('script')
 
@@ -606,7 +607,7 @@
         });
         var role = '{{ trim($__env->yieldContent('role')) }}';
     </script>
-@livewireScripts
+    @livewireScripts
 </body>
 
 </html>

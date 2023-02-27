@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
+use App\Setting;
 
-use function GuzzleHttp\json_decode;
-
-class CalendarController extends Controller
+class SettingController extends Controller
 {
     protected function role()
     {
@@ -19,24 +18,30 @@ class CalendarController extends Controller
             return null;
         }
     }
-
     protected function name()
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getName();
+                return Utils::getName($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
         }
     }
-    public function index()
+    public function index(Request $request)
     {
-        $role = str_replace(' ', '', $this->role());
+        $role = $this->role();
+        $role = str_replace(' ', '', $role);
         $name = $this->name();
+        $settings = Setting::all();
+
         if ($role) {
-            if ($role == 'Admin' || $role == 'Driver' || $role == 'DriverManager') {
-                return view('calendar', ['role' => $role, 'name' => $name]);
+            if ($role === 'Admin') {
+                return view('settings', [
+                    'role' => $role,
+                    'name' => $name,
+                    'settings' => $settings
+                ]);
             } else {
                 return redirect('/forbidden');
             }

@@ -65,6 +65,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <span id="modal_result"></span>
 
                         <div class="row justify-content-start">
 
@@ -376,10 +377,11 @@
                     $('#name').val(obj.name)
                     $('#phone').val(obj.phone)
                     $('#email').val(obj.email)
+                    $('#driver_id').val(obj.driver_id)
                     $('#car_type').val(obj.car_type).trigger('click')
                         setTimeout(function() { 
-                            $('#driver_id').val(obj.driver_id)
-                        }, 200);
+                            $('#car_id').val(obj.car_id)
+                        }, 500);
                 }
             });
         });
@@ -394,8 +396,6 @@
             e.preventDefault();
 
             var form = $('#bookings_form');
-            console.log(form);
-            console.log(form.serialize());
             $.ajax({
                 headers: {
                     "Authorization": "Bearer " + Cookies.get('token')
@@ -447,6 +447,28 @@
                             response + ')')
                     });
                 },
+                error: function(data) {
+                    if (data.responseJSON.message) {
+                        html = '<div class="alert alert-danger">';
+                        html += '<p>' + data.responseJSON.message + '</p>'
+                        html += '</div>';
+                        $('#modal_result').html(html);
+                    }
+
+                    $.each(data.responseJSON.error, function (key, val) {
+                        var el = $('#' + key);
+                        el.addClass('is-invalid');
+                        $.each(val, function(i, err) {
+                            html = '<div class="alert alert-danger">';
+                            html += '<p>' + err + '</p>'
+                            html += '</div>';
+                        });
+                        $('#modal_result').html(html);
+                    });
+                    //(data.responseJSON.errors).forEach(function(item){
+                   
+                    //});
+                }
             });
         });
         $('#booking_table').DataTable({

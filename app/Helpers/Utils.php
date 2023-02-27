@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Laravel\Passport\Passport;
@@ -63,6 +64,9 @@ class Utils
     {
         $tokenId = (new Parser(new JoseEncoder()))->parse($token)->claims()->all()['jti'];
         $accesstoken = Token::where('id', '=', $tokenId)->first();
+        if (Carbon::parse($accesstoken->expires_at) < Carbon::now()) {
+            return null;
+        }
         $user = User::where('id', '=', $accesstoken->user_id)->first();
         return $user;
     }

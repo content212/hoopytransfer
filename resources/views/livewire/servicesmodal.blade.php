@@ -32,6 +32,10 @@
                     <label>Discount Rate</label>
                     <input type="number" class="form-control" max="100" wire:model.defer="car_type.discount_rate" placeholder="Discount Rate">
                 </div>
+                <div class="form-group">
+                    <label>Free Cancellation Time</label>
+                    <input type="number" class="form-control" wire:model.defer="car_type.free_cancellation" placeholder="Free Cancellation Time">
+                </div>
             </div>
         </div>
         <hr class="mt-2 mb-3" />
@@ -53,19 +57,19 @@
             @foreach ($car_type->prices as $i => $price)
                 <div class="row align-items-end">
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.start_km') is-invalid @enderror" {{ $loop->first ? "wire:model.layz" : "wire:model.defer" }}="car_type.prices.{{ $i }}.start_km" readonly>
+                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.start_km') is-invalid @enderror" wire:model.lazy="car_type.prices.{{ $i }}.start_km" readonly>
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.finish_km') is-invalid @enderror" {{ $loop->first ? "wire:model.layz" : "wire:model.defer" }}="car_type.prices.{{ $i }}.finish_km">
+                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.finish_km') is-invalid @enderror" wire:model.lazy="car_type.prices.{{ $i }}.finish_km">
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.opning_fee') is-invalid @enderror" {{ $loop->first ? "wire:model.layz" : "wire:model.defer" }}="car_type.prices.{{ $i }}.opening_fee">
+                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.opning_fee') is-invalid @enderror" wire:model.lazy="car_type.prices.{{ $i }}.opening_fee">
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.km_fee') is-invalid @enderror" {{ $loop->first ? "wire:model.layz" : "wire:model.defer" }}="car_type.prices.{{ $i }}.km_fee">
+                        <input type="text" class="form-control @error('car_type.prices.' . $i . '.km_fee') is-invalid @enderror" wire:model.lazy="car_type.prices.{{ $i }}.km_fee">
                     </div>
                     <div class="form-group col-md-2 pb-1">
                             @if (!$loop->first && $loop->count > 1)
@@ -87,21 +91,21 @@
             <div class="row align-items-end">
             
                 <div class="form-group col-2 col-md-2">
-                    <input type="text" class="form-control @error('news.' . $i . '.start_km') is-invalid @enderror" wire:model.layz="news.{{ $i }}.start_km" readonly>
+                    <input type="text" class="form-control @error('news.' . $i . '.start_km') is-invalid @enderror" wire:model.defer="news.{{ $i }}.start_km" readonly>
                 </div>
             
                 <div class="form-group col-2 col-md-2">
-                    <input type="text" class="form-control @error('news.' . $i . '.finish_km') is-invalid @enderror" wire:model.layz="news.{{ $i }}.finish_km">
-                </div>
-            
-                <div class="form-group col-2 col-md-2">
-
-                    <input type="text" class="form-control @error('news.' . $i . '.opening_fee') is-invalid @enderror" wire:model.layz="news.{{ $i }}.opening_fee">
+                    <input type="text" class="form-control @error('news.' . $i . '.finish_km') is-invalid @enderror" wire:model.lazy="news.{{ $i }}.finish_km">
                 </div>
             
                 <div class="form-group col-2 col-md-2">
 
-                    <input type="text" class="form-control @error('news.' . $i . '.km_fee') is-invalid @enderror" wire:model.layz="news.{{ $i }}.km_fee">
+                    <input type="text" class="form-control @error('news.' . $i . '.opening_fee') is-invalid @enderror" wire:model.defer="news.{{ $i }}.opening_fee">
+                </div>
+            
+                <div class="form-group col-2 col-md-2">
+
+                    <input type="text" class="form-control @error('news.' . $i . '.km_fee') is-invalid @enderror" wire:model.defer="news.{{ $i }}.km_fee">
                 </div>
                 <div class="form-group col-md-2 pb-1">
                     <button class="btn btn-sm btn-danger" wire:click="newsdelete({{ $i }})" style="color: white">
@@ -123,22 +127,22 @@
             @foreach ($news as $i => $price)
                 <div class="row align-items-end">
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('news.' . $i . '.start_km') is-invalid @enderror" wire:model.layz="news.{{ $i }}.start_km" readonly>
+                        <input type="text" class="form-control @error('news.' . $i . '.start_km') is-invalid @enderror" wire:model.defer="news.{{ $i }}.start_km" readonly>
                             
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
-                        <input type="text" class="form-control @error('news.' . $i . '.finish_km') is-invalid @enderror" wire:model.layz="news.{{ $i }}.finish_km">
+                        <input type="text" class="form-control @error('news.' . $i . '.finish_km') is-invalid @enderror" wire:model.lazy="news.{{ $i }}.finish_km">
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
 
-                        <input type="text" class="form-control @error('news.' . $i . '.opening_fee') is-invalid @enderror" wire:model.layz="news.{{ $i }}.opening_fee">
+                        <input type="text" class="form-control @error('news.' . $i . '.opening_fee') is-invalid @enderror" wire:model.defer="news.{{ $i }}.opening_fee">
                     </div>
                 
                     <div class="form-group col-2 col-md-2">
 
-                        <input type="text" class="form-control @error('news.' . $i . '.km_fee') is-invalid @enderror" wire:model.layz="news.{{ $i }}.km_fee">
+                        <input type="text" class="form-control @error('news.' . $i . '.km_fee') is-invalid @enderror" wire:model.defer="news.{{ $i }}.km_fee">
                     </div>
                     <div class="form-group col-md-2 pb-1">
                             @if (!$loop->first && $loop->count > 1)

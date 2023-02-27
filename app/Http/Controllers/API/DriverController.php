@@ -24,12 +24,10 @@ class DriverController extends Controller
         $drivers = Driver::select(
             'drivers.id as id',
             'users.name as name',
-            'cars.plate as plate',
             'users.phone as phone',
             'countries.name as country',
             'states.name as state',
         )
-            ->join('cars', 'cars.id', '=', 'drivers.car_id')
             ->join('users', 'users.id', '=', 'drivers.user_id')
             ->join('countries', 'countries.id', '=', 'drivers.country')
             ->join('states', 'states.id', '=', 'drivers.state');
@@ -57,7 +55,6 @@ class DriverController extends Controller
                 return response()->json(['message' => $user['message']], 400);
             $input = $request->all();
             $input['user_id'] = $user->id;
-            $input['car_id'] = $input['car'];
             $driver = Driver::create($input);
             Log::addToLog('Driver Log.', $request->all(), 'Create');
             return response($driver->toJson(JSON_PRETTY_PRINT), 200);

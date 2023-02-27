@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\CustomClass\CalculateSalary;
+use App\Driver;
+use App\Setting;
+use App\Transaction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -53,8 +56,17 @@ Route::get('/forbidden', 'HomeController@forbidden');
 
 Route::get('/logout', 'HomeController@logout');
 
-Route::post('/test', 'BookingsController@test');
+Route::get('/accounting', 'AccountingController@index');
+Route::get('/accounting/{id}', 'AccountingController@driverIndex');
+Route::get('/accountingdetail', 'AccountingController@detailIndex');
+Route::get('/settings', 'SettingController@index');
 
 Route::get('/symlink', function () {
-    Artisan::call('storage:link --relative');
+    $targetFolder = '/home/ch349004/web/admin.hoopytransfer.com/public_html/hoopytransfer/storage/app/images';
+    $linkFolder = '/home/ch349004/web/admin.hoopytransfer.com/public_html/images';
+    if (symlink($targetFolder, $linkFolder)) {
+        echo 'Symlink completed';
+    } else {
+        echo 'Symlink Failed';
+    }
 });

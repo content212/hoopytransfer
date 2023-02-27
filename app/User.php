@@ -15,7 +15,8 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable;
 
 
-    public function role() {
+    public function role()
+    {
         return $this->hasOne(Role::class);
     }
     /**
@@ -24,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'phone', 'status'
+        'name', 'surname', 'email', 'password', 'phone', 'status'
     ];
 
     /**
@@ -44,6 +45,4 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-
 }

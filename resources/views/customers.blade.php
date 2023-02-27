@@ -23,9 +23,9 @@
                     <th>#</th>
                     <th>Status</th>
                     <th>Name</th>
+                    <th>Surname</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Discount</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -40,7 +40,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span id="customers_result"></span>
+                    <span id="modal_result"></span>
                     <form id="customer_form" method="GET">
                         <input type="hidden" name="id" id="id" value="-1">
                         <div class="row">
@@ -52,21 +52,13 @@
                                     <option value="1">Active</option>
                                 </select>
                             </div>
-                            <div class="col-lg-2 col-md-12">
-                                <label for="name">Discount</label>
-                                <input type="text" class="form-control" name="discount" id="discount">
-                            </div>
-                            <div class="col-lg-2 col-md-12">
-                                <label for="type">Type</label>
-                                <select class="form-select" name="type" id="type">
-                                    <option value="individual">Individual</option>
-                                    <option value="corporate">Corporate</option>
-                                </select>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6">
+                            <div class="col-lg-5 col-md-5">
                                 <label for="name">Name</label>
                                 <input type="text" class="form-control" name="name" id="name">
+                            </div>
+                            <div class="col-lg-5 col-md-5">
+                                <label for="name">Surname</label>
+                                <input type="text" class="form-control" name="surname" id="surname">
                             </div>
                         </div>
                         <hr class="mt-2 mb-3" />
@@ -84,42 +76,6 @@
 
                         </div>
                         <hr class="mt-2 mb-3" />
-                        <div class="row corp">
-
-                            <div class="col-md-6">
-                                <label for="company_name">Company Name</label>
-                                <input type="text" class="form-control" name="company_name" id="company_name">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="organization_number">Organization Number</label>
-                                <input type="text" class="form-control" name="organization_number" id="organization_number">
-                            </div>
-
-                        </div>
-                        <hr class="mt-2 mb-3 corp" />
-                        <div class="row corp">
-
-                            <div class="col-md-6">
-                                <label for="company_name">Tax Department</label>
-                                <input type="text" class="form-control" name="tax_department" id="tax_department">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="organization_number">Tax Number</label>
-                                <input type="text" class="form-control" name="tax_number" id="tax_number">
-                            </div>
-
-                        </div>
-                        <hr class="mt-2 mb-3 crop" />
-                        <div class="row corp">
-
-                            <div class="col-md-12">
-                                <label for="address">Address</label>
-                                <textarea type="text" class="form-control" name="address" id="address" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <hr class="mt-2 mb-3 corp" />
                         <div class="row">
 
                             <div class="col-md-6">
@@ -219,7 +175,7 @@
             serverSide: true,
 
             ajax: {
-                url: "/api/getcustomer",
+                url: "/api/getcustomers",
                 type: 'get',
             },
 
@@ -238,6 +194,10 @@
                     data: 'name',
                     name: 'name'
                 },
+                {
+                    data: 'surname',
+                    name: 'surname'
+                },
 
                 {
                     data: 'email',
@@ -246,10 +206,6 @@
                 {
                     data: 'phone',
                     name: 'phone'
-                },
-                {
-                    data: 'discount',
-                    name: 'customers.discount'
                 },
                 {
                     data: 'edit',
@@ -273,27 +229,20 @@
 
             if (id) {
                 $.ajax({
-                    url: "/api/customer/" + id,
+                    url: "/api/users/" + id,
                     type: "GET",
                     headers: {
                         "accept": "application/json",
                         "content-type": "application/json",
                     },
                     success: function(data) {
+                        data = JSON.parse(data);
                         $('#id').val(data.id);
                         $('#statuss').val(data.status);
                         $('#name').val(data.name)
+                        $('#surname').val(data.surname)
                         $('#phone').val(data.phone)
                         $('#email').val(data.email)
-                        $('#discount').val(data.discount);
-                        $('#type').val(data.type);
-                        $("#type").trigger("change");
-                        $('#company_name').val(data.company_name);
-                        $('#tax_department').val(data.tax_department);
-                        $('#tax_number').val(data.tax_number);
-                        $('#organization_number').val(data.organization_number);
-                        $('#address').val(data.address);
-
                     }
                 });
             }
@@ -314,26 +263,35 @@
                         customers_table.ajax.reload();
                     },
                     error: function(data) {
-                        if (data.responseJSON.message) {
-
-                            var errors = $.parseJSON(data.responseText);
-                            html = '<div class="alert alert-danger">';
-                            $.each(data.responseJSON.message, function(key, value) {
-                                html += '<p>' + value[0] + '</p>';
-                            });
-                            html += '</div>';
-                            $('#customers_result').html(html);
-                        }
-                        customers_table.ajax.reload();
+                        html = "";
+                    if (data.responseJSON.message) {
+                        html += '<div class="alert alert-danger">';
+                        html += '<p>' + data.responseJSON.message + '</p>'
+                        html += '</div>';
+                        $('#modal_result').html(html);
                     }
+                    
+                    $.each(data.responseJSON.error, function (key, val) {
+                        var el = $('#' + key);
+                        el.addClass('is-invalid');
+                        $.each(val, function(i, err) {
+                            html += '<div class="alert alert-danger">';
+                            html += '<p>' + err + '</p>'
+                            html += '</div>';
+                        });
+                        $('#modal_result').html(html);
+                    });
+                }
                 })
             }
         });
         $('#edit_modal').on('hide.bs.modal', function() {
             $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
             $("#customer_form").trigger("reset");
-            $('.corp').hide();
-            $('#customers_result').empty();
+            $(".is-invalid").each(function() {
+                $(this).removeClass('is-invalid')
+            });
+            $('#modal_result').empty();
         });
         $(document).on('click', '.delete', function() {
             $(this).addClass('delete-item-trigger-clicked');

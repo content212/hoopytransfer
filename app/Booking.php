@@ -11,10 +11,12 @@ class Booking extends Model
         'user_id',
         'track_code',
         'driver_id',
+        'car_id',
         'car_type',
-        'from',
+        'price_id',
         'km',
         'duration',
+        'from',
         'from_name',
         'from_address',
         'from_lat',
@@ -31,5 +33,13 @@ class Booking extends Model
     {
         $count = Booking::where('status', $status)->count();
         return $count;
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public function data()
+    {
+        return $this->hasOne(BookingData::class, 'booking_id', 'id');
     }
 }

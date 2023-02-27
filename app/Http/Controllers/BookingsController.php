@@ -24,7 +24,7 @@ class BookingsController extends Controller
     {
         try {
             if (isset($_COOKIE['token'])) {
-                return Utils::getName();
+                return Utils::getName($_COOKIE['token']);
             }
         } catch (\Exception $exception) {
             return null;
@@ -37,6 +37,7 @@ class BookingsController extends Controller
         $name = $this->name();
 
         $car_types = CarType::pluck('name', 'id');
+        info($role);
         if ($role) {
             if ($role === 'Admin' || $role === 'Editor') {
                 return view('bookings', [

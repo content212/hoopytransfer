@@ -1,6 +1,6 @@
 @extends('test')
 
-@section('title', 'Prices' . storage_path())
+@section('title', 'Prices')
 
 @section('role', $role)
 

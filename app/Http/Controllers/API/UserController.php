@@ -58,9 +58,8 @@ class UserController extends Controller
     {
         $drivers = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone')
             ->join('roles', 'roles.user_id', '=', 'users.id')
-            ->join('customers', 'customers.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
         return DataTables::of($drivers)
             ->addColumn('edit', function ($row) {
@@ -72,35 +71,18 @@ class UserController extends Controller
     }
     public function getCustomer($id)
     {
-        if (!$type = User::select('customers.type')->join('customers', 'customers.user_id', '=', 'users.id')->where('users.id', '=', $id)->first())
-            return response()->json(['message' => 'Not Found!'], 404);
-
-        if ($type->type == 'individual') {
-            return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type')->join('customers', 'customers.user_id', '=', 'users.id')->where('users.id', '=', $id)->first();
-        } else if ($type->type == 'corporate') {
-            return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
-                ->join('customers', 'customers.user_id', '=', 'users.id')
-                ->join('companies', 'companies.customer_id', '=', 'customers.id')
-                ->where('users.id', '=', $id)
-                ->first();
-        }
+        return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
+            ->join('customers', 'customers.user_id', '=', 'users.id')
+            ->join('companies', 'companies.customer_id', '=', 'customers.id')
+            ->where('users.id', '=', $id)
+            ->first();
     }
-    public function FrontEndCustomer()
+    public function FrontEndCustomer(Request $request)
     {
-        $user = Auth::user();
-        $id = $user->id;
-        if (!$type = User::select('customers.type')->join('customers', 'customers.user_id', '=', 'users.id')->where('users.id', '=', $id)->first())
+        $user = $request->user('api');
+        if (!$user)
             return response()->json(['message' => 'Not Found!'], 404);
-
-        if ($type->type == 'individual') {
-            return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type')->join('customers', 'customers.user_id', '=', 'users.id')->where('users.id', '=', $id)->first();
-        } else if ($type->type == 'corporate') {
-            return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
-                ->join('customers', 'customers.user_id', '=', 'users.id')
-                ->join('companies', 'companies.customer_id', '=', 'customers.id')
-                ->where('users.id', '=', $id)
-                ->first();
-        }
+        return User::select('id', 'name', 'surname', 'phone', 'email')->firstWhere('id', $user->id);
     }
     public function FrontEndCustomerUpdate(Request $request)
     {
@@ -173,95 +155,50 @@ class UserController extends Controller
     public function customersAction(Request $request)
     {
 
-        if ($request->id != -1) {
-            $id = $request->id;
-            if (!$user = User::where('id', '=', $request->id)->first())
-                return response()->json(['message' => 'Not Found!'], 404);
-            if ($request->type == 'individual') {
-                if (!$user = User::where('id', '=', $id)->first())
-                    return response()->json(['message' => 'Not Found!'], 404);
-                try {
-                    $input = $request->all();
-                    if ($user->email != $input['email']) {
-                        $validator = Validator::make($request->all(), [
-                            'email' => 'required|email|unique:users'
-                        ]);
-                        if ($validator->fails()) {
-                            $response = $validator->errors();
-                            session()->flash('flash_error', $response);
-                            return response()->json(['message' => $response], 400);
-                        }
-                    }
-                    $input['password'] = Hash::make($input['password']);
-                    $user->update($input);
-                    $customer = Customer::where('user_id', '=', $id)->first();
-                    $input['discount'] = $input['discount'] == '' || $input['discount'] == null ? 0 : $input['discount'];
-                    $customer->update($input);
-                    Log::addToLog('Customer Log.', $request->all(), 'Edit');
-                    return response($user->toJson(JSON_PRETTY_PRINT), 200);
-                } catch (QueryException $e) {
-                    return response()->json(['message' => 'Database error. Code:' . $e->getCode()], 400);
-                }
-            } else if ($request->type == 'corporate') {
-                try {
-                    if (!$user = User::where('id', '=', $id)->first())
-                        return response()->json(['message' => 'Not Found!'], 404);
-                    $input = $request->all();
-                    if ($user->email != $input['email']) {
-                        $validator = Validator::make($request->all(), [
-                            'email' => 'required|email|unique:users'
-                        ]);
-                        if ($validator->fails()) {
-                            $response = $validator->errors();
-                            session()->flash('flash_error', $response);
-                            return response()->json(['message' => $response], 400);
-                        }
-                    }
-                    $input['password'] = Hash::make($input['password']);
-                    $user->update($input);
-                    $customer = Customer::where('user_id', '=', $id)->first();
-                    $input['discount'] = $input['discount'] == '' || $input['discount'] == null ? 0 : $input['discount'];
-                    $customer->update($input);
-                    $company = Companies::where('customer_id', '=', $customer->id)->first();
-                    $company->update($input);
-                    Log::addToLog('Customer Log.', $request->all(), 'Edit');
-                } catch (QueryException $e) {
-                    return response()->json(['message' => 'Database error. Code:' . $e->getMessage()], 400);
-                }
-            }
-        } else {
-            $validator = Validator::make($request->all(), [
-                'email' => 'required|email|unique:users'
-            ]);
-            if ($validator->fails()) {
-                $response = $validator->errors();
-                session()->flash('flash_error', $response);
-                return response()->json(['message' => $response], 400);
-            }
-            if ($request->type == 'individual') {
-                try {
-                    $input = $request->all();
-                    $input['password'] = Hash::make($input['password']);
-                    $user = User::create($input);
-                    $user->role()->save(Role::create(['role' => 'customer', 'user_id' => $user->id]));
-                    $input['discount'] = $input['discount'] == '' || $input['discount'] == null ? 0 : $input['discount'];
-                    Customer::create(['user_id' => $user->id, 'discount' => $input['discount'], 'type' => $input['type']]);
-                    Log::addToLog('Customer Log.', $request->all(), 'Create');
-                    return response($user->toJson(JSON_PRETTY_PRINT), 200);
-                } catch (QueryException $e) {
-                    return response()->json(['message' => 'Database error. Code:' . $e->getCode()], 400);
-                }
-            } else if ($request->type == 'corporate') {
+        if ($request->id == -1) {
+            $input = $request->all();
+            $rules = array(
+                'email' => 'required|email|unique:users,email',
+                'name' => 'required',
+                'surname' => 'required',
+                'phone' => 'required|unique:users,phone'
+            );
+            $validator = Validator::make($request->all(), $rules);
+            try {
                 $input = $request->all();
                 $input['password'] = Hash::make($input['password']);
                 $user = User::create($input);
                 $user->role()->save(Role::create(['role' => 'customer', 'user_id' => $user->id]));
-                $input['discount'] = $input['discount'] == '' || $input['discount'] == null ? 0 : $input['discount'];
-                $customer = Customer::create(['user_id' => $user->id, 'discount' => $input['discount'], 'type' => $input['type']]);
-                Companies::create(['customer_id' => $customer->id, 'company_name' => $input['company_name'], 'tax_department' => $input['tax_department'], 'tax_number' => $input['tax_number'], 'organization_number' => $input['organization_number'], 'address' => $input['address']]);
                 Log::addToLog('Customer Log.', $request->all(), 'Create');
-                return response($user->toJson(JSON_PRETTY_PRINT), 200);
+                return $user;
+            } catch (QueryException $e) {
+                return response()->json(['message' => $e->getMessage()], 400);
             }
+        } else {
+            $input = $request->all();
+
+            if (!$user = User::where('id', '=', $input['id'])->first())
+                return response()->json(['message' => 'Not Found!'], 404);
+            $input = $request->all();
+            $rules = array(
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'name' => 'required',
+                'surname' => 'required',
+                'phone' => 'required|unique:users,phone,' . $user->id
+            );
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $messages = $validator->messages()->get('*');
+                return response()->json([
+                    'error' => $messages
+                ], 400);
+            }
+
+            $input = $request->all();
+            $input['password'] = Hash::make($input['password']);
+            $user->update($input);
+            Log::addToLog('Customer Log.', $request->all(), 'Update');
+            return response($user->toJson(JSON_PRETTY_PRINT), 200);
         }
     }
     public function driversAction(Request $request)
@@ -308,11 +245,11 @@ class UserController extends Controller
     {
         try {
             $input = $request->all();
-            $input['password'] = Hash::make($input['password']);
+            //$input['password'] = Hash::make($input['password']);
             $user = User::create($input);
             $user->role()->save(Role::create(['role' => 'customer', 'user_id' => $user->id]));
             Log::addToLog('Customer Log.', $request->all(), 'Create');
-            return response($user->toJson(JSON_PRETTY_PRINT), 200);
+            return $user;
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }

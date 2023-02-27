@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePricesTable extends Migration
+class CreateBookingDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,17 @@ class CreatePricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('prices', function (Blueprint $table) {
+        Schema::create('booking_data', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('car_type')->unsigned();
-            $table->integer('start_km');
-            $table->integer('finish_km');
+            $table->bigInteger('booking_id')->unsigned();
+            $table->integer('km');
             $table->decimal('opening_fee', 9, 2);
             $table->decimal('km_fee', 9, 2);
+            $table->integer('discount_rate');
+            $table->enum('payment_type', ['Pre', 'Full']);
+            $table->decimal('system_payment', 9, 2);
+            $table->decimal('driver_payment', 9, 2);
+            $table->decimal('total', 9, 2);
             $table->timestamps();
         });
     }
@@ -31,6 +35,6 @@ class CreatePricesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('prices');
+        Schema::dropIfExists('booking_data');
     }
 }

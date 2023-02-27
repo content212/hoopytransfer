@@ -85,6 +85,7 @@ class CarTypeController extends Controller
         if (!$cartypetypes = CarType::where('id', '=', $cartype)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
+            $cartypetypes->prices->each->delete();
             $cartypetypes->delete();
             Log::addToLog('CarType Log.',  $cartypetypes, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);

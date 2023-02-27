@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\CarType;
 use App\Price;
+use Livewire\Request;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -21,12 +22,40 @@ class Servicesmodal extends Component
         'car_type.baggage_capacity' => 'required',
         'car_type.person_capacity' => 'required',
         'car_type.discount_rate' => 'required',
+        'car_type.free_cancellation' => 'required',
         'car_type.prices.*.start_km' => 'required',
-        'car_type.prices.*.finish_km' => 'required',
+        'car_type.prices.*.finish_km' => 'required|gt:car_type.prices.*.start_km',
         'car_type.prices.*.opening_fee' => 'required',
         'car_type.prices.*.km_fee' => 'required',
         'newImage' => 'image|nullable'
     ];
+    public function updated($name, $value)
+    {
+        $nameArray = explode('.', $name);
+        if (count($nameArray) > 1) {
+            if ($nameArray[0] == 'news' and $nameArray[2] == 'finish_km' and $nameArray[1] != count($this->news) - 1) {
+                //dd($this->news[$nameArray[1] + 1]['start_km']);
+                $new = $this->news[$nameArray[1] + 1];
+                $new['start_km'] = $value + 1;
+                $this->news[$nameArray[1] + 1] = $new;
+            }
+            if ($nameArray[1] == 'prices' and $nameArray[3] == 'finish_km') {
+                if ($nameArray[2] == count($this->car_type->prices) - 1) {
+                    if (count($this->news) > 0) {
+                        $new = $this->news[0];
+                        $new['start_km'] = $value + 1;
+                    }
+                } else {
+                    $price = $this->car_type->prices[$nameArray[2] + 1];
+                    $price['start_km'] = $value + 1;
+                }
+            }
+        }
+    }
+    public function updatedCar_type($value)
+    {
+        dd($value);
+    }
 
     public function setId($car_type_id)
     {
@@ -74,7 +103,7 @@ class Servicesmodal extends Component
                 'news.*.opening_fee' => 'required',
                 'news.*.km_fee' => 'required'
             ]);
-            $price = new Price(['start_km' => $this->news->last()['finish_km']]);
+            $price = new Price(['start_km' => $this->news->last()['finish_km'] + 1]);
             $this->news->add($price);
         } else {
             $a = count($this->car_type->prices);
@@ -88,7 +117,7 @@ class Servicesmodal extends Component
                 'car_type.prices.*.opening_fee' => 'required',
                 'car_type.prices.*.km_fee' => 'required'
             ]);
-            $price = new Price(['start_km' => count($this->news) > 0 ? $this->news->last()['finish_km'] : $this->car_type->prices->last()['finish_km']]);
+            $price = new Price(['start_km' => count($this->news) > 0 ? $this->news->last()['finish_km'] + 1  : $this->car_type->prices->last()['finish_km'] + 1]);
             $this->news->add($price);
         }
         $this->emit('some-event');
@@ -125,6 +154,14 @@ class Servicesmodal extends Component
             }
         } else {
             $this->validate();
+            if (count($this->news) > 0) {
+                $this->validate([
+                    'news.*.start_km' => 'required',
+                    'news.*.finish_km' => 'required|gt:news.*.start_km',
+                    'news.*.opening_fee' => 'required',
+                    'news.*.km_fee' => 'required'
+                ]);
+            }
             $this->car_type->prices->each->save();
             unset($this->car_type->prices);
             $this->car_type->save();

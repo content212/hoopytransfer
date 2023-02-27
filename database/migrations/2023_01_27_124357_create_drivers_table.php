@@ -16,7 +16,6 @@ class CreateDriversTable extends Migration
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('car_id')->unsigned();
             $table->date('license_date');
             $table->string('license_class', 5);
             $table->string('license_no');

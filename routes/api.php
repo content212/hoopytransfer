@@ -22,10 +22,14 @@ use Symfony\Component\Process\Process;
 */
 
 Route::post('login', 'API\AuthController@login');
+Route::post('/register', 'API\AuthOtpController@registerGenerate');
+Route::post('/registervalidate', 'API\AuthOtpController@registerValidate');
+Route::post('/otp/generate', 'API\AuthOtpController@generate');
+Route::post('/otp/login', 'API\AuthOtpController@loginWithOtp');
 Route::get('/direction', [GoogleMapsApiController::class, '__invoke']);
 Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
-Route::post('/bookings', 'API\BookingsController@store');
 Route::post('/track', "API\BookingsController@track");
+//Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
 
 
 Route::middleware(['auth:api', 'role'])->group(function () {
@@ -37,39 +41,11 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->delete('/users/{user}', 'API\UserController@destroy');
 
 
-    Route::middleware(['scope:admin'])->get('/pricelist', 'API\PriceListController@index');
-    Route::middleware(['scope:admin'])->post('/pricelist', 'API\PriceListController@store');
-    Route::middleware(['scope:admin'])->post('/pricelist/{id}', 'API\PriceListController@update');
-    Route::middleware(['scope:admin'])->post('/pricelistaction', 'API\PriceListController@action');
-    Route::middleware(['scope:admin'])->get('/pricelist/{id}', 'API\PriceListController@show');
-    Route::middleware(['scope:admin'])->get('/getcompanies', 'API\PriceListController@getCompanies');
-    Route::middleware(['scope:admin'])->get('/pricecompanies', 'API\PriceListController@getUsingComapnies');
-    Route::middleware(['scope:admin'])->post('/addcorp', 'API\PriceListController@addCorp');
-
-
-
-
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/jobs', 'API\DriverWorkController@index');
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/jobs/{id}', 'API\DriverWorkController@show');
-    Route::middleware(['scope:admin,driver,driver_manager'])->post('/jobs', 'API\SalaryController@store')->name('storeWork');
-    Route::middleware(['scope:admin,driver,driver_manager'])->post('/jobs/{id}', 'API\DriverWorkController@update');
-    Route::middleware(['scope:admin,driver_manager'])->delete('/jobs/{id}', 'API\DriverWorkController@destroy');
-
-
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/getdrivers', 'API\DriverWorkController@getDrivers');
-    Route::middleware(['scope:admin'])->get('/getdriversedit', 'API\DriverWorkController@getDriversedit');
-
-    Route::middleware(['scope:admin,driver_manager'])->post('/driverworkaction', 'API\DriverWorkController@driverWorkAction');
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/getyears', 'API\DriverWorkController@getYears')->name('year');
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/getmonths', 'API\DriverWorkController@getMonth')->name('month');
-    Route::middleware(['scope:admin,driver,driver_manager'])->get('/getlagers', 'API\DriverWorkController@getLagers')->name('lager');
-
-    Route::middleware(['scope:admin,driver_manager,driver'])->get('/excelexport', 'API\DriverWorkController@excelExport');
     Route::middleware(['scope:admin,driver_manager'])->get('/getdriverdata', 'API\UserController@getDrivers');
     Route::middleware(['scope:admin,driver_manager'])->post('/driversaction', 'API\UserController@driversAction');
     Route::middleware(['scope:admin,driver_manager'])->post('/storedriver', 'API\UserController@storeDriver');
 
-    Route::middleware(['scope:admin'])->get('/getcustomer', 'API\UserController@getCustomers');
+    Route::middleware(['scope:admin'])->get('/getcustomers', 'API\UserController@getCustomers');
     Route::middleware(['scope:admin'])->get('/customer/{customer}', 'API\UserController@getCustomer');
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
 
@@ -82,13 +58,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin,editor'])->get('/bookings/{booking}', 'API\BookingsController@show');
     Route::middleware(['scope:admin,editor'])->post('/bookings/{booking}', 'API\BookingsController@update');
     Route::middleware(['scope:admin'])->delete('/bookings/{booking}', 'API\BookingsController@destroy');
-
-    Route::middleware(['scope:admin,editor'])->get('/bookingspackets/{id}/{type}', 'API\BookingsController@getPacketsDatatable');
-    Route::middleware(['scope:admin,editor'])->get('/packet/{id}', 'API\BookingsController@getPacket');
-    Route::middleware(['scope:admin,editor'])->post('/packet/{id}', 'API\BookingsController@packetUpdate');
-
-    Route::middleware(['scope:admin,editor'])->get('/packetdetail/{id}', 'API\BookingsController@getPacketDetail');
-    Route::middleware(['scope:admin,editor'])->post('/packetdetail/{id}', 'API\BookingsController@packetsDetailUpdate');
+    Route::middleware(['scope:admin,driver'])->get('/caledarEvents', "API\BookingsController@calendarEvents");
 
     Route::middleware(['scope:admin,editor'])->get('/bookingscount/{status}', 'API\BookingsController@getBookingsCount')->name('count');;
 
@@ -124,6 +94,10 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/stations/{station}', 'API\StationController@show');
     Route::middleware(['scope:admin'])->post('/stations/{station}', 'API\StationController@update');
     Route::middleware(['scope:admin'])->delete('/stations/{station}', 'API\StationController@destroy');
+
+    Route::middleware(['scope:admin'])->post('/settings', 'API\SettingController@save');
+
+    Route::post('/bookings', 'API\BookingsController@store');
 
     Route::post('/logout', 'API\AuthController@logout');
     Route::get('/getRole', 'API\AuthController@getrole');

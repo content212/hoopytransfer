@@ -25,8 +25,7 @@
                 <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Plate</th>
-                    <th>License No</th>
+                    <th>Phone</th>
                     <th>Country</th>
                     <th>State</th>
                     <th>Edit/Delete</th>
@@ -71,6 +70,10 @@
                                 <input type="text" class="form-control" name="name" id="name"
                                     placeholder="Name">
                             </div>
+                            <div class="form-grop">
+                                <label for="surname">Surname</label>
+                                <input type="text" class="form-control" name="surname" id="surname" placeholder="Surname">
+                            </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Email">
@@ -83,10 +86,6 @@
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" name="password" id="password" placeholder="Password">
-                            </div>
-                            <div class="form-group">
-                                <label for="car">Car</label>
-                                {{ Form::select('car', [null=>'Please Select']+$cars->toarray(), null, array('class' => 'form-control', 'id' => 'car')) }}
                             </div>
                             <div class="form-group">
                                 <label for="license_date">License Date</label>
@@ -226,6 +225,7 @@
                     success: function(data) {
                         obj = JSON.parse(data);
                         $('#name').val(obj.name);
+                        $('#surname').val(obj.surname)
                         $('#email').val(obj.email)
                         $('#phone').val(obj.phone)
                         $('#car').val(obj.car_id)
@@ -293,10 +293,6 @@
                 {
                     data: 'name',
                     name: 'name'
-                },
-                {
-                    data: 'plate',
-                    name: 'plate'
                 },
                 {
                     data: 'phone',

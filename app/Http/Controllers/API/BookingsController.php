@@ -7,13 +7,19 @@ use App\Booking;
 use App\BookingUserInfo;
 use Carbon\Carbon;
 use App\BookingPackets;
+use App\Car;
+use App\Driver;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Price;
+use App\Rules\InsuranceExp;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Validator;
 use stdClass;
 use Yajra\DataTables\Contracts\DataTable;
 
@@ -83,11 +89,11 @@ class BookingsController extends Controller
     public function store(Request $request)
     {
         try {
-            $user_id = null;
             if ($user = $request->user('api'))
                 $user_id = $user->id;
             $input = $request->all();
             $input['user_id'] = $user_id;
+            $input['car_type'] = Price::find($input['price_id'])->carType->id;
             $booking = Booking::create($input);
             $track_code = $this->generateRandomNumber(8);
             while (Booking::where('track_code', $track_code)->exists()) {
@@ -96,10 +102,6 @@ class BookingsController extends Controller
             $booking = Booking::where('id', $booking->id);
             $booking->update(['track_code' => $track_code]);
             $booking = $booking->first();
-            if ($user_id == null) {
-                $input['booking_id'] = $booking->id;
-                BookingUserInfo::create($input);
-            }
             Log::addToLog('Booking Log.', $request->all(), 'Create');
             return response($booking->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
@@ -143,6 +145,20 @@ class BookingsController extends Controller
         if (!$bookings = Booking::where('id', '=', $booking)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
+            $rules = array(
+                'car_id' => [new InsuranceExp($booking)],
+            );
+            $messages = array();
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                $messages = $validator->messages()->get('*');
+                return response()->json([
+                    'error' => $messages
+                ], 400);
+            }
+            if ($request->post('driver_id') and $request->post('car_id')) {
+                $request->merge(['status' => '1']);
+            }
             $bookings->update($request->all());
             Log::addToLog('Booking Log.', $request->all(), 'Edit');
             return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
@@ -253,5 +269,42 @@ class BookingsController extends Controller
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+    }
+    private function random_color_part()
+    {
+        return str_pad(dechex(mt_rand(50, 150)), 2, '0', STR_PAD_LEFT);
+    }
+
+    private function random_color()
+    {
+        return "#" . $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
+    }
+    public function calendarEvents(Request $request)
+    {
+
+        $bookings = Booking::whereDate('booking_date', '>=', $request->start)
+            ->whereDate('booking_date', '<=', $request->end)
+            ->where('status', '=', 1);
+        if ($request->user('api')->role->role  == 'driver') {
+            $bookings = $bookings->where('driver_id', '=', Driver::firstWhere('user_id', $request->user('api')->id)->id);
+        }
+        $bookings = $bookings->get();
+        $data = [];
+        foreach ($bookings as $booking) {
+
+            array_push($data, [
+                'title' => Carbon::parse($booking->booking_time)->format('h:i') . " - " . $booking->id . " - " . $booking->user->name . " " . $booking->user->surname,
+                'start' => $booking->booking_date,
+                'backgroundColor' => $this->random_color(),
+                'allDay' => true
+            ]);
+        }
+        return response()->json($data);
+    }
+    public function BookingPay(Request $request)
+    {
+        //TODO Payment System
+
+
     }
 }

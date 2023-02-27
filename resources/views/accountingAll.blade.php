@@ -1,10 +1,14 @@
-@extends('test')
+@extends('test', ['accounting' => '1'])
 
-@section('title', 'Prices')
+@if (isset($driverName))
+    @section('title', 'Accounting - ' . $driverName)
+@else
+    @section('title', 'Accounting')
+@endif
 
 @section('role', $role)
 
-@section('name', $name)
+@section('name', $role)
 
 @section('css')
     <style>
@@ -12,11 +16,18 @@
             display: inline-block;
             margin: 100px auto;
         }
-
     </style>
 @endsection
 
 @section('content')
+    @if (isset($id))
+        @if ($id == -1)
+            @livewire('accounting-driver-table', ['driver_id' => $id, 'isDetail' => true])
+        @endif
+        @livewire('accounting-driver-table', ['driver_id' => $id])
+    @else
+        @livewire('accounting-table')
+    @endif
 @endsection
 @section('script')
     <script>

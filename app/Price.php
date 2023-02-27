@@ -13,4 +13,8 @@ class Price extends Model
         'opening_fee',
         'km_fee'
     ];
+    public function carType()
+    {
+        return $this->belongsTo(CarType::class, 'car_type', 'id');
+    }
 }

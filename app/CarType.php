@@ -15,7 +15,8 @@ class CarType extends Model
         'image',
         'person_capacity',
         'baggage_capacity',
-        'discount_rate'
+        'discount_rate',
+        'free_cancellation'
     ];
     public function prices()
     {

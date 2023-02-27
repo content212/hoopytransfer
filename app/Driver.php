@@ -10,7 +10,6 @@ class Driver extends Model
 
     protected $fillable = [
         'user_id',
-        'car_id',
         'license_date',
         'license_class',
         'license_no',
@@ -18,4 +17,13 @@ class Driver extends Model
         'state',
         'address'
     ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'driver_id', 'id');
+    }
 }
