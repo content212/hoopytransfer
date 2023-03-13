@@ -38,7 +38,6 @@ class Login extends Component
             session()->flash('error', $data->error);
         else {
             session()->flash('message', $data->message);
-            info($data->token);
             $cookie = Cookie::make('token', $data->token, 60, null, null, false, false);
             Cookie::queue($cookie);
             Redirect::route('login');

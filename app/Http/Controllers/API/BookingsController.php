@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Log;
-use App\Booking;
-use App\BookingUserInfo;
+use App\Models\Log;
+use App\Models\Booking;
+use App\Models\BookingUserInfo;
 use Carbon\Carbon;
 use App\BookingPackets;
-use App\Car;
-use App\Driver;
+use App\Models\Car;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Price;
+use App\Models\Price;
+use App\Models\Transaction;
 use App\Rules\InsuranceExp;
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Date;
@@ -36,15 +37,16 @@ class BookingsController extends Controller
     {
         $bookings = Booking::select(
             'bookings.id',
-            DB::raw('(CASE bookings.status
-            when 0 then \'Waiting for Booking\'
-            when 1 then \'Trip is expected\'
-            when 2 then \'Waiting for Booking\'
-            when 3 then \'Trip is completed\'
-            when 4 then \'Trip is not Completed\'
-            when 5 then \'Canceled by Customer\'
-            when 6 then \'Canceled by System\'
-            when 7 then \'Completed\' END) as status'),
+            //DB::raw('(CASE bookings.status
+            //when 0 then \'Waiting for Booking\'
+            //when 1 then \'Trip is expected\'
+            //when 2 then \'Waiting for Booking\'
+            //when 3 then \'Trip is completed\'
+            //when 4 then \'Trip is not Completed\'
+            //when 5 then \'Canceled by Customer\'
+            //when 6 then \'Canceled by System\'
+            //when 7 then \'Completed\' END) as status'),
+            'bookings.status as status',
             'bookings.track_code',
             'bookings.from',
             'bookings.from_name',
@@ -69,6 +71,9 @@ class BookingsController extends Controller
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y') : '';
+            })
+            ->editColumn('status', function (Booking $booking) {
+                return $booking->getStatus();
             })
             ->rawColumns(['edit'])
             ->make(true);
@@ -112,7 +117,7 @@ class BookingsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Booking  $booking
+     * @param  \App\Models\Booking  $booking
      * @return \Illuminate\Http\Response
      */
     public function show(int $booking)
@@ -123,9 +128,9 @@ class BookingsController extends Controller
             $user = User::where('id', $bookings->user_id)->first();
         else
             $user = BookingUserInfo::where('booking_id', $bookings->id)->first();
-
+        $bookings['status_name'] = $bookings->getStatus();
         $user = [
-            'name' => $user->name . $user->surname,
+            'name' => $user->name . " " . $user->surname,
             'phone' => $user->phone,
             'email' => $user->email
         ];
@@ -137,7 +142,6 @@ class BookingsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Booking  $booking
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $booking)
@@ -156,9 +160,14 @@ class BookingsController extends Controller
                     'error' => $messages
                 ], 400);
             }
-            if ($request->post('driver_id') and $request->post('car_id')) {
-                $request->merge(['status' => '1']);
+
+            if ($request->post('driver_id') and $request->post('car_id') and $bookings->status == '1') {
+                $request->merge(['status' => '2']);
+                Transaction::where('booking_id', $bookings->id)->where('type', 'driver_wage')->first()->update([
+                    'driver_id' => $request->post('driver_id')
+                ]);
             }
+
             $bookings->update($request->all());
             Log::addToLog('Booking Log.', $request->all(), 'Edit');
             return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
@@ -170,7 +179,7 @@ class BookingsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Booking  $booking
+     * @param  \App\Models\Booking  $booking
      * @return \Illuminate\Http\Response
      */
     public function destroy(int $booking)
@@ -181,6 +190,35 @@ class BookingsController extends Controller
             $bookings->delete();
             Log::addToLog('Booking Log.', $bookings, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+    public function cancel(Request $request, $booking_id)
+    {
+        try {
+            $user = $request->user('api');
+            $booking = Booking::firstWhere('id', $booking_id);
+            if (!$booking)
+                return response()->json(['message' => 'Not Found!'], 404);
+            if ($user->role->role == 'customer' and $booking->user_id != $user->id) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            if (Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) < $booking->service->free_cancellation or !in_array($booking->status, [0, 1, 2, 8])) {
+                return response()->json(['message' => 'You can not cancel this booking!'], 400);
+            }
+            $refundRequest = new Request([
+                'payment_intent' => $booking->payment->paymentIntent
+            ]);
+            if (((new PaymentController)->refund($refundRequest))->status() == 200) {
+                $booking->update([
+                    'status' => $user->role->role == 'customer' ? 3 : 4
+                ]);
+            }
+            Log::addToLog('Booking Log.', $request->all(), 'Cancel');
+            return response()->json([
+                'message' => 'Booking canceled successfully'
+            ]);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -217,7 +255,7 @@ class BookingsController extends Controller
     }
     public function getBookingsCount($status)
     {
-        return Booking::where('status', $status)->count();
+        return Booking::getCount($status);
     }
     public function FrontEndCustomerBookings()
     {
@@ -284,7 +322,7 @@ class BookingsController extends Controller
 
         $bookings = Booking::whereDate('booking_date', '>=', $request->start)
             ->whereDate('booking_date', '<=', $request->end)
-            ->where('status', '=', 1);
+            ->where('status', '=', 2);
         if ($request->user('api')->role->role  == 'driver') {
             $bookings = $bookings->where('driver_id', '=', Driver::firstWhere('user_id', $request->user('api')->id)->id);
         }
@@ -293,6 +331,7 @@ class BookingsController extends Controller
         foreach ($bookings as $booking) {
 
             array_push($data, [
+                'id' => $booking->id,
                 'title' => Carbon::parse($booking->booking_time)->format('h:i') . " - " . $booking->id . " - " . $booking->user->name . " " . $booking->user->surname,
                 'start' => $booking->booking_date,
                 'backgroundColor' => $this->random_color(),
@@ -300,11 +339,5 @@ class BookingsController extends Controller
             ]);
         }
         return response()->json($data);
-    }
-    public function BookingPay(Request $request)
-    {
-        //TODO Payment System
-
-
     }
 }

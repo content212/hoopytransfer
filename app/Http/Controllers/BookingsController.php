@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\CarType;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
@@ -36,14 +36,11 @@ class BookingsController extends Controller
         $role = str_replace(' ', '', $role);
         $name = $this->name();
 
-        $car_types = CarType::pluck('name', 'id');
-        info($role);
         if ($role) {
             if ($role === 'Admin' || $role === 'Editor') {
                 return view('bookings', [
                     'role' => $role,
-                    'name' => $name,
-                    'car_types' => $car_types
+                    'name' => $name
                 ]);
             } else {
                 return redirect('/forbidden');

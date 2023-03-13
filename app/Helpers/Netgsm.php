@@ -23,7 +23,6 @@ class Netgsm
         );
         $url = 'https://api.netgsm.com.tr/sms/send/get/';
         $response = $this->client->post($url, $params);
-        info($response->getBody());
         return $response;
     }
 }

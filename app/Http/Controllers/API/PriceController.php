@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Price;
-use App\Log;
+use App\Models\Price;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Database\QueryException;
@@ -59,7 +59,7 @@ class PriceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Price  $price
+     * @param  \App\Models\Price  $price
      * @return \Illuminate\Http\Response
      */
     public function show(int $price)
@@ -73,7 +73,7 @@ class PriceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Price  $price
+     * @param  \App\Models\Price  $price
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $price)

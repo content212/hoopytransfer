@@ -237,46 +237,14 @@
                                     <li>
                                         <a href="/bookings">All Bookings</a>
                                     </li>
-                                    <li>
-                                        <a id="count0" aria-current="page" href="/bookings?status=0">
-                                            Waiting for Booking({{ App\Booking::getCount(0) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count1" aria-current="page" href="/bookings?status=1">
-                                            Trip is expected({{ App\Booking::getCount(1) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count2" aria-current="page" href="/bookings?status=2">
-                                            Waiting for Confirmation({{ App\Booking::getCount(2) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count3" aria-current="page" href="/bookings?status=3">
-                                            Trip is completed({{ App\Booking::getCount(3) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count4" aria-current="page" href="/bookings?status=4">
-                                            Trip is not Completed({{ App\Booking::getCount(4) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count5" aria-current="page" href="/bookings?status=5">
-                                            Canceled by Customer({{ App\Booking::getCount(5) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count6" aria-current="page" href="/bookings?status=6">
-                                            Canceled by System({{ App\Booking::getCount(6) }})
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="count7" aria-current="page" href="/bookings?status=7">
-                                            Completed({{ App\Booking::getCount(7) }})
-                                        </a>
-                                    </li>
+                                    @foreach (App\Models\Booking::getAllStatus() as $status)
+                                        <li>
+                                            <a id="count{{ $loop->index }}" aria-current="page"
+                                                href="/bookings?status={{ $loop->index }}">
+                                                {{ App\Models\Booking::getCount($loop->index) }}
+                                            </a>
+                                        </li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </li>

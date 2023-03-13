@@ -24,6 +24,8 @@ class CreateBookingDataTable extends Migration
             $table->decimal('system_payment', 9, 2);
             $table->decimal('driver_payment', 9, 2);
             $table->decimal('total', 9, 2);
+            $table->string('paymentIntentSecret');
+            $table->integer('full_discount');
             $table->timestamps();
         });
     }

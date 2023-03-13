@@ -18,7 +18,6 @@
     @elseif (app('request')->input('status') == 7)
         @section('title', 'Bookings - Completed')
     @endif
-    
 @else
     @section('title', 'Bookings')
 @endif
@@ -122,7 +121,8 @@
                             <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <label for="to">To Zip Code</label>
-                                    <input type="text" class="form-control" id="to" placeholder="To Zip Code" readonly>
+                                    <input type="text" class="form-control" id="to" placeholder="To Zip Code"
+                                        readonly>
                                 </div>
                             </div>
 
@@ -157,15 +157,16 @@
                             <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <label for="from_address">From Address</label>
-                                    <input type="text" class="form-control" id="from_address" placeholder="From Address"
-                                        readonly>
+                                    <input type="text" class="form-control" id="from_address"
+                                        placeholder="From Address" readonly>
                                 </div>
                             </div>
 
                             <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <label for="to_name">To Name</label>
-                                    <input type="text" class="form-control" id="to_name" placeholder="To Name" readonly>
+                                    <input type="text" class="form-control" id="to_name" placeholder="To Name"
+                                        readonly>
                                 </div>
                             </div>
 
@@ -179,13 +180,15 @@
                             <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <label for="km">Distance</label>
-                                    <input type="text" class="form-control" id="km" placeholder="Distance" readonly>
+                                    <input type="text" class="form-control" id="km" placeholder="Distance"
+                                        readonly>
                                 </div>
                             </div>
                             <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <label for="duration">Duration</label>
-                                    <input type="text" class="form-control" id="duration" placeholder="Duration" readonly>
+                                    <input type="text" class="form-control" id="duration" placeholder="Duration"
+                                        readonly>
                                 </div>
                             </div>
 
@@ -217,77 +220,23 @@
                         </div>
 
                         <hr class="mt-2 mb-3" />
-                        
+
                         @livewire('car-driver')
-                        
+
                     </div>
 
                     <div class="modal-footer">
                         <div class="row justify-content-between">
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="0">
-                                    <label class="form-check-label" for="0">
-                                        Waiting for Booking
-                                    </label>
+                            @foreach (App\Models\Booking::getAllStatus() as $status)
+                                <div class="col-lg-1">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" value="{{ $loop->index }}" @if ($loop->index != 4) disabled  @endif>
+                                        <label class="form-check-label" for="{{ $loop->index }}">
+                                            {{ $status }}
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="1">
-                                    <label class="form-check-label" for="1">
-                                        Trip is expected
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="2">
-                                    <label class="form-check-label" for="2">
-                                        Waiting for Confirmation
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="3">
-                                    <label class="form-check-label" for="3">
-                                        Trip is completed
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="4">
-                                    <label class="form-check-label" for="4">
-                                        Trip is not Completed
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="5">
-                                    <label class="form-check-label" for="5">
-                                        Canceled by Customer
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="6">
-                                    <label class="form-check-label" for="6">
-                                        Canceled by System
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" value="7">
-                                    <label class="form-check-label" for="7">
-                                        Completed
-                                    </label>
-                                </div>
-                            </div>
+                            @endforeach
 
                             <div class="col-lg-3 offset-md-1 btn-margin">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -379,9 +328,9 @@
                     $('#email').val(obj.email)
                     $('#driver_id').val(obj.driver_id)
                     $('#car_type').val(obj.car_type).trigger('click')
-                        setTimeout(function() { 
-                            $('#car_id').val(obj.car_id)
-                        }, 500);
+                    setTimeout(function() {
+                        $('#car_id').val(obj.car_id)
+                    }, 500);
                 }
             });
         });
@@ -406,46 +355,12 @@
                 success: function(data) {
                     $('#booking_table').DataTable().ajax.reload();
                     $('#edit-modal').modal('hide');
-                    $.get('{{ route('count', '0') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count0').html('Waiting for Booking(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '1') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count1').html('Trip is expected(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '2') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count2').html('Waiting for Confirmation(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '3') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count3').html('Trip is completed(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '4') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count4').html('Trip is not Completed(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '5') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count5').html('Canceled by Customer(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '6') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count6').html('Canceled by System(' +
-                            response + ')')
-                    });
-                    $.get('{{ route('count', '7') }}').then(function(response) {
-                        response = response.replace(/\s/g, '');
-                        $('#count7').html('Completed(' +
-                            response + ')')
-                    });
+                    @foreach (App\Models\Booking::getAllStatus() as  $status)
+                        $.get('{{ route('count', $loop->index ) }}').then(function(response) {
+                            $('#count'+ {{ $loop->index }}).html(
+                                response)
+                        });
+                    @endforeach
                 },
                 error: function(data) {
                     if (data.responseJSON.message) {
@@ -455,7 +370,7 @@
                         $('#modal_result').html(html);
                     }
 
-                    $.each(data.responseJSON.error, function (key, val) {
+                    $.each(data.responseJSON.error, function(key, val) {
                         var el = $('#' + key);
                         el.addClass('is-invalid');
                         $.each(val, function(i, err) {
@@ -466,7 +381,7 @@
                         $('#modal_result').html(html);
                     });
                     //(data.responseJSON.errors).forEach(function(item){
-                   
+
                     //});
                 }
             });

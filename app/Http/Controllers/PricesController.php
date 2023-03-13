@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
-use App\CarType;
+use App\Models\CarType;
 
 use Yajra\DataTables\DataTables;
 

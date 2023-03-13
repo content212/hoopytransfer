@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire;
 
-use App\CarType;
-use App\Price;
+use App\Models\CarType;
+use App\Models\Price;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -44,7 +44,6 @@ class Prices extends Component
         $this->car_type->prices->each->save();
 
         foreach ($this->news as $i => $price) {
-            info($price);
             if (
                 isset($price['km_fee']) &&
                 isset($price['opening_fee']) &&

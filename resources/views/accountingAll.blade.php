@@ -8,7 +8,7 @@
 
 @section('role', $role)
 
-@section('name', $role)
+@section('name', $name)
 
 @section('css')
     <style>
@@ -22,9 +22,10 @@
 @section('content')
     @if (isset($id))
         @if ($id == -1)
-            @livewire('accounting-driver-table', ['driver_id' => $id, 'isDetail' => true])
+            @livewire('accounting-driver-table', ['driver_id' => $id, 'isDetail' => true, 'role' => $role])
+        @else
+            @livewire('accounting-driver-table', ['driver_id' => $id, 'role' => $role])
         @endif
-        @livewire('accounting-driver-table', ['driver_id' => $id])
     @else
         @livewire('accounting-table')
     @endif

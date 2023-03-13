@@ -15,8 +15,8 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('driver_id')->unsigned();
-            $table->enum('type', ['pay', 'receipt', 'wage']);
+            $table->bigInteger('driver_id')->unsigned()->nullable();
+            $table->enum('type', ['driver_payment', 'booking_payment', 'driver_wage']);
             $table->decimal('amount', 9, 2);
             $table->decimal('balance', 9, 2);
             $table->string('note');

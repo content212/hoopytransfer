@@ -4,10 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Companies;
 use App\Http\Controllers\Controller;
-use App\Log;
-use App\Role;
-use App\User;
-use App\Customer;
+use App\Models\Log;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

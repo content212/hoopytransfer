@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Driver;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
 
@@ -46,7 +46,8 @@ class AccountingController extends Controller
                 return view('accountingAll', [
                     'role' => $role,
                     'name' => $name,
-                    'id' => $driver->id
+                    'id' => $driver->id,
+                    'driverName' => $driver->user->name
                 ]);
             } else {
                 return redirect('/forbidden');
@@ -60,13 +61,14 @@ class AccountingController extends Controller
         $role = $this->role();
         $role = str_replace(' ', '', $role);
         $name = $this->name();
-
+        $driver = Driver::find($id);
         if ($role) {
-            if ($role === 'Admin') {
+            if ($role === 'Admin' and $driver) {
                 return view('accountingAll', [
                     'role' => $role,
                     'name' => $name,
-                    'id' => $id
+                    'id' => $id,
+                    'driverName' => $driver->user->name
                 ]);
             } else {
                 return redirect('/forbidden');
@@ -86,7 +88,8 @@ class AccountingController extends Controller
                 return view('accountingAll', [
                     'role' => $role,
                     'name' => $name,
-                    'id' => -1
+                    'id' => -1,
+                    'driverName' => 'Detail'
                 ]);
             } else {
                 return redirect('/forbidden');

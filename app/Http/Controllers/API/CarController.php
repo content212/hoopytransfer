@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Car;
-use App\Log;
+use App\Models\Car;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Database\QueryException;
@@ -58,7 +58,7 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Car  $car
+     * @param  \App\Models\Car  $car
      * @return \Illuminate\Http\Response
      */
     public function show(int $car)
@@ -72,7 +72,7 @@ class CarController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Car  $car
+     * @param  \App\Models\Car  $car
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $car)

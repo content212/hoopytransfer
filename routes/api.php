@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers\API\GoogleMapsApiController;
+use App\Http\Controllers\API\PaymentController;
+use App\Models\Booking;
+use App\Models\BookingData;
+use App\Models\BookingPayment;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -30,6 +36,140 @@ Route::get('/direction', [GoogleMapsApiController::class, '__invoke']);
 Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
 Route::post('/track', "API\BookingsController@track");
 //Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
+
+Route::get('/payment', [PaymentController::class, 'index']);
+Route::post('/payment', [PaymentController::class, 'payment'])->name('payment.create');
+Route::get('/paymentsuccess', [PaymentController::class, 'success'])->name('payment.success');
+
+
+Route::post('/webhook', function (Request $request) {
+
+    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+    $payload = $request->getContent();
+    $sig_header =  $_SERVER['HTTP_STRIPE_SIGNATURE'];
+    $event = null;
+    $secret = 'whsec_180755da0ce75da72324feea1f3d308b070eea611c78f2a477e7db50e6ceaa4a';
+    try {
+        $event = \Stripe\Webhook::constructEvent(
+            $payload,
+            $sig_header,
+            $secret
+        );
+    } catch (\UnexpectedValueException $e) {
+        return response()->json([], 400);
+    } catch (\Stripe\Exception\SignatureVerificationException $e) {
+        return response()->json([], 400);
+    }
+
+    // Handle the event
+    switch ($event->type) {
+        case 'payment_intent.created':
+            BookingPayment::create([
+                'booking_id' => $event->data->object->metadata->booking_id,
+                'paymentIntent' => $event->data->object->id,
+                'status' => $event->data->object->status
+            ]);
+            break;
+        case 'payment_intent.succeeded':
+            $booking_data = Booking::find($event->data->object->metadata->booking_id)->data;
+            Transaction::create([
+                'type' => 'booking_payment',
+                'amount' => $booking_data->total,
+                'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
+                'booking_id' => $booking_data->booking->id
+            ]);
+            $total = Transaction::where('driver_id', $booking_data->booking->driver_id)
+                ->get()
+                ->sum(function ($transaction) {
+                    return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                });
+            Transaction::create([
+                'type' => 'driver_wage',
+                'amount' => $booking_data->driver_payment,
+                'balance' => $total,
+                'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
+                'driver_id' => $booking_data->booking->driver_id,
+                'booking_id' => $booking_data->booking->id
+            ]);
+            $booking_data->booking->update(['status' => 1]);
+        case 'payment_intent.payment_failed':
+            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->id);
+            $payment->update([
+                'status' => $event->data->object->last_payment_error->code ?? $event->data->object->status,
+                'charge' => $event->data->object->latest_charge,
+                'last_message' => $event->data->object->last_payment_error->message ?? null
+            ]);
+            break;
+        case 'charge.refunded':
+            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
+            $refund = $stripe->refunds->retrieve($payment->refund);
+            $booking_data = $payment->booking->data;
+            $payment->update([
+                'status' => 'refund_' . $refund->status,
+                'last_message' => null
+            ]);
+            if ($refund->status == 'succeeded') {
+                Transaction::create([
+                    'type' => 'refund',
+                    'amount' => $booking_data->total,
+                    'note' => 'Refund from #' . $payment->booking_id . ' booking.',
+                    'booking_id' => $payment->booking_id
+                ]);
+                if ($payment->booking->driver_id) {
+                    $total = Transaction::where('driver_id', $payment->booking->driver_id)
+                        ->get()
+                        ->sum(function ($transaction) {
+                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                        });
+                    Transaction::create([
+                        'type' => 'driver_refund',
+                        'amount' => $booking_data->driver_payment,
+                        'balance' => $total,
+                        'note' => 'Refund for #' . $payment->booking->id . ' booking.',
+                        'driver_id' => $payment->booking->driver_id,
+                        'booking_id' => $payment->booking->id
+                    ]);
+                }
+            }
+            break;
+        case 'charge.refund.updated':
+            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
+            $refund = $stripe->refunds->retrieve($payment->refund);
+            $booking_data = $payment->booking->data;
+            $payment->update([
+                'status' => 'refund_' .  $event->data->object->status,
+                'last_message' => null
+            ]);
+            if ($refund->status == 'succeeded') {
+                Transaction::create([
+                    'type' => 'refund',
+                    'amount' => $booking_data->total,
+                    'note' => 'Refund from #' . $payment->booking_id . ' booking.',
+                    'booking_id' => $payment->booking_id
+                ]);
+                if ($payment->booking->driver_id) {
+                    $total = Transaction::where('driver_id', $payment->booking->driver_id)
+                        ->get()
+                        ->sum(function ($transaction) {
+                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                        });
+                    Transaction::create([
+                        'type' => 'driver_refund',
+                        'amount' => $booking_data->driver_payment,
+                        'balance' => $total,
+                        'note' => 'Refund for #' . $payment->booking->id . ' booking.',
+                        'driver_id' => $payment->booking->driver_id,
+                        'booking_id' => $payment->booking->id
+                    ]);
+                }
+            }
+            break;
+        default:
+            info('Received unknown event type ' . $event->type);
+    }
+
+    return 200;
+});
 
 
 Route::middleware(['auth:api', 'role'])->group(function () {
@@ -59,6 +199,8 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin,editor'])->post('/bookings/{booking}', 'API\BookingsController@update');
     Route::middleware(['scope:admin'])->delete('/bookings/{booking}', 'API\BookingsController@destroy');
     Route::middleware(['scope:admin,driver'])->get('/caledarEvents', "API\BookingsController@calendarEvents");
+
+    Route::middleware(['scope:admin,customer'])->post('/bookings/{booking}/cancel', 'API\BookingsController@cancel');
 
     Route::middleware(['scope:admin,editor'])->get('/bookingscount/{status}', 'API\BookingsController@getBookingsCount')->name('count');;
 

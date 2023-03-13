@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Station;
-use App\Log;
+use App\Models\Station;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +59,7 @@ class StationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Station  $station
+     * @param  \App\Models\Station  $station
      * @return \Illuminate\Http\Response
      */
     public function show(int $station)
@@ -73,7 +73,7 @@ class StationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Station  $station
+     * @param  \App\Models\Station  $station
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $station)

@@ -224,25 +224,25 @@
                             <li class="nav-item">
                                 <a class="nav-link text-success" id="count" aria-current="page"
                                     href="/bookings?status=0">
-                                    &emsp;- Waiting for Booking({{ App\Booking::getCount(0) }})
+                                    &emsp;- Waiting for Booking({{ App\Models\Booking::getCount(0) }})
                                 </a>
                                 <a class="nav-link " aria-current="page" href="/bookings?status=1">
-                                    &emsp;- Trip is expected({{ App\Booking::getCount(1) }})
+                                    &emsp;- Trip is expected({{ App\Models\Booking::getCount(1) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=2">
-                                    &emsp;- Waiting for Confirmation({{ App\Booking::getCount(2) }})
+                                    &emsp;- Waiting for Confirmation({{ App\Models\Booking::getCount(2) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=3">
-                                    &emsp;- Trip is completed({{ App\Booking::getCount(3) }})
+                                    &emsp;- Trip is completed({{ App\Models\Booking::getCount(3) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=4">
-                                    &emsp;- Trip is not Completed({{ App\Booking::getCount(4) }})
+                                    &emsp;- Trip is not Completed({{ App\Models\Booking::getCount(4) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=5">
-                                    &emsp;- Canceled by Customer({{ App\Booking::getCount(5) }})
+                                    &emsp;- Canceled by Customer({{ App\Models\Booking::getCount(5) }})
                                 </a>
                                 <a class="nav-link" aria-current="page" href="/bookings?status=6">
-                                    &emsp;- Canceled by System({{ App\Booking::getCount(6) }})
+                                    &emsp;- Canceled by System({{ App\Models\Booking::getCount(6) }})
                                 </a>
                             </li>
 

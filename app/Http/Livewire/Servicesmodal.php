@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire;
 
-use App\CarType;
-use App\Price;
+use App\Models\CarType;
+use App\Models\Price;
 use Livewire\Request;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -141,7 +141,6 @@ class Servicesmodal extends Component
             if ($car_type) {
                 $this->car_type = $car_type;
                 foreach ($this->news as $i => $price) {
-                    info($price);
                     if (
                         isset($price['km_fee']) &&
                         isset($price['opening_fee']) &&
@@ -167,7 +166,6 @@ class Servicesmodal extends Component
             $this->car_type->save();
 
             foreach ($this->news as $i => $price) {
-                info($price);
                 if (
                     isset($price['km_fee']) &&
                     isset($price['opening_fee']) &&

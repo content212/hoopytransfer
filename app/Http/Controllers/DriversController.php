@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Car;
+use App\Models\Car;
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
 use Illuminate\Support\Facades\DB;

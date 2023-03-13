@@ -2,8 +2,8 @@
 
 namespace App\Rules;
 
-use App\Booking;
-use App\Car;
+use App\Models\Booking;
+use App\Models\Car;
 use Illuminate\Contracts\Validation\Rule;
 
 class InsuranceExp implements Rule
@@ -31,7 +31,6 @@ class InsuranceExp implements Rule
         $car_id = $value;
         $car = Car::find($car_id);
         if ($car and $this->booking->car_id != $car_id) {
-            info($car);
             return $car->insurance_date > now();
         } else
             return true;

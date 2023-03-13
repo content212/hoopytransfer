@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Car;
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;

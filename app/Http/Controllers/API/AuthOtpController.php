@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\RegisterOtp;
+use App\Models\RegisterOtp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\User;
-use App\UserOtp;
+use App\Models\User;
+use App\Models\UserOtp;
 use Illuminate\Support\Facades\Hash;
 use \Validator;
 

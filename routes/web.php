@@ -9,9 +9,10 @@ use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\CustomClass\CalculateSalary;
-use App\Driver;
-use App\Setting;
-use App\Transaction;
+use App\Models\Driver;
+use App\Http\Controllers\PaymentController;
+use App\Models\Setting;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,8 @@ Route::get('/accounting', 'AccountingController@index');
 Route::get('/accounting/{id}', 'AccountingController@driverIndex');
 Route::get('/accountingdetail', 'AccountingController@detailIndex');
 Route::get('/settings', 'SettingController@index');
+
+
 
 Route::get('/symlink', function () {
     $targetFolder = '/home/ch349004/web/admin.hoopytransfer.com/public_html/hoopytransfer/storage/app/images';

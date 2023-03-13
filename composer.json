@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.0",
         "laravelcollective/html": "^6.2",
         "livewire/livewire": "^2.11",
+        "stripe/stripe-php": "^10.7",
         "symfony/dotenv": "^5.4",
         "symfony/filesystem": "^5.4",
         "yajra/laravel-datatables-oracle": "^9.18"

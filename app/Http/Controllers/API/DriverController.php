@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Driver;
-use App\Log;
+use App\Models\Driver;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -66,7 +66,7 @@ class DriverController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Driver  $driver
+     * @param  \App\Models\Driver  $driver
      * @return \Illuminate\Http\Response
      */
     public function show(int $driver)
@@ -81,7 +81,7 @@ class DriverController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Driver  $driver
+     * @param  \App\Models\Driver  $driver
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $driver)

@@ -2,9 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use App\Car;
-use App\CarType;
-use App\Driver;
+use App\Models\Car;
+use App\Models\CarType;
+use App\Models\Driver;
 use Livewire\Component;
 
 class CarDriver extends Component
@@ -12,7 +12,7 @@ class CarDriver extends Component
     public $car_type;
     public $drivers = [];
     public $cars = [];
-    public $driver;
+    public $driver, $calendar, $test = false;
 
     public function render()
     {
@@ -38,5 +38,7 @@ class CarDriver extends Component
         if ($this->car_type != $value) {
             $this->car_type = $value;
         }
+        if ($this->calendar)
+            $this->test = true;
     }
 }

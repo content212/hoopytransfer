@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Setting;
+use App\Models\Setting;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Contracts\Validation\Rule;

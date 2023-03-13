@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Support\Facades\DB;
-use App\Price;
+use App\Models\Price;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Customer;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redis;
-use PhpOffice\PhpSpreadsheet\RichText\ITextElement;
 
 class PriceCalculateController extends Controller
 {
@@ -23,9 +19,12 @@ class PriceCalculateController extends Controller
         } catch (\Exception $e) {
             return response(['message' => "Could not connect to the database."], 422);
         }
+        if ($data['km'] < 1) {
+            return response(['error' => 'Bad request!'], 400);
+        }
         $prices = Price::whereRaw('? between start_km and finish_km', [$data['km']])->get();
+        $response = [];
         if (count($prices) > 0) {
-            $response = [];
             foreach ($prices as $key => $price) {
                 $newPrice = [
                     'price_id' => $price->id,
@@ -38,7 +37,11 @@ class PriceCalculateController extends Controller
                 ];
                 array_push($response, $newPrice);
             }
+        } else {
+            return response([
+                'errors' => ['not_calculated' => ['Price not calculated.']]
+            ], 200);
         }
-        return $response;
+        return response($response, 200);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Utils;
-use App\Setting;
+use App\Models\Setting;
 
 class SettingController extends Controller
 {
