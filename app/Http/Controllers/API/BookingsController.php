@@ -14,9 +14,12 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Price;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Rules\InsuranceExp;
 use App\Models\User;
+use App\Models\BookingData;
+use App\Models\CarType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Date;
@@ -37,15 +40,6 @@ class BookingsController extends Controller
     {
         $bookings = Booking::select(
             'bookings.id',
-            //DB::raw('(CASE bookings.status
-            //when 0 then \'Waiting for Booking\'
-            //when 1 then \'Trip is expected\'
-            //when 2 then \'Waiting for Booking\'
-            //when 3 then \'Trip is completed\'
-            //when 4 then \'Trip is not Completed\'
-            //when 5 then \'Canceled by Customer\'
-            //when 6 then \'Canceled by System\'
-            //when 7 then \'Completed\' END) as status'),
             'bookings.status as status',
             'bookings.track_code',
             'bookings.from',
@@ -72,9 +66,6 @@ class BookingsController extends Controller
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y') : '';
             })
-            ->editColumn('status', function (Booking $booking) {
-                return $booking->getStatus();
-            })
             ->rawColumns(['edit'])
             ->make(true);
     }
@@ -98,15 +89,58 @@ class BookingsController extends Controller
                 $user_id = $user->id;
             $input = $request->all();
             $input['user_id'] = $user_id;
-            $input['car_type'] = Price::find($input['price_id'])->carType->id;
+            $input['car_type'] = $input['price_id'] != -1 ? Price::find($input['price_id'])->carType->id : null;
+            $input['status'] = $input['price_id'] != -1 ? 0 : 8;
             $booking = Booking::create($input);
             $track_code = $this->generateRandomNumber(8);
             while (Booking::where('track_code', $track_code)->exists()) {
                 $track_code = $this->generateRandomNumber(8);
             }
-            $booking = Booking::where('id', $booking->id);
             $booking->update(['track_code' => $track_code]);
-            $booking = $booking->first();
+
+            if ($booking->price_id != -1) {
+                $price = Price::find($booking->price_id);
+                $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;
+                $total = ($price->opening_fee + ($price->km_fee *  $booking->km));
+                $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
+                $driver_payment = $discount_price * 0.7;
+                $system_payment = $discount_price - $driver_payment;
+                $inputs = [
+                    'booking_id' => $booking->id,
+                    'km' => $booking->km,
+                    'opening_fee' => $price->opening_fee,
+                    'km_fee' => $price->km_fee,
+                    'discount_rate' => $price->carType->discount_rate,
+                    'discount_price' => $discount_price,
+                    'system_payment' => $system_payment,
+                    'driver_payment' => $driver_payment,
+                    'total' => $total,
+                    'full_discount' => $full_discount,
+                    'full_discount_price' => $discount_price * (1.0 - ($full_discount / 100.0)),
+                    'full_discount_system_payment' => $system_payment - ($discount_price * ($full_discount / 100.0))
+
+                ];
+            } else {
+                $inputs = [
+                    'booking_id' => $booking->id,
+                    'km' => $booking->km,
+                    'opening_fee' => 0,
+                    'km_fee' => 0,
+                    'discount_rate' => 0,
+                    'discount_price' => 0,
+                    'system_payment' => 0,
+                    'driver_payment' => 0,
+                    'total' => 0,
+                    'full_discount' => 0,
+                    'full_discount_price' => 0,
+                    'full_discount_system_payment' => 0
+
+                ];
+            }
+
+            $booking_data = new BookingData($inputs);
+            $booking->data()->save($booking_data);
+            $booking->load('data');
             Log::addToLog('Booking Log.', $request->all(), 'Create');
             return response($booking->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
@@ -122,20 +156,14 @@ class BookingsController extends Controller
      */
     public function show(int $booking)
     {
-        if (!$bookings = Booking::where('id', '=', $booking)->first())
+        $user = Auth::user();
+        if (!$bookings = Booking::where('id', '=', $booking)->with('user')->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        if ($bookings->user_id)
-            $user = User::where('id', $bookings->user_id)->first();
-        else
-            $user = BookingUserInfo::where('booking_id', $bookings->id)->first();
-        $bookings['status_name'] = $bookings->getStatus();
-        $user = [
-            'name' => $user->name . " " . $user->surname,
-            'phone' => $user->phone,
-            'email' => $user->email
-        ];
+        if ($bookings['status'] == 8) {
+            $bookings['car_type'] = 'request';
+        }
 
-        return response(json_encode(array_merge($user, $bookings->toarray())), 200);
+        return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
     }
 
     /**
@@ -149,9 +177,20 @@ class BookingsController extends Controller
         if (!$bookings = Booking::where('id', '=', $booking)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $rules = array(
-                'car_id' => [new InsuranceExp($booking)],
-            );
+            if ($request->post('car_type') != 'request') {
+                $rules = array(
+                    'car_id' => [new InsuranceExp($booking)],
+                    'booking_date' => 'required',
+                    'booking_time' => 'required'
+                );
+            } else {
+                $rules = array(
+                    'car_id' => [new InsuranceExp($booking)],
+                    'booking_date' => 'required',
+                    'booking_time' => 'required',
+                    'price' => 'required'
+                );
+            }
             $messages = array();
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
@@ -167,8 +206,15 @@ class BookingsController extends Controller
                     'driver_id' => $request->post('driver_id')
                 ]);
             }
-
+            if ($request->post('status') == '4' and in_array($bookings->status, [1, 2])) {
+                $this->cancel($request, $bookings->id);
+            }
+            if ($request->post('car_type') == 'request') {
+                $price = $request->post('price');
+                $bookings->data->update(['discount_price' => $price]);
+            }
             $bookings->update($request->all());
+
             Log::addToLog('Booking Log.', $request->all(), 'Edit');
             return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
@@ -264,46 +310,30 @@ class BookingsController extends Controller
             'bookings.id',
             'track_code',
             'bookings.created_at',
-            DB::raw('sum(booking_packets.price) as total_price'),
             'from_name',
             'to_name',
-            DB::raw('(CASE status
-        when 0 then \'Waiting for Booking\'
-        when 1 then \' Trip is expected\'
-        when 2 then \'Waiting for Confirmation\'
-        when 3 then \'Trip is completed\'
-        when 4 then \'Trip is not Completed\'
-        when 5 then \'Canceled by Customer\'
-        when 6 then \'Canceled by System\'
-        when 7 then \'Completed\' END) as status'),
+            'status',
+            'booking_date',
+            'car_type'
         )
-            ->join('booking_packets', 'booking_packets.bookingId', '=', 'bookings.id')
+            ->with('service:id,free_cancellation', 'data')
+            #->addSelect(['free_cancellation' => CarType::select('free_cancellation')])
             ->where('bookings.user_id', $user->id)
-            ->groupBy('bookings.id')
-            ->get();
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'service', 'data');
 
         return $bookings;
     }
     public function FrontEndCustomerBookingsDetail($id)
     {
-        if (!$booking = Booking::select(
-            'bookings.*',
-            DB::raw('(CASE status
-        when 0 then \'Waiting for Booking\'
-        when 1 then \' Trip is expected\'
-        when 2 then \'Waiting for Confirmation\'
-        when 3 then \'Trip is completed\'
-        when 4 then \'Trip is not Completed\'
-        when 5 then \'Canceled by Customer\'
-        when 6 then \'Canceled by System\'
-        when 7 then \'Completed\' END) as status'),
-        )->where('id', $id)->first())
+        if (!$booking = Booking::where('id', $id)->with('service', 'data', 'user')->first())
             return response()->json(['message' => 'Not Found!'], 404);
         $user = Auth::user();
-        $packets = BookingPackets::where('bookingId', $booking->id)->get();
 
         if ($booking->user_id == $user->id) {
-            return response()->json(['booking' => $booking, 'packets' => $packets], 200);
+            return response()->json($booking, 200);
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -339,5 +369,10 @@ class BookingsController extends Controller
             ]);
         }
         return response()->json($data);
+    }
+    public function timeRule(Request $request)
+    {
+        $time_rule = Setting::firstWhere('code', 'booking_time')->value;
+        return $time_rule;
     }
 }

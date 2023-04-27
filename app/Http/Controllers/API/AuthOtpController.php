@@ -32,7 +32,8 @@ class AuthOtpController extends Controller
 
         $content = [
             'user_id' => $userOtp->user_id,
-            'message' => "Verification number has been sent on Your Mobile Number."
+            'message' => "Verification number has been sent on Your Mobile Number.",
+            'otp' => $userOtp->otp
         ];
         return response(json_encode($content), 200);
     }
@@ -165,7 +166,8 @@ class AuthOtpController extends Controller
 
         $content = [
             'phone' => $registerOtp->phone,
-            'message' => "Verification number has been sent on Your Mobile Number."
+            'message' => "Verification number has been sent on Your Mobile Number.",
+            'otp' => $input['otp']
         ];
         return response(json_encode($content), 200);
     }

@@ -14,12 +14,15 @@ class BookingData extends Model
         'opening_fee',
         'km_fee',
         'discount_rate',
+        'discount_price',
         'payment_type',
         'system_payment',
         'driver_payment',
         'total',
         'paymentIntentSecret',
-        'full_discount'
+        'full_discount',
+        'full_discount_price',
+        'full_discount_system_payment'
     ];
 
     public function booking()

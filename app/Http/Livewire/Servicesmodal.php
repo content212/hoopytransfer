@@ -132,6 +132,11 @@ class Servicesmodal extends Component
     {
         if ($this->car_type_id == -1) {
             $this->validate([
+                'car_type.name' => 'required',
+                'car_type.person_capacity' => 'required',
+                'car_type.baggage_capacity' => 'required',
+                'car_type.discount_rate' => 'required',
+                'car_type.free_cancellation' => 'required',
                 'news.*.start_km' => 'required',
                 'news.*.finish_km' => 'required|gt:news.*.start_km',
                 'news.*.opening_fee' => 'required',
@@ -155,6 +160,11 @@ class Servicesmodal extends Component
             $this->validate();
             if (count($this->news) > 0) {
                 $this->validate([
+                    'car_type.name' => 'required',
+                    'car_type.person_capacity' => 'required',
+                    'car_type.baggage_capacity' => 'required',
+                    'car_type.discount_rate' => 'required',
+                    'car_type.free_cancellation' => 'required',
                     'news.*.start_km' => 'required',
                     'news.*.finish_km' => 'required|gt:news.*.start_km',
                     'news.*.opening_fee' => 'required',
@@ -185,5 +195,6 @@ class Servicesmodal extends Component
         $this->news = collect();
         $this->car_type = CarType::find($this->car_type->id);
         $this->emit('some-event');
+        $this->emit('saved');
     }
 }

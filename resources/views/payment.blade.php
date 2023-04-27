@@ -189,7 +189,7 @@
         console.log(document.getElementById("payment-form"));
         document.querySelector("#payment-form").addEventListener("submit", handleSubmit);
 
-        let emailAddress = "";
+        let emailAddress = "{{ $email }}";
         async function initialize() {
             const {
                 clientSecret
@@ -213,11 +213,19 @@
 
             const paymentElementOptions = {
                 layout: "tabs",
+                defaultValues:{
+                    billingDetails: {
+                        email: emailAddress
+                    }
+                }
             };
 
             const paymentElement = elements.create("payment", paymentElementOptions);
+            
             console.log(paymentElement);
+            //document.getElementById('Field-emailInput').value = "{{ $email }}";
             paymentElement.mount("#payment-element");
+            
         }
 
         async function handleSubmit(e) {
@@ -230,7 +238,7 @@
                 elements,
                 confirmParams: {
                     // Make sure to change this to your payment completion page
-                    return_url: "{{ route('payment.success') }}",
+                    return_url: "{{ env('FRONTED_URL'). '/reservations/'. $bookingId }}",
                     receipt_email: emailAddress,
                 },
             });

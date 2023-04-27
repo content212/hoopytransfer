@@ -323,20 +323,23 @@
                     $('#duration').val(obj.duration)
                     $('#booking_date').val(obj.booking_date)
                     $('#booking_time').val(obj.booking_time)
-                    $('#name').val(obj.name)
-                    $('#phone').val(obj.phone)
-                    $('#email').val(obj.email)
+                    $('#name').val(obj.user.name)
+                    $('#phone').val(obj.user.phone)
+                    $('#email').val(obj.user.email)
                     $('#driver_id').val(obj.driver_id)
-                    $('#car_type').val(obj.car_type).trigger('click')
-                    setTimeout(function() {
-                        $('#car_id').val(obj.car_id)
-                    }, 500);
+                    Livewire.emit('setBookingId', id);
+                    //$('#car_type').val(obj.car_type).trigger('click')
+                    //setTimeout(function() {
+                    //    $('#car_id').val(obj.car_id)
+                    //}, 500);
+                    
                 }
             });
         });
 
         $('#edit-modal').on('hide.bs.modal', function() {
             $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
+            $('.is-invalid').removeClass('is-invalid');
             $("#edit-form").trigger("reset");
             $('#packets_table').DataTable().clear().destroy();
             $('#modal_result').empty();
@@ -411,8 +414,8 @@
                     name: 'track_code'
                 },
                 {
-                    data: 'status',
-                    name: 'status'
+                    data: 'status_name',
+                    name: 'status_name'
                 },
                 {
                     data: 'from',

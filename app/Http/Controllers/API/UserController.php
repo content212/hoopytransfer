@@ -88,68 +88,14 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $id = $user->id;
-        $type = Customer::where('user_id', '=', $id)->first()->type;
-        if ($type == 'individual') {
-            if (!$user = User::where('id', '=', $id)->first())
-                return response()->json(['message' => 'Not Found!'], 404);
-            try {
-                $input = $request->all();
-                if ($user->email != $input['email']) {
-                    $validator = Validator::make($request->all(), [
-                        'email' => 'required|email|unique:users'
-                    ]);
-                    if ($validator->fails()) {
-                        $response = $validator->errors();
-                        session()->flash('flash_error', $response);
-                        return response()->json(['message' => $response], 400);
-                    }
-                }
-                unset($input['password']);
-                unset($input['type']);
-                unset($input['discount']);
-                unset($input['status']);
-                $user->update($input);
-                $customer = Customer::where('user_id', '=', $id)->first();
-                $customer->update($input);
-                Log::addToLog('Customer Log.', $request->all(), 'Edit');
-                // return response($user->toJson(JSON_PRETTY_PRINT), 200);
-                return UserController::getCustomer($id);
-            } catch (QueryException $e) {
-                return response()->json(['message' => 'Database error. Code:' . $e->getCode()], 400);
-            }
-        } else if ($type == 'corporate') {
-            try {
-                if (!$user = User::where('id', '=', $id)->first())
-                    return response()->json(['message' => 'Not Found!'], 404);
-                $input = $request->all();
-                if ($user->email != $input['email']) {
-                    $validator = Validator::make($request->all(), [
-                        'email' => 'required|email|unique:users'
-                    ]);
-                    if ($validator->fails()) {
-                        $response = $validator->errors();
-                        session()->flash('flash_error', $response);
-                        return response()->json(['message' => $response], 400);
-                    }
-                }
-                unset($input['password']);
-                unset($input['type']);
-                unset($input['discount']);
-                unset($input['status']);
-                $user->update($input);
-                $customer = Customer::where('user_id', '=', $id)->first();
-                $customer->update($input);
-                $input['customer_id'] = $customer->id;
-                //return $input;
-                Companies::updateOrCreate([
-                    'customer_id' => $customer->id
-                ], $input);
-                Log::addToLog('Customer Log.', $request->all(), 'Edit');
-
-                return UserController::getCustomer($id);
-            } catch (QueryException $e) {
-                return response()->json(['message' => 'Database error. Code:' . $e->getCode()], 400);
-            }
+        if (!$user = User::where('id', '=', $id)->first())
+            return response()->json(['message' => 'Not Found!'], 404);
+        try {
+            $user->update($request->all());
+            Log::addToLog('Customer Log.', $request->all(), 'Edit');
+            return response($user->toJson(JSON_PRETTY_PRINT), 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         }
     }
     public function customersAction(Request $request)

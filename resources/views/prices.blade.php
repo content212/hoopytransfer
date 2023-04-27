@@ -54,7 +54,7 @@
             </div>
         </div>
     </div>
-    <div class="modal top fade" id="edit-modal" tabindex="-1" aria-labelledby="editmodalLabel" aria-hidden="true"
+    <div wire:ignore.self class="modal top fade" id="edit-modal" tabindex="-1" aria-labelledby="editmodalLabel" aria-hidden="true"
             data-bs-backdrop="static" data-bs-keyboard="true">
         <div class="modal-dialog modal-xl  modal-dialog-centered">
             <livewire:servicesmodal :car_type_id="-1">
@@ -114,7 +114,9 @@
 
             var id = el.data('id');
             Livewire.emit('setId', id);
-            
+            window.livewire.on('saved', () => {
+                $('#edit-modal').modal('hide');
+            });
         });
 
         $('#edit-modal').on('hide.bs.modal', function() {
@@ -188,5 +190,6 @@
                 }
             ]
         });
+        
     </script>
 @endsection

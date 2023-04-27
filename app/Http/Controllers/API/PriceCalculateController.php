@@ -33,7 +33,8 @@ class PriceCalculateController extends Controller
                     'baggage' => $price->carType->baggage_capacity,
                     'image' => $price->carType->imageUrl(),
                     'price' => $price->opening_fee + ($price->km_fee * $data['km']),
-                    'discount_price' => ($price->opening_fee + ($price->km_fee * $data['km'])) * (1.0 - ($price->carType->discount_rate / 100.0))
+                    'discount_price' => ($price->opening_fee + ($price->km_fee * $data['km'])) * (1.0 - ($price->carType->discount_rate / 100.0)),
+                    'free_cancellation' => $price->carType->free_cancellation
                 ];
                 array_push($response, $newPrice);
             }

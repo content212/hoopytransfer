@@ -29,6 +29,7 @@ class Booking extends Model
         'booking_date',
         'booking_time'
     ];
+    protected $appends = ['status_name'];
     public static function getCount($status)
     {
         $count = Booking::where('status', $status)->count();
@@ -75,6 +76,20 @@ class Booking extends Model
         ];
     }
     public function getStatus(): string
+    {
+        return [
+            0 => 'Waiting for Booking',
+            1 => 'Waiting for Confirmation',
+            2 => 'Trip is expected',
+            3 => 'Canceled by Customer',
+            4 => 'Canceled by System',
+            5 => 'Trip is completed',
+            6 => 'Trip is not Completed',
+            7 => 'Completed',
+            8 => 'Booking Request'
+        ][$this->status];
+    }
+    public function getStatusNameAttribute($value)
     {
         return [
             0 => 'Waiting for Booking',

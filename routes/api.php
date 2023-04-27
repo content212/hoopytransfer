@@ -35,6 +35,8 @@ Route::post('/otp/login', 'API\AuthOtpController@loginWithOtp');
 Route::get('/direction', [GoogleMapsApiController::class, '__invoke']);
 Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
 Route::post('/track', "API\BookingsController@track");
+
+Route::get('/timerule', "API\BookingsController@timeRule");
 //Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
 
 Route::get('/payment', [PaymentController::class, 'index']);
@@ -48,7 +50,8 @@ Route::post('/webhook', function (Request $request) {
     $payload = $request->getContent();
     $sig_header =  $_SERVER['HTTP_STRIPE_SIGNATURE'];
     $event = null;
-    $secret = 'whsec_180755da0ce75da72324feea1f3d308b070eea611c78f2a477e7db50e6ceaa4a';
+    $secret = env('STRIPE_WEBHOOK_SECRET');
+    #$secret = 'whsec_180755da0ce75da72324feea1f3d308b070eea611c78f2a477e7db50e6ceaa4a';
     try {
         $event = \Stripe\Webhook::constructEvent(
             $payload,
@@ -74,7 +77,7 @@ Route::post('/webhook', function (Request $request) {
             $booking_data = Booking::find($event->data->object->metadata->booking_id)->data;
             Transaction::create([
                 'type' => 'booking_payment',
-                'amount' => $booking_data->total,
+                'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
                 'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
                 'booking_id' => $booking_data->booking->id
             ]);
@@ -111,7 +114,7 @@ Route::post('/webhook', function (Request $request) {
             if ($refund->status == 'succeeded') {
                 Transaction::create([
                     'type' => 'refund',
-                    'amount' => $booking_data->total,
+                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
                     'note' => 'Refund from #' . $payment->booking_id . ' booking.',
                     'booking_id' => $payment->booking_id
                 ]);
@@ -143,7 +146,7 @@ Route::post('/webhook', function (Request $request) {
             if ($refund->status == 'succeeded') {
                 Transaction::create([
                     'type' => 'refund',
-                    'amount' => $booking_data->total,
+                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
                     'note' => 'Refund from #' . $payment->booking_id . ' booking.',
                     'booking_id' => $payment->booking_id
                 ]);

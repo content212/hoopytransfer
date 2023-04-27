@@ -62,6 +62,9 @@ Route::get('/accounting/{id}', 'AccountingController@driverIndex');
 Route::get('/accountingdetail', 'AccountingController@detailIndex');
 Route::get('/settings', 'SettingController@index');
 
+Route::get('/migrate', function () {
+    return Artisan::call('migrate');
+});
 
 
 Route::get('/symlink', function () {

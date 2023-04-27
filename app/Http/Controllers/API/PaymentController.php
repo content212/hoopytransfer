@@ -28,7 +28,8 @@ class PaymentController extends Controller
         $input = $request->all();
         if (!isset($input['bookingId']) or !isset($input['paymentType']) or ($input['paymentType'] != 'Full' and $input['paymentType'] != 'Pre'))
             abort(404);
-        return view('payment');
+        $email = Booking::find($input['bookingId'])->user->email;
+        return view('payment')->with(['email' => $email, 'bookingId' => $input['bookingId']]);
     }
 
     public function payment(Request $request)
@@ -50,28 +51,56 @@ class PaymentController extends Controller
                 return response()->json([
                     'error' => 'Payment not created for this booking!'
                 ]);
+            if ($booking->status == 8) {
+                if ($booking->payment) {
+                    $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
+                        'amount' => number_format((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price), 2) * 100
+                    ]);
+                    $booking->payment->update([
+                        'status' => $paymentIntent->status,
+                        'last_message' => null,
+                        'charge' => null
+                    ]);
+                } else {
+                    $paymentIntent = $this->stripe->paymentIntents->create([
+                        'amount' => number_format((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price), 2) * 100,
+                        'currency' => 'usd',
+                        'automatic_payment_methods' => [
+                            'enabled' => true,
+                        ],
+                        'metadata' => ['booking_id' => $booking->id]
+                    ]);
+                }
+                $output = [
+                    'clientSecret' => $paymentIntent->client_secret,
+                ];
+                return response()->json($output);
+            }
             $price = Price::find($booking->price_id);
             $full_discount = Setting::firstWhere('code', 'full_discount')->value;
+            $total = ($price->opening_fee + ($price->km_fee *  $booking->km));
+            $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
+            $driver_payment = $discount_price * 0.7;
+            $system_payment = $discount_price - $driver_payment;
             $inputs = [
                 'booking_id' => $booking->id,
                 'km' => $booking->km,
                 'opening_fee' => $price->opening_fee,
                 'km_fee' => $price->km_fee,
-                'discount_rate' => $price->carType->discount_rate,
                 'payment_type' => $data['paymentType'],
-                'system_payment' => ($price->opening_fee + ($price->km_fee *  $booking->km)) * (1.0 - ($price->carType->discount_rate / 100.0)) * 0.3,
-                'driver_payment' => ($price->opening_fee + ($price->km_fee *  $booking->km)) * (1.0 - ($price->carType->discount_rate / 100.0)) * 0.7,
-                'total' => ($price->opening_fee + ($price->km_fee *  $booking->km)) * (1.0 - ($price->carType->discount_rate / 100.0)),
-                'full_discount' => $full_discount ?? 0
+                'discount_rate' => $price->carType->discount_rate,
+                'discount_price' => $discount_price,
+                'system_payment' => $system_payment,
+                'driver_payment' => $driver_payment,
+                'total' => $total,
+                'full_discount' => $full_discount,
+                'full_discount_price' => $discount_price * (1.0 - ($full_discount / 100.0)),
+                'full_discount_system_payment' => $system_payment - ($discount_price * ($full_discount / 100.0))
             ];
-            if ($inputs['payment_type'] == 'Full') {
-                $inputs['system_payment'] = $inputs['system_payment'] - ($inputs['total'] * ($inputs['full_discount'] / 100.0));
-                $inputs['total'] = $inputs['total'] * (1.0 - ($inputs['full_discount'] / 100.0));
-            }
-            if ($booking->data) {
-                $booking->data->update($inputs);
+            $booking->data->update($inputs);
+            if ($booking->payment) {
                 $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
-                    'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->total), 2) * 100
+                    'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price), 2) * 100
                 ]);
                 $booking->payment->update([
                     'status' => $paymentIntent->status,
@@ -79,11 +108,8 @@ class PaymentController extends Controller
                     'charge' => null
                 ]);
             } else {
-                $booking_data = new BookingData($inputs);
-                $booking->data()->save($booking_data);
-                $booking->load('data');
                 $paymentIntent = $this->stripe->paymentIntents->create([
-                    'amount' => (($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->total) * 100,
+                    'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price), 2) * 100,
                     'currency' => 'usd',
                     'automatic_payment_methods' => [
                         'enabled' => true,
@@ -91,15 +117,6 @@ class PaymentController extends Controller
                     'metadata' => ['booking_id' => $booking->id]
                 ]);
             }
-
-            //if ($booking->data->payment_type == 'Full') {
-            //    $booking->data->update([
-            //        'system_payment' => $booking->data->system_payment - ($booking->data->total * ($booking->data->full_discount / 100.0)),
-            //        'total' => $booking->data->total * (1.0 - ($booking->data->full_discount / 100.0))
-            //    ]);
-            //}
-
-
             $output = [
                 'clientSecret' => $paymentIntent->client_secret,
             ];

@@ -18,23 +18,23 @@
             <div class="col-lg-8 col-md-6">
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" wire:model.defer="car_type.name" placeholder="Name">
+                    <input type="text" class="form-control @error('car_type.name') is-invalid @enderror" wire:model.defer="car_type.name" placeholder="Name">
                 </div>
                 <div class="form-group">
                     <label>Person Capacity</label>
-                    <input type="text" class="form-control" wire:model.defer="car_type.person_capacity" placeholder="Person Capacity">
+                    <input type="text" class="form-control  @error('car_type.person_capacity') is-invalid @enderror" wire:model.defer="car_type.person_capacity" placeholder="Person Capacity">
                 </div>
                 <div class="form-group">
                     <label>Baggage Capacity</label>
-                    <input type="text" class="form-control" wire:model.defer="car_type.baggage_capacity" placeholder="Baggage Capacity">
+                    <input type="text" class="form-control @error('car_type.baggage_capacity') is-invalid @enderror" wire:model.defer="car_type.baggage_capacity" placeholder="Baggage Capacity">
                 </div>
                 <div class="form-group">
                     <label>Discount Rate</label>
-                    <input type="number" class="form-control" max="100" wire:model.defer="car_type.discount_rate" placeholder="Discount Rate">
+                    <input type="number" class="form-control @error('car_type.discount_rate') is-invalid @enderror" max="100" wire:model.defer="car_type.discount_rate" placeholder="Discount Rate">
                 </div>
                 <div class="form-group">
                     <label>Free Cancellation Time</label>
-                    <input type="number" class="form-control" wire:model.defer="car_type.free_cancellation" placeholder="Free Cancellation Time">
+                    <input type="number" class="form-control @error('car_type.free_cancellation') is-invalid @enderror" wire:model.defer="car_type.free_cancellation" placeholder="Free Cancellation Time">
                 </div>
             </div>
         </div>
