@@ -95,7 +95,7 @@ class ContractController extends Controller
 
     public function list() 
     {
-        $contracts = Contract::where('active', '=', 1)->select('id','name','prefix','suffix','selected','required','display_order')
+        $contracts = Contract::where('active', '=', 1)->select('id','name','prefix','suffix','selected','required','display_order','position')
         ->orderBy('display_order','asc')
         ->get();
         return response($contracts, 200);
@@ -117,7 +117,16 @@ class ContractController extends Controller
             $booking = Booking::where('id', '=', request()->query('booking_id'))->first();
         }
 
-        return response(ContractHelper::BuildContract($contract, $booking), 200);
+        $layout = '<html>';
+        $layout .= '<head>';
+        $layout .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
+        $layout .= '</head>';
+        $layout .= '<body>';
+        $layout .= ContractHelper::BuildContract($contract, $booking);
+        $layout .= '</body>';
+        $layout .= '</html>';
+
+        return response($layout, 200);
     }
 
     //test

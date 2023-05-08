@@ -156,7 +156,9 @@
                     ]
             };
 
-            var $contractTextArea = $("#contract");
+
+
+          
 
         var token = Cookies.get('token');
         $.ajaxSetup({
@@ -188,8 +190,7 @@
                         $('#id').val(-1);
                         $("#name").rules("add", "required");
                         $("#display_order").rules("add", "required");
-                        $contractTextArea.html("");
-                        $contractTextArea.trumbowyg(trumbowygConfig);
+                        $("#contract").html("");
                         $('#edit_modal').modal('show');
                     }
                 }],
@@ -284,8 +285,7 @@
                         $("#name").rules("add", "required");
                         $("#display_order").rules("add", "required");
 
-                        $contractTextArea.html(obj.contract);
-                        $contractTextArea.trumbowyg(trumbowygConfig);
+                        $("#contract").html(obj.contract);
                     }
                 });
             }
