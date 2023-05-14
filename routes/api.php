@@ -196,7 +196,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/customer/{customer}', 'API\UserController@getCustomer');
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
 
-    Route::middleware(['scope:customer'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
+    Route::middleware(['scope:customer,driver'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
     Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
     Route::middleware(['scope:customer'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
     Route::middleware(['scope:customer'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
