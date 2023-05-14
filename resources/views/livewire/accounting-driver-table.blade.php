@@ -36,6 +36,16 @@
                                 @endif</td>
                             </tr>
                         @endforeach
+                        <tr>
+                            <td>#</td>
+                            <td>Opening</td>
+                            <td>0.00</td>
+                            <td>0.00</td>
+                            <td>Opening</td>
+                            @if ($driver_id == -1)
+                                <td>{{  $transaction->driver->user->name ?? 'KASA'}}</td>
+                            @endif
+                        </tr>
                     </tbody>
                 </table>
             </div>

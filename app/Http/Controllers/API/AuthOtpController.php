@@ -178,7 +178,7 @@ class AuthOtpController extends Controller
             'otp' => 'required'
         );
         $messages = array(
-            'phone.required' => 'Please enter a usephoner_id.',
+            'phone.required' => 'Please enter a phone.',
             'otp.required' => 'Please enter a otp.',
             'phone.exists' => 'Phone not found.'
         );

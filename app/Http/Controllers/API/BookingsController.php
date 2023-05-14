@@ -202,8 +202,15 @@ class BookingsController extends Controller
 
             if ($request->post('driver_id') and $request->post('car_id') and $bookings->status == '1') {
                 $request->merge(['status' => '2']);
-                Transaction::where('booking_id', $bookings->id)->where('type', 'driver_wage')->first()->update([
-                    'driver_id' => $request->post('driver_id')
+                $total = Transaction::where('driver_id', $request->post('driver_id'))
+                    ->get()
+                    ->sum(function ($transaction) {
+                        return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                    });
+                $transaction = Transaction::where('booking_id', $bookings->id)->where('type', 'driver_wage')->first();
+                $transaction->update([
+                    'driver_id' => $request->post('driver_id'),
+                    'balance'   => ($total - $transaction->amount)
                 ]);
             }
             if ($request->post('status') == '4' and in_array($bookings->status, [1, 2])) {
@@ -319,6 +326,7 @@ class BookingsController extends Controller
             ->with('service:id,free_cancellation', 'data')
             #->addSelect(['free_cancellation' => CarType::select('free_cancellation')])
             ->where('bookings.user_id', $user->id)
+            ->orWhere('bookings.other_user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
@@ -332,7 +340,7 @@ class BookingsController extends Controller
             return response()->json(['message' => 'Not Found!'], 404);
         $user = Auth::user();
 
-        if ($booking->user_id == $user->id) {
+        if ($booking->user_id == $user->id || $booking->other_user_id == $user->id) {
             return response()->json($booking, 200);
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
