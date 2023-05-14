@@ -27,7 +27,8 @@ class Booking extends Model
         'to_lat',
         'to_lng',
         'booking_date',
-        'booking_time'
+        'booking_time',
+        'other_user_id'
     ];
     protected $appends = ['status_name'];
     public static function getCount($status)

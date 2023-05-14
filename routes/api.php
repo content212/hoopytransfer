@@ -85,15 +85,10 @@ Route::post('/webhook', function (Request $request) {
                 'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
                 'booking_id' => $booking_data->booking->id
             ]);
-            $total = Transaction::where('driver_id', $booking_data->booking->driver_id)
-                ->get()
-                ->sum(function ($transaction) {
-                    return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                });
             Transaction::create([
                 'type' => 'driver_wage',
                 'amount' => $booking_data->driver_payment,
-                'balance' => $total,
+                'balance' => 0,
                 'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
                 'driver_id' => $booking_data->booking->driver_id,
                 'booking_id' => $booking_data->booking->id
@@ -131,7 +126,7 @@ Route::post('/webhook', function (Request $request) {
                     Transaction::create([
                         'type' => 'driver_refund',
                         'amount' => $booking_data->driver_payment,
-                        'balance' => $total,
+                        'balance' => ($total + $booking_data->driver_payment),
                         'note' => 'Refund for #' . $payment->booking->id . ' booking.',
                         'driver_id' => $payment->booking->driver_id,
                         'booking_id' => $payment->booking->id
@@ -163,7 +158,7 @@ Route::post('/webhook', function (Request $request) {
                     Transaction::create([
                         'type' => 'driver_refund',
                         'amount' => $booking_data->driver_payment,
-                        'balance' => $total,
+                        'balance' => ($total + $booking_data->driver_payment),
                         'note' => 'Refund for #' . $payment->booking->id . ' booking.',
                         'driver_id' => $payment->booking->driver_id,
                         'booking_id' => $payment->booking->id
@@ -186,6 +181,8 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/users/{user}', 'API\UserController@show');
     Route::middleware(['scope:admin'])->post('/users/{user}', 'API\UserController@update');
     Route::middleware(['scope:admin'])->delete('/users/{user}', 'API\UserController@destroy');
+
+    Route::post('/userdevices', 'API\UserController@addDevice');
 
 
     Route::middleware(['scope:admin,driver_manager'])->get('/getdriverdata', 'API\UserController@getDrivers');

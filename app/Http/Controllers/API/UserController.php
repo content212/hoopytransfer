@@ -8,6 +8,7 @@ use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Customer;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -317,6 +318,31 @@ class UserController extends Controller
             $user->update($request->all());
             return response($user->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+    public function addDevice(Request $request)
+    {
+        try {
+            $user_id = Auth::user()->id;
+            $input  = $request->all();
+            $rules = array(
+                'device_token' => 'required',
+            );
+            $messages = array();
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                $messages = $validator->messages()->get('*');
+                return response()->json([
+                    'error' => $messages
+                ], 400);
+            }
+            DB::table('user_devices')->insert([
+                'user_id' => $user_id,
+                'device_token' => $input['device_token'],
+            ]);
+            return response()->json(['message' => 'Added!'], 200);
+        } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
