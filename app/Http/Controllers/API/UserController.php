@@ -82,8 +82,21 @@ class UserController extends Controller
         $user = $request->user('api');
         if (!$user)
             return response()->json(['message' => 'Not Found!'], 404);
-        return User::select('id', 'name', 'surname', 'phone', 'email')->firstWhere('id', $user->id);
+
+        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email')->firstWhere('id', $user->id);
+
+        $userRole = $user->role()->first();
+
+        return response()->json([
+            'id' => $dbUser->id,
+            'name' => $dbUser->name,
+            'surname' => $dbUser->surname,
+            'phone' => $dbUser->phone,
+            'email' => $dbUser->email,
+            'role' => $userRole->role,
+        ]);
     }
+    
     public function FrontEndCustomerUpdate(Request $request)
     {
         $user = Auth::user();
