@@ -342,6 +342,14 @@
                             </a>
                         </li>
                     @endif
+                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                        <li class="side-nav-item">
+                            <a href="/contracts" class="side-nav-link">
+                                <i class="uil-newspaper"></i>
+                                <span>Contracts</span>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
                 <!-- End Sidebar -->
 

@@ -117,6 +117,7 @@ class AuthOtpController extends Controller
             return response()->json([
                 'token' => $token->accessToken,
                 'role' => $userRole->role,
+                'user_id' => $user->id,
                 'message' => 'Login success'
             ]);
         }
@@ -222,6 +223,7 @@ class AuthOtpController extends Controller
             return response()->json([
                 'token' => $token->accessToken,
                 'role' => $userRole->role,
+                'user_id' => $user->id,
                 'message' => 'Register success'
             ]);
         }
