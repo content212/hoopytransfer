@@ -47,11 +47,11 @@ class PaymentController extends Controller
         try {
             $data = $request->all();
             $booking = Booking::find($data['bookingId']);
-            if (!in_array($booking->status, [0, 8]))
+            if (!in_array($booking->status, [0, 9]))
                 return response()->json([
                     'error' => 'Payment not created for this booking!'
                 ]);
-            if ($booking->status == 8) {
+            if ($booking->status == 9) {
                 if ($booking->payment) {
                     $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
                         'amount' => number_format((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price), 2) * 100

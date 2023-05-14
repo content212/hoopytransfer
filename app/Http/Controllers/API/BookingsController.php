@@ -90,7 +90,7 @@ class BookingsController extends Controller
             $input = $request->all();
             $input['user_id'] = $user_id;
             $input['car_type'] = $input['price_id'] != -1 ? Price::find($input['price_id'])->carType->id : null;
-            $input['status'] = $input['price_id'] != -1 ? 0 : 8;
+            $input['status'] = $input['price_id'] != -1 ? 0 : 9;
             $booking = Booking::create($input);
             $track_code = $this->generateRandomNumber(8);
             while (Booking::where('track_code', $track_code)->exists()) {
@@ -159,7 +159,7 @@ class BookingsController extends Controller
         $user = Auth::user();
         if (!$bookings = Booking::where('id', '=', $booking)->with('user')->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        if ($bookings['status'] == 8) {
+        if ($bookings['status'] == 9) {
             $bookings['car_type'] = 'request';
         }
 
@@ -213,7 +213,7 @@ class BookingsController extends Controller
                     'balance'   => ($total - $transaction->amount)
                 ]);
             }
-            if ($request->post('status') == '4' and in_array($bookings->status, [1, 2])) {
+            if ($request->post('status') == '5' and in_array($bookings->status, [1, 2])) {
                 $this->cancel($request, $bookings->id);
             }
             if ($request->post('car_type') == 'request') {
@@ -257,7 +257,7 @@ class BookingsController extends Controller
             if ($user->role->role == 'customer' and $booking->user_id != $user->id) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
-            if (Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) < $booking->service->free_cancellation or !in_array($booking->status, [0, 1, 2, 8])) {
+            if (Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) < $booking->service->free_cancellation or !in_array($booking->status, [0, 1, 2, 9])) {
                 return response()->json(['message' => 'You can not cancel this booking!'], 400);
             }
             $refundRequest = new Request([
@@ -265,7 +265,7 @@ class BookingsController extends Controller
             ]);
             if (((new PaymentController)->refund($refundRequest))->status() == 200) {
                 $booking->update([
-                    'status' => $user->role->role == 'customer' ? 3 : 4
+                    'status' => $user->role->role == 'customer' ? 4 : 5
                 ]);
             }
             Log::addToLog('Booking Log.', $request->all(), 'Cancel');
@@ -321,7 +321,7 @@ class BookingsController extends Controller
             'to_name',
             'status',
             'booking_date',
-            'car_type'
+            'car_type',
         )
             ->with('service:id,free_cancellation', 'data')
             #->addSelect(['free_cancellation' => CarType::select('free_cancellation')])
@@ -330,7 +330,7 @@ class BookingsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
-            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'service', 'data');
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'service', 'data', 'payment_status');
 
         return $bookings;
     }

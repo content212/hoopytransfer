@@ -1,23 +1,7 @@
 @extends('test')
 
 @if (app('request')->input('status') != '')
-    @if (app('request')->input('status') == 0)
-        @section('title', 'Bookings - Waiting for Booking')
-    @elseif (app('request')->input('status') == 1)
-        @section('title', 'Bookings - Trip is expected')
-    @elseif (app('request')->input('status') == 2)
-        @section('title', 'Bookings - Waiting for Confirmation')
-    @elseif (app('request')->input('status') == 3)
-        @section('title', 'Bookings - Trip is completed')
-    @elseif (app('request')->input('status') == 4)
-        @section('title', 'Bookings - Trip is not Completed')
-    @elseif (app('request')->input('status') == 5)
-        @section('title', 'Bookings - Canceled by Customer')
-    @elseif (app('request')->input('status') == 6)
-        @section('title', 'Bookings - Canceled by System')
-    @elseif (app('request')->input('status') == 7)
-        @section('title', 'Bookings - Completed')
-    @endif
+    @section('title', 'Bookings - ' . App\Models\Booking::getAllStatus()[app('request')->input('status')])
 @else
     @section('title', 'Bookings')
 @endif
@@ -230,7 +214,7 @@
                             @foreach (App\Models\Booking::getAllStatus() as $status)
                                 <div class="col-lg-1">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" value="{{ $loop->index }}" @if ($loop->index != 4) disabled  @endif>
+                                        <input class="form-check-input" type="radio" name="status" value="{{ $loop->index }}" @if ($loop->index != 5) disabled  @endif>
                                         <label class="form-check-label" for="{{ $loop->index }}">
                                             {{ $status }}
                                         </label>

@@ -30,21 +30,31 @@ class Booking extends Model
         'booking_time',
         'other_user_id'
     ];
-    protected $appends = ['status_name'];
+    private const STATUS = [
+        0 => 'Waiting for Booking',
+        1 => 'Waiting for Confirmation',
+        2 => 'Trip is expected',
+        3 => 'Trip is started',
+        4 => 'Canceled by Customer',
+        5 => 'Canceled by System',
+        6 => 'Trip is completed',
+        7 => 'Trip is not Completed',
+        8 => 'Completed',
+        9 => 'Booking Request',
+    ];
+    private const PAYMENT_STATUS = [
+        'requires_payment_method' => 'Not Paid',
+        'succeeded' => 'Paid',
+        'refund_pending' => 'Pending',
+        'refund_succeeded' => 'Refunded',
+        'refund_failed' => 'Failed',
+        '' => null,
+    ];
+    protected $appends = ['status_name', 'payment_status'];
     public static function getCount($status)
     {
         $count = Booking::where('status', $status)->count();
-        return [
-            0 => 'Waiting for Booking',
-            1 => 'Waiting for Confirmation',
-            2 => 'Trip is expected',
-            3 => 'Canceled by Customer',
-            4 => 'Canceled by System',
-            5 => 'Trip is completed',
-            6 => 'Trip is not Completed',
-            7 => 'Completed',
-            8 => 'Booking Request'
-        ][$status] . '(' . $count . ')';
+        return self::STATUS[$status] . '(' . $count . ')';
     }
     public function user()
     {
@@ -64,44 +74,18 @@ class Booking extends Model
     }
     public static function getAllStatus(): array
     {
-        return [
-            0 => 'Waiting for Booking',
-            1 => 'Waiting for Confirmation',
-            2 => 'Trip is expected',
-            3 => 'Canceled by Customer',
-            4 => 'Canceled by System',
-            5 => 'Trip is completed',
-            6 => 'Trip is not Completed',
-            7 => 'Completed',
-            8 => 'Booking Request'
-        ];
+        return self::STATUS;
     }
     public function getStatus(): string
     {
-        return [
-            0 => 'Waiting for Booking',
-            1 => 'Waiting for Confirmation',
-            2 => 'Trip is expected',
-            3 => 'Canceled by Customer',
-            4 => 'Canceled by System',
-            5 => 'Trip is completed',
-            6 => 'Trip is not Completed',
-            7 => 'Completed',
-            8 => 'Booking Request'
-        ][$this->status];
+        return self::STATUS[$this->status];
     }
     public function getStatusNameAttribute($value)
     {
-        return [
-            0 => 'Waiting for Booking',
-            1 => 'Waiting for Confirmation',
-            2 => 'Trip is expected',
-            3 => 'Canceled by Customer',
-            4 => 'Canceled by System',
-            5 => 'Trip is completed',
-            6 => 'Trip is not Completed',
-            7 => 'Completed',
-            8 => 'Booking Request'
-        ][$this->status];
+        return self::STATUS[$this->status];
+    }
+    public function getPaymentStatusAttribute($value)
+    {
+        return self::PAYMENT_STATUS[$this->payment?->status];
     }
 }
