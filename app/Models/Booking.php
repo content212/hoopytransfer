@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Booking extends Model
 {
@@ -87,5 +88,9 @@ class Booking extends Model
     public function getPaymentStatusAttribute($value)
     {
         return self::PAYMENT_STATUS[$this->payment?->status];
+    }
+    public function bookingDate() 
+    {
+        return Carbon::parse($this->status_date . ' ' .  $this->status_time);
     }
 }

@@ -174,7 +174,12 @@ Route::post('/webhook', function (Request $request) {
 });
 
 
+
+
 Route::middleware(['auth:api', 'role'])->group(function () {
+
+ 
+
     Route::middleware(['scope:admin'])->get('/users', 'API\UserController@index');
     Route::middleware(['scope:admin'])->post('/users', 'API\UserController@store');
     Route::middleware(['scope:admin'])->post('/usersaction', 'API\UserController@action');
@@ -197,6 +202,9 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
     Route::middleware(['scope:customer'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
     Route::middleware(['scope:customer'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
+
+    Route::middleware(['scope:driver'])->get('/driver/jobs', 'API\DriverJobController@index');
+    Route::middleware(['scope:driver'])->post('/driver/update-status/{booking_id}/{status_id}', 'API\DriverJobController@updateStatus');
 
     Route::middleware(['scope:admin,editor'])->get('/bookings', 'API\BookingsController@index');
     Route::middleware(['scope:admin,editor'])->get('/bookings/{booking}', 'API\BookingsController@show');
@@ -247,6 +255,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/contracts/{id}', 'API\ContractController@show');
     Route::middleware(['scope:admin'])->post('/contracts', 'API\ContractController@store');
     Route::middleware(['scope:admin'])->delete('/contracts/{id}', 'API\ContractController@destroy');
+
 
     Route::post('/bookings', 'API\BookingsController@store');
 
