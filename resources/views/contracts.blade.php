@@ -85,7 +85,6 @@
                             <label for="position">Position</label>
                                 <select id="position" name="position" class="form-control">
                                     <option value="register">Register</option>
-                                   <!-- <option value="orderform">Order Form</option> -->
                                     <option value="payment">Payment</option>
                                 </select>
                             </div>

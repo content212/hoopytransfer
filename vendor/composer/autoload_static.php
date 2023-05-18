@@ -161,10 +161,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         array (
             'Illuminate\\' => 11,
         ),
-        'H' => 
-        array (
-            'Http\\Message\\' => 13,
-        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -431,8 +427,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri/src',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            1 => __DIR__ . '/..' . '/league/uri/src',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -477,10 +473,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Illuminate\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
-        ),
-        'Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -600,6 +592,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Http\\Controllers\\API\\ContractController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/ContractController.php',
         'App\\Http\\Controllers\\API\\CustomersController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/CustomersController.php',
         'App\\Http\\Controllers\\API\\DriverController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/DriverController.php',
+        'App\\Http\\Controllers\\API\\DriverJobController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/DriverJobController.php',
         'App\\Http\\Controllers\\API\\GoogleMapsApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/GoogleMapsApiController.php',
         'App\\Http\\Controllers\\API\\LogsController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/LogsController.php',
         'App\\Http\\Controllers\\API\\PaymentController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/PaymentController.php',
@@ -1786,11 +1779,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Hamcrest\\Type\\IsString' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsString.php',
         'Hamcrest\\Util' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Util.php',
         'Hamcrest\\Xml\\HasXPath' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Xml/HasXPath.php',
-        'Http\\Message\\MessageFactory' => __DIR__ . '/..' . '/php-http/message-factory/src/MessageFactory.php',
-        'Http\\Message\\RequestFactory' => __DIR__ . '/..' . '/php-http/message-factory/src/RequestFactory.php',
-        'Http\\Message\\ResponseFactory' => __DIR__ . '/..' . '/php-http/message-factory/src/ResponseFactory.php',
-        'Http\\Message\\StreamFactory' => __DIR__ . '/..' . '/php-http/message-factory/src/StreamFactory.php',
-        'Http\\Message\\UriFactory' => __DIR__ . '/..' . '/php-http/message-factory/src/UriFactory.php',
         'Illuminate\\Auth\\Access\\AuthorizationException' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/AuthorizationException.php',
         'Illuminate\\Auth\\Access\\Gate' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/Gate.php',
         'Illuminate\\Auth\\Access\\HandlesAuthorization' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/HandlesAuthorization.php',

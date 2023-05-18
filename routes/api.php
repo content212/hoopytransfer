@@ -204,7 +204,10 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:customer'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
 
     Route::middleware(['scope:driver'])->get('/driver/jobs', 'API\DriverJobController@index');
-    Route::middleware(['scope:driver'])->post('/driver/update-status/{booking_id}/{status_id}', 'API\DriverJobController@updateStatus');
+    Route::middleware(['scope:driver'])->get('/driver/jobs/{id}', 'API\DriverJobController@detail');
+    Route::middleware(['scope:driver'])->post('/driver/tripIsStarted/{booking_id}', 'API\DriverJobController@tripIsStarted');
+    Route::middleware(['scope:driver'])->post('/driver/tripIsCompleted/{booking_id}', 'API\DriverJobController@tripIsCompleted');
+    Route::middleware(['scope:driver'])->post('/driver/tripIsNotCompleted/{booking_id}', 'API\DriverJobController@tripIsNotCompleted');
 
     Route::middleware(['scope:admin,editor'])->get('/bookings', 'API\BookingsController@index');
     Route::middleware(['scope:admin,editor'])->get('/bookings/{booking}', 'API\BookingsController@show');

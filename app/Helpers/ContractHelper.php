@@ -10,7 +10,7 @@ class ContractHelper
         return '@order-information';
     }
 
-    public static function BuildContract($contract, $booking) 
+    public static function BuildContract($contract, $booking, $paymentType) 
     {
         if (!$booking)
         {
@@ -18,6 +18,7 @@ class ContractHelper
         }
         //TODO: burada şablon oluşturulacak.
         $html = "Booking Id: " . $booking->id . "<br>";
+        $html = "Payment Type: " . $paymentType . "<br>";
         //$html .= "From: " . $booking->from . "<br>";
         //$html .= "To: " . $booking->to . "<br>";
 

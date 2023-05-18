@@ -112,17 +112,24 @@ class ContractController extends Controller
 
         $booking = null;
 
-        if (request()->has('booking_id'))
+        if (request()->has('bookingId'))
         {
-            $booking = Booking::where('id', '=', request()->query('booking_id'))->first();
+            $booking = Booking::where('id', '=', request()->query('bookingId'))->first();
+        }
+
+        $paymentType = "";
+
+        if (request()->has('paymentType'))
+        {
+            $paymentType = request()->query('paymentType');
         }
 
         $layout = '<html>';
         $layout .= '<head>';
         $layout .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
         $layout .= '</head>';
-        $layout .= '<body>';
-        $layout .= ContractHelper::BuildContract($contract, $booking);
+        $layout .= '<body style="white-space: pre">';
+        $layout .= ContractHelper::BuildContract($contract, $booking, $paymentType );
         $layout .= '</body>';
         $layout .= '</html>';
 
