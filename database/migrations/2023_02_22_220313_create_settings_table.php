@@ -18,134 +18,154 @@ class CreateSettingsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->unique();
-            $table->string('value')->default('0');
+            $table->string('value')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
         $settings = array(
             array(
                 "name" => "Booking Time Rule",
                 "code" => "booking_time",
-                "value" => "1"
+                "value" => "1",
+                "type" => "int"
             ),
             array(
                 "name" => "Full Payment Discount",
                 "code" => "full_discount",
-                "value" => "0"
+                "value" => "0",
+                "type" => "int"
             ),
             array(
                 "name" => "Page Logo",
                 "code" => "page_logo",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Page Favicon",
                 "code" => "page_favicon",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Page Copyright Text",
                 "code" => "page_copyright_text",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Copyright Link",
                 "code" => "page_copyright_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Help Text",
                 "code" => "page_help_text",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Help Link",
                 "code" => "page_help_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Contact Text",
                 "code" => "page_contact_text",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Contact Link",
                 "code" => "page_contact_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Facebook Link",
                 "code" => "page_facebook_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Twitter Link",
                 "code" => "page_twitter_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page LinkedIn Link",
                 "code" => "page_linkedin_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Instagram Link",
                 "code" => "page_instagram_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Email",
                 "code" => "page_email",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Page Payment Logo",
                 "code" => "page_payment_logo",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Page Payment Link",
                 "code" => "page_payment_link",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Homepage Title",
                 "code" => "homepage_title",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Homepage Description",
                 "code" => "homepage_description",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Homepage Button Text",
                 "code" => "homepage_button_text",
-                "value" => null
+                "value" => null,
+                "type" => "text"
             ),
             array(
                 "name" => "Homepage Slider 1",
                 "code" => "homepage_slider_1",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Homepage Slider 2",
                 "code" => "homepage_slider_2",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Homepage Slider 3",
                 "code" => "homepage_slider_3",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
             array(
                 "name" => "Homepage Slider 4",
                 "code" => "homepage_slider_4",
-                "value" => null
-            ),
-            array(
-                "name" => "Homepage Slider 5",
-                "code" => "homepage_slider_5",
-                "value" => null
+                "value" => null,
+                "type" => "image"
             ),
         );
         DB::table('settings')->insert($settings);

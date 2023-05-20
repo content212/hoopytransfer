@@ -37,6 +37,7 @@ Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
 Route::post('/track', "API\BookingsController@track");
 
 Route::get('/timerule', "API\BookingsController@timeRule");
+Route::get('/settings', 'API\SettingController@index');
 //Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
 
 Route::get('/payment', [PaymentController::class, 'index']);
