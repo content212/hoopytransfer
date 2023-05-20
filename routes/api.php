@@ -41,6 +41,7 @@ Route::get('/contracts/savecontract', "API\ContractController@saveContract");
 Route::get('/contracts/active/{id}', "API\ContractController@detail");
 
 Route::get('/timerule', "API\BookingsController@timeRule");
+Route::get('/settings', 'API\SettingController@index');
 //Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
 
 Route::get('/payment', [PaymentController::class, 'index']);

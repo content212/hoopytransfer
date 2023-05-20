@@ -22,7 +22,11 @@
             <div class="form-group row">
                 <label class="col-form-label font-weight-bold col-sm-4">{{ $setting->name }}</label>
                 <div class="col-sm-8">
-                    <input type="text" value="{{ $setting->value }}" name="{{ $setting->code }}" id="{{ $setting->code }}" class="form-control">
+                    @if($setting->type == 'image')
+                        <input type="file" name="{{ $setting->code }}" id="{{ $setting->code }}" class="form-control">
+                    @else
+                        <input type="text" value="{{ $setting->value }}" name="{{ $setting->code }}" id="{{ $setting->code }}" class="form-control">
+                    @endif
                 </div>
             </div>
         @endforeach
@@ -42,11 +46,19 @@
         $('#save').on('click', function(e) {
             e.preventDefault();
             var form = $('#settings_form');
-
+            $(".is-invalid").each(function() {
+                $(this).removeClass('is-invalid')
+            });
+            var formData = new FormData(form[0]);
+            $('input[type=file]').each(function() {
+                formData.append($(this)[0].name, $(this)[0].files[0]);
+            });
             $.ajax({
                 url: '/api/settings',
                 type: 'POST',
-                data: form.serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(data) {
                     html = '<div class="alert alert-success">';
                     html += '<p>Save Success</p>';
@@ -75,9 +87,6 @@
                         });
                         $('#settings_results').html(html);
                     });
-                    //(data.responseJSON.errors).forEach(function(item){
-
-                    //});
                 }
             });
         })
