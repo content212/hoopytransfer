@@ -36,6 +36,10 @@ Route::get('/direction', [GoogleMapsApiController::class, '__invoke']);
 Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
 Route::post('/track', "API\BookingsController@track");
 
+Route::get('/contracts/active', "API\ContractController@list");
+Route::get('/contracts/savecontract', "API\ContractController@saveContract");
+Route::get('/contracts/active/{id}', "API\ContractController@detail");
+
 Route::get('/timerule', "API\BookingsController@timeRule");
 Route::get('/settings', 'API\SettingController@index');
 //Route::get('/caledarEvents', "API\BookingsController@calendarEvents");
@@ -190,7 +194,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/customer/{customer}', 'API\UserController@getCustomer');
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
 
-    Route::middleware(['scope:customer'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
+    Route::middleware(['scope:customer,driver'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
     Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
     Route::middleware(['scope:customer'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
     Route::middleware(['scope:customer'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
@@ -239,6 +243,11 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->delete('/stations/{station}', 'API\StationController@destroy');
 
     Route::middleware(['scope:admin'])->post('/settings', 'API\SettingController@save');
+
+    Route::middleware(['scope:admin'])->get('/contracts', 'API\ContractController@index');
+    Route::middleware(['scope:admin'])->get('/contracts/{id}', 'API\ContractController@show');
+    Route::middleware(['scope:admin'])->post('/contracts', 'API\ContractController@store');
+    Route::middleware(['scope:admin'])->delete('/contracts/{id}', 'API\ContractController@destroy');
 
     Route::post('/bookings', 'API\BookingsController@store');
 

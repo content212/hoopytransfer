@@ -45,6 +45,8 @@ Route::get('/customers', 'CustomersController@index');
 
 Route::get('/users', 'UsersController@index');
 
+Route::get('/contracts', 'ContractController@index');
+
 Route::get('/logs', 'LogsController@index');
 
 Route::get('/pricelist', 'PriceListController@index');
