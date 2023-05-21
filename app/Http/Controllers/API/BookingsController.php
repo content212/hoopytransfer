@@ -20,6 +20,7 @@ use App\Rules\InsuranceExp;
 use App\Models\User;
 use App\Models\BookingData;
 use App\Models\CarType;
+use App\Models\UserContract;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Date;
@@ -336,11 +337,19 @@ class BookingsController extends Controller
     }
     public function FrontEndCustomerBookingsDetail($id)
     {
-        if (!$booking = Booking::where('id', $id)->with('service', 'data', 'user')->first())
+        if (!$booking = Booking::where('id', $id)
+            ->with('service', 'data', 'user')
+            ->first())
             return response()->json(['message' => 'Not Found!'], 404);
-        $user = Auth::user();
+
+            $user = Auth::user();
 
         if ($booking->user_id == $user->id || $booking->other_user_id == $user->id) {
+
+            $bookingContracts = UserContract::where('booking_id','=',$booking->id)->select('id','name')->get();
+
+            $booking['contracts'] = $bookingContracts;
+
             return response()->json($booking, 200);
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);

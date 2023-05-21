@@ -37,7 +37,6 @@ Route::post('/pricecalculate', 'API\PriceCalculateController@calculate');
 Route::post('/track', "API\BookingsController@track");
 
 Route::get('/contracts/active', "API\ContractController@list");
-Route::get('/contracts/savecontract', "API\ContractController@saveContract");
 Route::get('/contracts/active/{id}', "API\ContractController@detail");
 
 Route::get('/timerule', "API\BookingsController@timeRule");
@@ -198,6 +197,9 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/getcustomers', 'API\UserController@getCustomers');
     Route::middleware(['scope:admin'])->get('/customer/{customer}', 'API\UserController@getCustomer');
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
+
+
+    Route::middleware(['scope:customer,driver'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
 
     Route::middleware(['scope:customer,driver'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
     Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');

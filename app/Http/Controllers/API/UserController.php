@@ -8,6 +8,7 @@ use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Customer;
+use App\Models\UserDevice;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -327,7 +328,7 @@ class UserController extends Controller
             $user_id = Auth::user()->id;
             $input  = $request->all();
             $rules = array(
-                'device_token' => 'required',
+                'device_token' => 'required'
             );
             $messages = array();
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -337,11 +338,33 @@ class UserController extends Controller
                     'error' => $messages
                 ], 400);
             }
-            DB::table('user_devices')->insert([
-                'user_id' => $user_id,
-                'device_token' => $input['device_token'],
-            ]);
+
+            $user_device = UserDevice::where('device_token','=',$input['device_token'])->first();
+
+            if ($user_device) 
+            {
+                //update
+                DB::table('user_devices')->update([
+                    'user_id' => $user_id,
+                    'platform' => $input['platform'],
+                    'version' => $input['version'],
+                    'build_number' => $input['build_number'],
+                ]);
+            }
+            else 
+            {
+                //insert  
+                DB::table('user_devices')->insert([
+                    'user_id' => $user_id,
+                    'device_token' => $input['device_token'],
+                    'platform' => $input['platform'],
+                    'version' => $input['version'],
+                    'build_number' => $input['build_number'],
+                ]);  
+            }
+
             return response()->json(['message' => 'Added!'], 200);
+            
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }

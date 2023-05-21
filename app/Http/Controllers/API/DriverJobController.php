@@ -24,7 +24,7 @@ class DriverJobController extends Controller
         $bookings = Booking::select('bookings.*','users.name','users.surname','users.phone')
         ->join('users', 'users.id', '=', 'bookings.user_id')
         ->where('bookings.driver_id','=',$driver->id)
-        //->whereIn('bookings.status',array(2, 3))
+        ->whereIn('bookings.status',array(2, 3))
         ->orderByRaw("STR_TO_DATE(CONCAT('booking_date',' ','booking_time'), '%d/%m/%Y %T')")
         ->get()
         ->map

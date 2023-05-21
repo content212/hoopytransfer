@@ -6,11 +6,14 @@ use App\Models\Contract;
 use App\Models\Log;
 use App\Models\Booking;
 use App\Models\User;
+use App\Models\UserContract;
 use App\Helpers\ContractHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class ContractController extends Controller
 {
@@ -137,12 +140,44 @@ class ContractController extends Controller
     }
 
     //test
-    public function saveContract() 
+    public function saveUserContract($booking_id, $contract_id, Request $request) 
     {
         $booking = Booking::where('id', '=', 102)->first();
         $contract = Contract::where('id', '=', 4)->first();
-        $user = User::where('id', '=', 1)->first();
+        $user = $request->user();
         $result =  ContractHelper::SaveContract($contract, $booking, $user);
         return response($result,200);
+    }
+
+    public function getUserContractDetail($user_contract_id) 
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response('',403);
+        }
+
+        $userContract = UserContract::where('id',$user_contract_id)
+        ->where('user_id',$user->id)
+        ->select('contract')
+        ->first();
+
+        if (!$userContract){
+            return response('',404);
+        }
+
+
+        $layout = '<html>';
+        $layout .= '<head>';
+        $layout .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
+        $layout .= '</head>';
+        $layout .= '<body style="white-space: pre">';
+        $layout .= $userContract->contract;
+        $layout .= '</body>';
+        $layout .= '</html>';
+
+        return response($layout, 200);
+
+   
     }
 }
