@@ -17,6 +17,9 @@ class SettingController extends Controller
         $settings = Setting::all();
         foreach ($settings as $setting) {
             if ($setting->type == "image") {
+                if ($setting->code = "homepage_slider_2" or $setting->code = "homepage_slider_3" or $setting->code = "homepage_slider_4") {
+                    continue;
+                }
                 $rules[$setting->code] = 'file|mimes:jpeg,jpg,bmp,png,ico';
             } else {
                 $rules[$setting->code] = 'required';

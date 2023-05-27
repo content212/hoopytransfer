@@ -222,10 +222,10 @@
 
                 <!--- Sidemenu -->
                 <ul class="side-nav">
-                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Editor'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-title side-nav-item">Reservation</li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'Editor'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
                                 aria-controls="sidebarDashboards" class="side-nav-link">
@@ -259,7 +259,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a href="/customers" class="side-nav-link">
                                 <i class="uil-user"></i>
@@ -268,11 +268,10 @@
                         </li>
                     @endif
                     @if (trim($__env->yieldContent('role') == 'Admin') ||
-                            trim($__env->yieldContent('role') == 'Driver') ||
                             trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-title side-nav-item">Services</li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a href="/vehicles" class="side-nav-link">
                                 <i class="uil-truck"></i>
@@ -296,7 +295,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (trim($__env->yieldContent('role') == 'Admin'))
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                         <li class="side-nav-item">
                             <a href="/stations" class="side-nav-link">
                                 <i class="mdi mdi-bus-stop"></i>
