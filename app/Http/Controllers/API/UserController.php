@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Customer;
 use App\Models\UserDevice;
 use Exception;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -349,6 +350,7 @@ class UserController extends Controller
                     'platform' => $input['platform'],
                     'version' => $input['version'],
                     'build_number' => $input['build_number'],
+                    'updated_at' => Carbon::now(),
                 ]);
             }
             else 
@@ -360,6 +362,7 @@ class UserController extends Controller
                     'platform' => $input['platform'],
                     'version' => $input['version'],
                     'build_number' => $input['build_number'],
+                    'created_at' => Carbon::now(),
                 ]);  
             }
 
