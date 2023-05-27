@@ -17,10 +17,10 @@ class SettingController extends Controller
         $settings = Setting::all();
         foreach ($settings as $setting) {
             if ($setting->type == "image") {
-                if ($setting->code = "homepage_slider_2" or $setting->code = "homepage_slider_3" or $setting->code = "homepage_slider_4") {
+                if ($setting->code == "homepage_slider_2" or $setting->code == "homepage_slider_3" or $setting->code == "homepage_slider_4") {
                     continue;
                 }
-                $rules[$setting->code] = 'file|mimes:jpeg,jpg,bmp,png,ico';
+                $rules[$setting->code] = 'required|mimes:jpeg,jpg,bmp,png,ico';
             } else {
                 $rules[$setting->code] = 'required';
                 $messages[$setting->code . '.required'] = 'Please ente a ' . $setting->name;
@@ -37,8 +37,10 @@ class SettingController extends Controller
             if ($code != 'scope') {
                 $setting = Setting::firstWhere('code', $code);
                 if ($setting->type == 'image') {
-                    $image = $value->store('/', 'images');
-                    $setting->value = $image;
+                    if ($value != "undefined") {
+                        $image = $value->store('/', 'images');
+                        $setting->value = $image;
+                    }
                 } else {
                     $setting->value = $value;
                 }
