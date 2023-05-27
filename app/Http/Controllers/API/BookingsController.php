@@ -106,6 +106,7 @@ class BookingsController extends Controller
                 $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
                 $driver_payment = $discount_price * 0.7;
                 $system_payment = $discount_price - $driver_payment;
+                $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
                 $inputs = [
                     'booking_id' => $booking->id,
                     'km' => $booking->km,
@@ -117,8 +118,9 @@ class BookingsController extends Controller
                     'driver_payment' => $driver_payment,
                     'total' => $total,
                     'full_discount' => $full_discount,
-                    'full_discount_price' => $discount_price * (1.0 - ($full_discount / 100.0)),
-                    'full_discount_system_payment' => $system_payment - ($discount_price * ($full_discount / 100.0))
+                    'full_discount_price' => $full_discount_price,
+                    'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
+                    'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
 
                 ];
             } else {
@@ -134,8 +136,8 @@ class BookingsController extends Controller
                     'total' => 0,
                     'full_discount' => 0,
                     'full_discount_price' => 0,
-                    'full_discount_system_payment' => 0
-
+                    'full_discount_system_payment' => 0,
+                    'full_discount_driver_payment' => 0
                 ];
             }
 
@@ -342,11 +344,11 @@ class BookingsController extends Controller
             ->first())
             return response()->json(['message' => 'Not Found!'], 404);
 
-            $user = Auth::user();
+        $user = Auth::user();
 
         if ($booking->user_id == $user->id || $booking->other_user_id == $user->id) {
 
-            $bookingContracts = UserContract::where('booking_id','=',$booking->id)->select('id','name')->get();
+            $bookingContracts = UserContract::where('booking_id', '=', $booking->id)->select('id', 'name')->get();
 
             $booking['contracts'] = $bookingContracts;
 

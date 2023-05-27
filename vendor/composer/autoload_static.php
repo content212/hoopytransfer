@@ -427,8 +427,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
-            1 => __DIR__ . '/..' . '/league/uri/src',
+            0 => __DIR__ . '/..' . '/league/uri/src',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -655,6 +655,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Models\\Transaction' => __DIR__ . '/../..' . '/app/Models/Transaction.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\UserContract' => __DIR__ . '/../..' . '/app/Models/UserContract.php',
+        'App\\Models\\UserDevice' => __DIR__ . '/../..' . '/app/Models/UserDevice.php',
         'App\\Models\\UserOtp' => __DIR__ . '/../..' . '/app/Models/UserOtp.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',

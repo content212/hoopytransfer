@@ -22,7 +22,8 @@ class BookingData extends Model
         'paymentIntentSecret',
         'full_discount',
         'full_discount_price',
-        'full_discount_system_payment'
+        'full_discount_system_payment',
+        'full_discount_driver_payment'
     ];
 
     public function booking()

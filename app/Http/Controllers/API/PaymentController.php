@@ -82,6 +82,7 @@ class PaymentController extends Controller
             $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
             $driver_payment = $discount_price * 0.7;
             $system_payment = $discount_price - $driver_payment;
+            $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
             $inputs = [
                 'booking_id' => $booking->id,
                 'km' => $booking->km,
@@ -94,8 +95,9 @@ class PaymentController extends Controller
                 'driver_payment' => $driver_payment,
                 'total' => $total,
                 'full_discount' => $full_discount,
-                'full_discount_price' => $discount_price * (1.0 - ($full_discount / 100.0)),
-                'full_discount_system_payment' => $system_payment - ($discount_price * ($full_discount / 100.0))
+                'full_discount_price' => $full_discount_price,
+                'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
+                'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
             ];
             $booking->data->update($inputs);
             if ($booking->payment) {
