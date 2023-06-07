@@ -25,10 +25,11 @@ class DriverJobController extends Controller
         ->join('users', 'users.id', '=', 'bookings.user_id')
         ->where('bookings.driver_id','=',$driver->id)
         ->whereIn('bookings.status',array(2, 3))
-        ->orderByRaw("STR_TO_DATE(CONCAT('booking_date',' ','booking_time'), '%d/%m/%Y %T')")
         ->get()
         ->map
         ->only('id','track_code', 'name','surname','phone','from_address','to_address','booking_date','booking_time','from_lat','from_lng','to_lat','to_lng','status','status_name');
+
+        //->orderByRaw("STR_TO_DATE(CONCAT('booking_date',' ','booking_time'), '%d/%m/%Y %T')")
 
         return response()->json($bookings);
     }

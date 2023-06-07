@@ -28,14 +28,16 @@ class AuthOtpController extends Controller
 
         /* Generate An verification number */
         $userOtp = $this->generateOtp($request->phone);
+
         $userOtp->sendSMS($request->phone);
 
         $content = [
-            'user_id' => $userOtp->user_id,
+            'user_id' => strval($userOtp->user_id),
             'message' => "Verification number has been sent on Your Mobile Number.",
-            'otp' => $userOtp->otp
+            'otp' => strval($userOtp->otp)
         ];
-        return response(json_encode($content), 200);
+
+        return $content;
     }
 
     /**
