@@ -87,7 +87,7 @@ Route::post('/webhook', function (Request $request) {
             ]);
             Transaction::create([
                 'type' => 'driver_wage',
-                'amount' => $booking_data->driver_payment,
+                'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
                 'balance' => 0,
                 'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
                 'driver_id' => $booking_data->booking->driver_id,
@@ -125,8 +125,8 @@ Route::post('/webhook', function (Request $request) {
                         });
                     Transaction::create([
                         'type' => 'driver_refund',
-                        'amount' => $booking_data->driver_payment,
-                        'balance' => ($total + $booking_data->driver_payment),
+                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                        'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
                         'note' => 'Refund for #' . $payment->booking->id . ' booking.',
                         'driver_id' => $payment->booking->driver_id,
                         'booking_id' => $payment->booking->id
@@ -157,8 +157,8 @@ Route::post('/webhook', function (Request $request) {
                         });
                     Transaction::create([
                         'type' => 'driver_refund',
-                        'amount' => $booking_data->driver_payment,
-                        'balance' => ($total + $booking_data->driver_payment),
+                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                        'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
                         'note' => 'Refund for #' . $payment->booking->id . ' booking.',
                         'driver_id' => $payment->booking->driver_id,
                         'booking_id' => $payment->booking->id
@@ -178,7 +178,7 @@ Route::post('/webhook', function (Request $request) {
 
 Route::middleware(['auth:api', 'role'])->group(function () {
 
- 
+
 
     Route::middleware(['scope:admin'])->get('/users', 'API\UserController@index');
     Route::middleware(['scope:admin'])->post('/users', 'API\UserController@store');
@@ -261,6 +261,10 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/contracts/{id}', 'API\ContractController@show');
     Route::middleware(['scope:admin'])->post('/contracts', 'API\ContractController@store');
     Route::middleware(['scope:admin'])->delete('/contracts/{id}', 'API\ContractController@destroy');
+
+    Route::middleware(['scope:admin'])->get('/shifts', 'API\ShiftController@clanderIndex');
+    Route::middleware(['scope:admin'])->get('/shifts/{date}', 'API\ShiftController@show');
+    Route::middleware(['scope:admin'])->post('/shifts', 'API\ShiftController@store');
 
 
     Route::post('/bookings', 'API\BookingsController@store');

@@ -99,7 +99,6 @@ class DriverController extends Controller
             ];
             $user->update(array_filter($user_array));
 
-            $input['car_id'] = $input['car'];
             $drivers->update($input);
             Log::addToLog('Driver Log.', $request->all(), 'Edit');
             return response($drivers->toJson(JSON_PRETTY_PRINT), 200);

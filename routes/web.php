@@ -55,6 +55,8 @@ Route::get('/stations', 'StationController@index');
 
 Route::get('/vehicles', 'CarController@index');
 
+Route::get('/shifts', 'ShiftController@index');
+
 Route::get('/forbidden', 'HomeController@forbidden');
 
 Route::get('/logout', 'HomeController@logout');
