@@ -48,32 +48,14 @@ class CreateSettingsTable extends Migration
                 "type" => "image"
             ),
             array(
-                "name" => "Page Copyright Text",
-                "code" => "page_copyright_text",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
                 "name" => "Page Copyright Link",
                 "code" => "page_copyright_link",
                 "value" => null,
                 "type" => "text"
             ),
             array(
-                "name" => "Page Help Text",
-                "code" => "page_help_text",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
                 "name" => "Page Help Link",
                 "code" => "page_help_link",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
-                "name" => "Page Contact Text",
-                "code" => "page_contact_text",
                 "value" => null,
                 "type" => "text"
             ),
@@ -126,24 +108,6 @@ class CreateSettingsTable extends Migration
                 "type" => "text"
             ),
             array(
-                "name" => "Homepage Title",
-                "code" => "homepage_title",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
-                "name" => "Homepage Description",
-                "code" => "homepage_description",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
-                "name" => "Homepage Button Text",
-                "code" => "homepage_button_text",
-                "value" => null,
-                "type" => "text"
-            ),
-            array(
                 "name" => "Homepage Slider 1",
                 "code" => "homepage_slider_1",
                 "value" => null,
@@ -167,6 +131,18 @@ class CreateSettingsTable extends Migration
                 "value" => null,
                 "type" => "image"
             ),
+            array(
+                "name" => "Shift Start Time",
+                "code" => "shift_start_time",
+                "value" => null,
+                "type" => "time"
+            ),
+            array(
+                "name" => "Shift End Time",
+                "code" => "shift_end_time",
+                "value" => null,
+                "type" => "time"
+            )
         );
         DB::table('settings')->insert($settings);
     }

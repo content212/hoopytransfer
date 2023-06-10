@@ -5,11 +5,22 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
+    private function like($str, $searchTerm)
+    {
+        $searchTerm = strtolower($searchTerm);
+        $str = strtolower($str);
+        $pos = strpos($str, $searchTerm);
+        if ($pos === false)
+            return false;
+        else
+            return true;
+    }
     public function save(Request $request)
     {
         $rules = [];
@@ -53,14 +64,30 @@ class SettingController extends Controller
     }
     public function index()
     {
-        $settings = Setting::select('name', 'code', 'value', 'type')->get();
+        $settings = Setting::select('name', 'code', 'value', 'type')->get()->keyBy('code');
+        $sliders = array(
+            "name" => "Home Page Sliders",
+            "code" => "home_page_sliders",
+            "type" => "image",
+            "values" => array()
+        );
         foreach ($settings as $setting) {
+            if ($setting->type == 'time') {
+                $settings->forget($setting->code);
+            }
             if ($setting->type == 'image') {
                 if ($setting->value != null) {
                     $setting->value = Storage::disk('images')->url($setting->value);
                 }
             }
+            if ($this->like($setting->code, "homepage_slider_")) {
+                array_push($sliders['values'], (array(
+                    "value" => $setting->value,
+                )));
+                $settings->forget($setting->code);
+            }
         }
+        $settings['home_page_sliders'] = $sliders;
         return response($settings, 200);
     }
 }

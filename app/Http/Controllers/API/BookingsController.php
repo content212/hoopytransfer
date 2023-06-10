@@ -92,6 +92,7 @@ class BookingsController extends Controller
             $input['user_id'] = $user_id;
             $input['car_type'] = $input['price_id'] != -1 ? Price::find($input['price_id'])->carType->id : null;
             $input['status'] = $input['price_id'] != -1 ? 0 : 9;
+            $input['booking_date'] = date('Y-m-d', strtotime($input['booking_date']));
             $booking = Booking::create($input);
             $track_code = $this->generateRandomNumber(8);
             while (Booking::where('track_code', $track_code)->exists()) {
