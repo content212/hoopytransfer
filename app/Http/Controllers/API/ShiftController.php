@@ -15,9 +15,8 @@ class ShiftController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
     }
     /**
      * Display to clander the list of resources
@@ -27,8 +26,9 @@ class ShiftController extends Controller
      */
     public function clanderIndex(Request $request)
     {
-        $shifts = Shift::whereDate('date', '>=', $request->start)
-            ->whereDate('date', '<=', $request->end)
+        $shifts = Shift::whereDate('shift_date', '>=', $request->start)
+            ->whereDate('shift_date', '<=', $request->end)
+            ->where('driver_id', '!=', NULL)
             ->get();
 
         $data = array();
@@ -36,9 +36,9 @@ class ShiftController extends Controller
             array_push($data, array(
                 "id" => $shift->id,
                 "title" => $shift->driver->user->name . " " . $shift->driver->user->surname,
-                "start" => $shift->date,
+                "start" => $shift->shift_date,
                 "backgroundColor" => "green",
-                "allDay" => false,
+                "allDay" => true,
             ));
         }
         return response()->json($data);
@@ -53,9 +53,21 @@ class ShiftController extends Controller
     public function store(Request $request)
     {
         try {
-            $station = Shift::create($request->all());
+            $data = $request->all();
+            unset($data['scope']);
+
+            $shift = Shift::where('shift_date', '=', $data['shift_date'])
+                ->where('queue', '=', $data['queue'])
+                ->first();
+            if ($shift) {
+                $shift->driver_id = $data['driver_id'];
+                $shift->update();
+                Log::addToLog('Shift Log.', $request->all(), 'Update');
+                return response($shift->toJson(JSON_PRETTY_PRINT), 200);
+            }
+            $shift = Shift::create($data);
             Log::addToLog('Shift Log.', $request->all(), 'Create');
-            return response($station->toJson(JSON_PRETTY_PRINT), 200);
+            return response($shift->toJson(JSON_PRETTY_PRINT), 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -67,9 +79,14 @@ class ShiftController extends Controller
      * @param  \App\Models\Shift  $shift
      * @return \Illuminate\Http\Response
      */
-    public function show(Shift $shift)
+    public function show(string $date)
     {
-        //
+        if ($date == null) {
+            response()->json(['message' => "Date is required!"], 400);
+        }
+        $shifts = Shift::whereDate('shift_date', '=', $date)
+            ->get();
+        return response()->json($shifts);
     }
 
     /**

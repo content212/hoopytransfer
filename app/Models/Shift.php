@@ -15,4 +15,9 @@ class Shift extends Model
         'isAssigned',
         'booking_id'
     ];
+
+    public function driver()
+    {
+        return $this->hasOne(Driver::class, 'id', 'driver_id');
+    }
 }

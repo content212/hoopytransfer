@@ -13,13 +13,14 @@ class CreateShiftsTable extends Migration
      */
     public function up()
     {
-        Schema::table('shifts', function (Blueprint $table) {
+        Schema::create('shifts', function (Blueprint $table) {
             $table->id();
             $table->date('shift_date');
             $table->tinyInteger('queue');
             $table->unsignedBigInteger('driver_id');
             $table->boolean('isAssigned');
             $table->unsignedBigInteger('booking_id')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -30,8 +31,6 @@ class CreateShiftsTable extends Migration
      */
     public function down()
     {
-        Schema::table('shifts', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('shifts');
     }
 }

@@ -263,6 +263,8 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->delete('/contracts/{id}', 'API\ContractController@destroy');
 
     Route::middleware(['scope:admin'])->get('/shifts', 'API\ShiftController@clanderIndex');
+    Route::middleware(['scope:admin'])->get('/shifts/{date}', 'API\ShiftController@show');
+    Route::middleware(['scope:admin'])->post('/shifts', 'API\ShiftController@store');
 
 
     Route::post('/bookings', 'API\BookingsController@store');
