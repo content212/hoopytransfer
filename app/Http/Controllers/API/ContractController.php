@@ -140,13 +140,42 @@ class ContractController extends Controller
     }
 
     //test
-    public function saveUserContract($booking_id, $contract_id, Request $request) 
+    public function generateUserContract( Request $request) 
     {
-        $booking = Booking::where('id', '=', 102)->first();
-        $contract = Contract::where('id', '=', 4)->first();
+
+        $booking;
+
         $user = $request->user();
-        $result =  ContractHelper::SaveContract($contract, $booking, $user);
-        return response($result,200);
+
+        if ($request->booking_id) {
+            $booking = Booking::where('id', $request->booking_id )
+            ->where('user_id', $user->id)
+            ->first();
+    
+            if (!$booking) {
+                return response()->json(['message' => 'Booking not found!'], 400);
+            }
+        }
+
+        foreach ($request->contract_ids as $contract_id) {
+            $contract = Contract::where('id', $contract_id)
+            ->first();
+
+            if (!$contract) {
+                return response()->json(['message' => 'Contract not found!'], 400);
+            }
+        }
+
+        foreach ($request->contract_ids as $contract_id) {
+            $contract = Contract::where('id', $contract_id)
+            ->first();
+
+            ContractHelper::SaveContract($contract, $booking, $user, $request->payment_type);
+        }
+
+
+        return response('',200);
+        
     }
 
     public function getUserContractDetail($user_contract_id) 

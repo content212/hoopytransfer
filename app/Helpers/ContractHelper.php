@@ -94,6 +94,26 @@ class ContractHelper
             return false;
         }
 
+
+        if ($booking) {
+            $c1 = UserContract::where('user_id', $user->id)
+            ->where('contract_id', $contract->id)
+            ->where('booking_id', $booking->id)
+            ->first();
+
+            if ($c1) {
+                return false;
+            }
+        }else{
+            $c2 = UserContract::where('user_id', $user->id)
+            ->where('contract_id', $contract->id)
+            ->first();
+
+            if ($c2) {
+                return false;
+            }
+        }
+
         $contractHtml = ContractHelper::BuildContract($contract, $booking, $paymentType);
 
         $userContract = [

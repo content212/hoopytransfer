@@ -24,6 +24,7 @@
                     <th>Status</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Country Code</th>
                     <th>Phone</th>
                     <th>Role</th>
                     <th>Edit</th>
@@ -71,12 +72,17 @@
                         <hr class="mt-2 mb-3" />
                         <div class="row ">
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="email" id="email">
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="country_code">Country Code</label>
+                                @include('tel-input',['name' => 'country_code'])
+                            </div>
+
+                            <div class="col-md-4">
                                 <label for="phone">Phone</label>
                                 <input type="text" class="form-control" name="phone" id="phone">
                             </div>
@@ -156,6 +162,8 @@
                         $('#id').val(-1);
                         $("#password").rules("add", "required");
                         $("#name").rules("add", "required");
+                        $("#phone").rules("add", "required");
+                        $("#country_code").rules("add", "required");
                         $('#edit_modal').modal('show');
                     }
                 }],
@@ -199,6 +207,10 @@
                     name: 'email'
                 },
                 {
+                    data: 'country_code',
+                    name: 'country_code'
+                },
+                {
                     data: 'phone',
                     name: 'phone'
                 },
@@ -240,6 +252,7 @@
                         $('#statuss').val(obj.status);
                         $('#name').val(obj.name)
                         $('#phone').val(obj.phone)
+                        $('#country_code').val(obj.country_code)
                         $('#email').val(obj.email)
                         $('#role').val(obj.role)
                     }
