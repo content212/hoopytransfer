@@ -24,6 +24,7 @@
                     <th>Status</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Country Code</th>
                     <th>Phone</th>
                     <th>Role</th>
                     <th>Edit</th>
@@ -77,8 +78,8 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="phone">Country Code</label>
-                                @include('tel-input',['var1' => 'this is the value'])
+                                <label for="country_code">Country Code</label>
+                                @include('tel-input',['name' => 'country_code'])
                             </div>
 
                             <div class="col-md-4">
@@ -161,6 +162,8 @@
                         $('#id').val(-1);
                         $("#password").rules("add", "required");
                         $("#name").rules("add", "required");
+                        $("#phone").rules("add", "required");
+                        $("#country_code").rules("add", "required");
                         $('#edit_modal').modal('show');
                     }
                 }],
@@ -204,6 +207,10 @@
                     name: 'email'
                 },
                 {
+                    data: 'country_code',
+                    name: 'country_code'
+                },
+                {
                     data: 'phone',
                     name: 'phone'
                 },
@@ -245,6 +252,7 @@
                         $('#statuss').val(obj.status);
                         $('#name').val(obj.name)
                         $('#phone').val(obj.phone)
+                        $('#country_code').val(obj.country_code)
                         $('#email').val(obj.email)
                         $('#role').val(obj.role)
                     }

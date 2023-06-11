@@ -80,9 +80,15 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="phone">Country Code</label>
+                                @include('tel-input',['name' => 'country_code'])
+                            </div>
+
+                            <div class="form-group">
                                 <label for="phone">Phone</label>
                                 <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone">
                             </div>
+
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" name="password" id="password" placeholder="Password">
