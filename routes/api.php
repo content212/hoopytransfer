@@ -8,6 +8,8 @@ use App\Http\Controllers\API\PaymentController;
 use App\Models\Booking;
 use App\Models\BookingData;
 use App\Models\BookingPayment;
+use App\Models\Setting;
+use App\Models\Shift;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -93,7 +95,44 @@ Route::post('/webhook', function (Request $request) {
                 'driver_id' => $booking_data->booking->driver_id,
                 'booking_id' => $booking_data->booking->id
             ]);
+
+
+            $shift_start_time = Setting::where('code', '=', 'shift_start_time')
+                ->first();
+            $shift_end_time = Setting::where('code', '=', 'shift_end_time')
+                ->first();
+            if ($shift_start_time != null and $shift_end_time != null) {
+                if (strtotime($booking_data->booking->booking_time) > strtotime($shift_start_time) or strtotime($booking_data->booking->booking_time) < strtotime($shift_end_time)) {
+                    $shift = Shift::where('shift_date', '=', $booking_data->booking->booking_date)
+                        ->where('isAssigned', '=', false)
+                        ->whereNotNull('driver_id')
+                        ->orderBy('queue')
+                        ->first();
+                    $shift->update([
+                        'booking_id' => $booking_data->booking->id,
+                        'isAssigned' => true
+                    ]);
+                    $total = Transaction::where('driver_id', $shift->driver_id)
+                        ->get()
+                        ->sum(function ($transaction) {
+                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                        });
+                    $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
+                    $transaction->update([
+                        'driver_id' => $request->post('driver_id'),
+                        'balance'   => ($total - $transaction->amount)
+                    ]);
+                    $booking_data->booking->update([
+                        'status' => 1,
+                        'driver_id' => $shift->driver_id
+                    ]);
+                }
+            }
             $booking_data->booking->update(['status' => 1]);
+
+
+
+
         case 'payment_intent.payment_failed':
             $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->id);
             $payment->update([
