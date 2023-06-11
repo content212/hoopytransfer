@@ -23,7 +23,7 @@
                 <label class="col-form-label font-weight-bold col-sm-4">{{ $setting->name }}</label>
                 <div class="col-sm-8">
                     @if($setting->type == 'image')
-                        <input type="file" id="{{ $setting->code }}" accept="image/*" class="form-control">
+                        <input type="file" id="{{ $setting->code }}" value="{{ $setting->value }}" accept="image/*" class="form-control">
                     @else
                         <input type="text" value="{{ $setting->value }}" name="{{ $setting->code }}" id="{{ $setting->code }}" class="form-control">
                     @endif
@@ -51,7 +51,11 @@
             });
             var formData = new FormData(form[0]);
             $('input[type=file]').each(function() {
-                formData.append($(this)[0].id, $(this)[0].files[0]);
+                if($(this)[0].files[0])
+                {
+                    formData.append($(this)[0].id, $(this)[0].files[0]);
+                }
+                
             });
             $.ajax({
                 url: '/api/settings',

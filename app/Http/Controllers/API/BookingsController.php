@@ -20,6 +20,7 @@ use App\Rules\InsuranceExp;
 use App\Models\User;
 use App\Models\BookingData;
 use App\Models\CarType;
+use App\Models\Shift;
 use App\Models\UserContract;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
@@ -270,6 +271,17 @@ class BookingsController extends Controller
             if (((new PaymentController)->refund($refundRequest))->status() == 200) {
                 $booking->update([
                     'status' => $user->role->role == 'customer' ? 4 : 5
+                ]);
+            }
+            $shift = Shift::where('shift_date', '=', $booking->booking_date)
+                ->where('isAssigned', '=', true)
+                ->where('driver_id', '=', $booking->driver_id)
+                ->where('booking_id', '=', $booking->id)
+                ->first();
+            if ($shift) {
+                $shift->update([
+                    'isAssigned' => false,
+                    'booking_id' => null
                 ]);
             }
             Log::addToLog('Booking Log.', $request->all(), 'Cancel');

@@ -31,7 +31,7 @@ class SettingController extends Controller
                 if ($setting->code == "homepage_slider_2" or $setting->code == "homepage_slider_3" or $setting->code == "homepage_slider_4") {
                     continue;
                 }
-                $rules[$setting->code] = 'required|mimes:jpeg,jpg,bmp,png,ico';
+                $rules[$setting->code] = 'nullable|sometimes|mimes:jpeg,jpg,bmp,png,ico';
             } else {
                 $rules[$setting->code] = 'required';
                 $messages[$setting->code . '.required'] = 'Please ente a ' . $setting->name;
