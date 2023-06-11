@@ -104,7 +104,42 @@ class UserController extends Controller
     
     public function FrontEndCustomerUpdate(Request $request)
     {
+
+        $rules = array(
+            'country_code' => 'required|starts_with:+',
+            'phone' => 'required',
+            'name' => 'required',
+            'surname' => 'required',
+            'email' => 'required',
+        );
+        $messages = array(
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
+            'phone.required' => 'phone field is required.',
+            'name.required' => 'name field is required.',
+            'surname.required' => 'surname field is required.',
+            'email.required' => 'phone field is required.',
+        );
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            $errors = $messages->all();
+            return $this->CreateBadResponse($errors);
+        }
+
         $user = Auth::user();
+
+        if ($user->phone != $request->phone || $user->country_code != $request->country_code) {
+            //phone is changed
+            $checkPhoneUser = User::where('phone',$request->phone)
+            ->where('country_code',$request->country_code)
+            ->first();
+            if ($checkPhoneUser) {
+                return response()->json(['message' => 'This phone number is used by another user!'], 400);
+            }
+        }
+
+
         $id = $user->id;
         if (!$user = User::where('id', '=', $id)->first())
             return response()->json(['message' => 'Not Found!'], 404);
@@ -197,6 +232,8 @@ class UserController extends Controller
             return response()->json($request);
         }
     }
+
+
     public function storeDriver($input)
     {
         try {
@@ -376,5 +413,13 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
+    }
+
+    private function CreateBadResponse($message)
+    {
+        $content = [
+            'error' => $message
+        ];
+        return response(json_encode($content), 400);
     }
 }
