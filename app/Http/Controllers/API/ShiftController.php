@@ -37,7 +37,7 @@ class ShiftController extends Controller
                 "id" => $shift->id,
                 "title" => $shift->driver->user->name . " " . $shift->driver->user->surname,
                 "start" => $shift->shift_date,
-                "backgroundColor" => "green",
+                "backgroundColor" => $shift->isAssigned == true ? "red" : "green",
                 "allDay" => true,
             ));
         }

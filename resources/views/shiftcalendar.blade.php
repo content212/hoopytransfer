@@ -126,7 +126,6 @@
 
                 },
                 dateClick: function(info) {
-                    alert('Date: ' + info.dateStr);
                     $.ajax({
                         url: "/api/shifts/" + info.dateStr,
                         type: "GET",
@@ -140,6 +139,24 @@
                                 $("#driver" + element.queue).val(element.driver_id);
                             });
                             $("#shift_date").val(info.dateStr);
+                            $('#edit-modal').modal('show');
+                        }
+                    });
+                },
+                eventClick: function(event) {
+                    $.ajax({
+                        url: "/api/shifts/" + event.event.startStr,
+                        type: "GET",
+                        headers: {
+                            "accept": "application/json",
+                            "content-type": "application/json",
+                            "authorization": "Bearer " + token
+                        },
+                        success: function(data) {
+                            data.forEach(element => {
+                                $("#driver" + element.queue).val(element.driver_id);
+                            });
+                            $("#shift_date").val(event.event.startStr);
                             $('#edit-modal').modal('show');
                         }
                     });

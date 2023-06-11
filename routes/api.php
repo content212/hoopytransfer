@@ -11,6 +11,7 @@ use App\Models\BookingPayment;
 use App\Models\Setting;
 use App\Models\Shift;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -95,44 +96,54 @@ Route::post('/webhook', function (Request $request) {
                 'driver_id' => $booking_data->booking->driver_id,
                 'booking_id' => $booking_data->booking->id
             ]);
-
-
-            $shift_start_time = Setting::where('code', '=', 'shift_start_time')
-                ->first();
-            $shift_end_time = Setting::where('code', '=', 'shift_end_time')
-                ->first();
-            if ($shift_start_time != null and $shift_end_time != null) {
-                if (strtotime($booking_data->booking->booking_time) > strtotime($shift_start_time) or strtotime($booking_data->booking->booking_time) < strtotime($shift_end_time)) {
-                    $shift = Shift::where('shift_date', '=', $booking_data->booking->booking_date)
-                        ->where('isAssigned', '=', false)
-                        ->whereNotNull('driver_id')
-                        ->orderBy('queue')
-                        ->first();
-                    $shift->update([
-                        'booking_id' => $booking_data->booking->id,
-                        'isAssigned' => true
-                    ]);
-                    $total = Transaction::where('driver_id', $shift->driver_id)
-                        ->get()
-                        ->sum(function ($transaction) {
-                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                        });
-                    $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
-                    $transaction->update([
-                        'driver_id' => $request->post('driver_id'),
-                        'balance'   => ($total - $transaction->amount)
-                    ]);
-                    $booking_data->booking->update([
-                        'status' => 1,
-                        'driver_id' => $shift->driver_id
-                    ]);
-                }
-            }
             $booking_data->booking->update(['status' => 1]);
 
+            $shift_start_time_string = Setting::where('code', '=', 'shift_start_time')->first();
+            $shift_end_time_string = Setting::where('code', '=', 'shift_end_time')->first();
+            $booking_time_rule = Setting::where('code', '=', 'booking_time')->first();
+            if ($shift_start_time_string != null and $shift_end_time_string != null) {
+                $shift_start_time = Carbon::createFromTimeString($shift_start_time_string->value);
+                $shift_end_time = Carbon::createFromTimeString($shift_end_time_string->value);
+                $now = Carbon::now();
 
-
-
+                if ($shift_start_time_string->value == "00:00") {
+                    $shift_start_time->addDay();
+                    $shift_end_time->addDay();
+                } else if ($shift_end_time < $shift_start_time) {
+                    $shift_end_time->addDay();
+                }
+                $booking_time_rule_time = $shift_start_time->copy()->subHours($booking_time_rule->value);
+                $booking_datetime = Carbon::createFromTimeString($booking_data->booking->booking_date . ' ' . $booking_data->booking->booking_time);
+                if ($now->between($booking_time_rule_time, $shift_start_time)) {
+                    if ($booking_datetime->between($shift_start_time, $shift_end_time)) {
+                        $shift = Shift::where('shift_date', '=', $now->format('Y-m-d'))
+                            ->where('isAssigned', '=', false)
+                            ->whereNotNull('driver_id')
+                            ->orderBy('queue')
+                            ->first();
+                        if ($shift) {
+                            $shift->update([
+                                'booking_id' => $booking_data->booking->id,
+                                'isAssigned' => true
+                            ]);
+                            $total = Transaction::where('driver_id', $shift->driver_id)
+                                ->get()
+                                ->sum(function ($transaction) {
+                                    return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                                });
+                            $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
+                            $transaction->update([
+                                'driver_id' => $request->post('driver_id'),
+                                'balance'   => ($total - $transaction->amount)
+                            ]);
+                            $booking_data->booking->update([
+                                'status' => 2,
+                                'driver_id' => $shift->driver_id
+                            ]);
+                        }
+                    }
+                }
+            }
         case 'payment_intent.payment_failed':
             $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->id);
             $payment->update([
