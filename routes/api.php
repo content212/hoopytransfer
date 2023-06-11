@@ -238,8 +238,8 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
 
 
-    Route::middleware(['scope:customer,driver'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
-    Route::middleware(['scope:customer,driver'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
+    Route::middleware(['scope:customer,driver, admin'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
+    Route::middleware(['scope:customer,driver, admin'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
 
     Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
     Route::middleware(['scope:customer'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
@@ -300,7 +300,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/contracts/{id}', 'API\ContractController@show');
     Route::middleware(['scope:admin'])->post('/contracts', 'API\ContractController@store');
     Route::middleware(['scope:admin'])->delete('/contracts/{id}', 'API\ContractController@destroy');
-    Route::middleware(['scope:customer,driver'])->post('/generateUserContract', 'API\ContractController@generateUserContract');
+    Route::middleware(['scope:customer,driver, admin'])->post('/generateUserContract', 'API\ContractController@generateUserContract');
 
     Route::middleware(['scope:admin'])->get('/shifts', 'API\ShiftController@clanderIndex');
     Route::middleware(['scope:admin'])->get('/shifts/{date}', 'API\ShiftController@show');

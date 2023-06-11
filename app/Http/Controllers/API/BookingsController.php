@@ -363,7 +363,7 @@ class BookingsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
-            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'service', 'data', 'payment_status');
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'status' ,'service', 'data', 'payment_status');
 
         return $bookings;
     }
