@@ -71,12 +71,17 @@
                         <hr class="mt-2 mb-3" />
                         <div class="row ">
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="email" id="email">
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="phone">Country Code</label>
+                                @include('tel-input',['var1' => 'this is the value'])
+                            </div>
+
+                            <div class="col-md-4">
                                 <label for="phone">Phone</label>
                                 <input type="text" class="form-control" name="phone" id="phone">
                             </div>
