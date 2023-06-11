@@ -21,21 +21,42 @@ class AuthOtpController extends Controller
      */
     public function generate(Request $request)
     {
+        $rules = array(
+            'country_code' => 'required|starts_with:+',
+            'phone' => 'required'
+        );
+        $messages = array(
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
+            'phone.required' => 'phone field is required.',
+        );
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            $errors = $messages->all();
+            return $this->CreateBadResponse($errors);
+        }
+
+
         /* Validate Data */
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('phone', $request->phone)
+        ->where('country_code', $request->country_code)
+        ->first();
         if (!$user)
             return $this->CreateBadResponse("User not found!");
 
         /* Generate An verification number */
         $userOtp = $this->generateOtp($request->phone);
+
         $userOtp->sendSMS($request->phone);
 
         $content = [
-            'user_id' => $userOtp->user_id,
+            'user_id' => strval($userOtp->user_id),
             'message' => "Verification number has been sent on Your Mobile Number.",
-            'otp' => $userOtp->otp
+            'otp' => strval($userOtp->otp)
         ];
-        return response(json_encode($content), 200);
+
+        return $content;
     }
 
     /**
@@ -132,7 +153,9 @@ class AuthOtpController extends Controller
             'surname' => 'required',
             'email' => 'required|unique:users,email',
             'password' => 'required',
-            'phone' => 'required|unique:users,phone'
+            'phone' => 'required',
+            'country_code' => 'required|starts_with:+',
+
         );
         $messages = array(
             'name.required' => 'Please enter a name.',
@@ -140,22 +163,32 @@ class AuthOtpController extends Controller
             'email.required' => 'Please enter a email.',
             'password.required' => 'Please enter a password.',
             'phone.required' => 'Please enter a phone.',
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
             'email.unique' => 'Email in use.',
             'phone.unique' => 'Phone in use.'
         );
         $validator = Validator::make($request->all(), $rules, $messages);
         if ($validator->fails()) {
-
-            if (array_key_exists('phone', $validator->invalid())) {
-                $request = new Request([
-                    'phone' => $validator->invalid()['phone']
-                ]);
-                return $this->generate($request);
-            }
             $messages = $validator->messages();
             $errors = $messages->all();
             return $this->CreateBadResponse($errors);
         }
+
+
+        $user = User::where('phone', $request->phone)
+        ->where('country_code', $request->country_code)
+        ->first(); 
+
+        if ($user) {
+            $request = new Request([
+                'phone' => $request->phone,
+                'country_code' => $request->country_code,
+            ]);
+            return $this->generate($request);
+        }
+
+
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
         $input['otp'] = rand(123456, 999999);
@@ -176,10 +209,13 @@ class AuthOtpController extends Controller
     {
         $rules = array(
             'phone' => 'required|exists:register_otps,phone',
+            'country_code' => 'required|starts_with:+',
             'otp' => 'required'
         );
         $messages = array(
             'phone.required' => 'Please enter a phone.',
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
             'otp.required' => 'Please enter a otp.',
             'phone.exists' => 'Phone not found.'
         );
@@ -192,7 +228,9 @@ class AuthOtpController extends Controller
 
 
         /* Validation Logic */
-        $registerOtp   = RegisterOtp::where('phone', $request->phone)->where('otp', $request->otp)->first();
+        $registerOtp = RegisterOtp::where('phone', $request->phone)
+        ->where('country_code',$request->country_code)
+        ->where('otp', $request->otp)->first();
 
         $now = now();
         if (!$registerOtp) {
@@ -206,7 +244,8 @@ class AuthOtpController extends Controller
             'surname' => $registerOtp->surname,
             'email' => $registerOtp->email,
             'password' => $registerOtp->password,
-            'phone' => $registerOtp->phone
+            'phone' => $registerOtp->phone,
+            'country_code' => $registerOtp->country_code,
         ]);
         $user = (new UserController)->storeCustomer($request);
         if ($user) {

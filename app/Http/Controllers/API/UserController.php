@@ -32,6 +32,7 @@ class UserController extends Controller
                 'users.name',
                 'users.email',
                 'users.phone',
+                'users.country_code',
                 'roles.role'
             );
 
@@ -46,7 +47,7 @@ class UserController extends Controller
     }
     public function getDrivers()
     {
-        $drivers = User::select('id', 'name', 'email', 'phone')
+        $drivers = User::select('id', 'name', 'email', 'phone','country_code')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'driver');
         return DataTables::of($drivers)
@@ -61,7 +62,7 @@ class UserController extends Controller
     {
         $drivers = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
         return DataTables::of($drivers)
@@ -74,7 +75,7 @@ class UserController extends Controller
     }
     public function getCustomer($id)
     {
-        return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
+        return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone','users.country_code' ,'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
             ->join('customers', 'customers.user_id', '=', 'users.id')
             ->join('companies', 'companies.customer_id', '=', 'customers.id')
             ->where('users.id', '=', $id)
@@ -86,7 +87,7 @@ class UserController extends Controller
         if (!$user)
             return response()->json(['message' => 'Not Found!'], 404);
 
-        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email')->firstWhere('id', $user->id);
+        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email','country_code')->firstWhere('id', $user->id);
 
         $userRole = $user->role()->first();
 
@@ -95,6 +96,7 @@ class UserController extends Controller
             'name' => $dbUser->name,
             'surname' => $dbUser->surname,
             'phone' => $dbUser->phone,
+            'country_code' => $dbUser->country_code,
             'email' => $dbUser->email,
             'role' => $userRole->role,
         ]);
@@ -102,7 +104,42 @@ class UserController extends Controller
     
     public function FrontEndCustomerUpdate(Request $request)
     {
+
+        $rules = array(
+            'country_code' => 'required|starts_with:+',
+            'phone' => 'required',
+            'name' => 'required',
+            'surname' => 'required',
+            'email' => 'required',
+        );
+        $messages = array(
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
+            'phone.required' => 'phone field is required.',
+            'name.required' => 'name field is required.',
+            'surname.required' => 'surname field is required.',
+            'email.required' => 'phone field is required.',
+        );
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            $errors = $messages->all();
+            return $this->CreateBadResponse($errors);
+        }
+
         $user = Auth::user();
+
+        if ($user->phone != $request->phone || $user->country_code != $request->country_code) {
+            //phone is changed
+            $checkPhoneUser = User::where('phone',$request->phone)
+            ->where('country_code',$request->country_code)
+            ->first();
+            if ($checkPhoneUser) {
+                return response()->json(['message' => 'This phone number is used by another user!'], 400);
+            }
+        }
+
+
         $id = $user->id;
         if (!$user = User::where('id', '=', $id)->first())
             return response()->json(['message' => 'Not Found!'], 404);
@@ -114,6 +151,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     public function customersAction(Request $request)
     {
 
@@ -123,6 +161,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'name' => 'required',
                 'surname' => 'required',
+                'country_code' => 'required',
                 'phone' => 'required|unique:users,phone'
             );
             $validator = Validator::make($request->all(), $rules);
@@ -146,6 +185,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'name' => 'required',
                 'surname' => 'required',
+                'country_code' => 'required',
                 'phone' => 'required|unique:users,phone,' . $user->id
             );
             $validator = Validator::make($request->all(), $rules);
@@ -192,6 +232,8 @@ class UserController extends Controller
             return response()->json($request);
         }
     }
+
+
     public function storeDriver($input)
     {
         try {
@@ -371,5 +413,13 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
+    }
+
+    private function CreateBadResponse($message)
+    {
+        $content = [
+            'error' => $message
+        ];
+        return response(json_encode($content), 400);
     }
 }

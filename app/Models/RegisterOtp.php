@@ -8,7 +8,7 @@ use Exception;
 
 class RegisterOtp extends Model
 {
-    protected $fillable = ['name', 'surname', 'email', 'password', 'phone', 'otp', 'expire_at'];
+    protected $fillable = ['name', 'surname', 'email', 'password', 'phone','country_code' ,'otp', 'expire_at'];
 
 
     /**

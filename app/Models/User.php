@@ -21,7 +21,7 @@ class User extends Authenticatable
     }
     public function sendNotification($title, $body)
     {
-        $SERVER_API_KEY = 'XXXXXX';
+        $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');
         $devices = DB::table('user_devices')->select('id', 'device_token')->where('user_id', $this->id)->get();
         foreach ($devices as $device) {
             $data = [
@@ -56,7 +56,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'email', 'password', 'phone', 'status'
+        'name', 'surname', 'email', 'password', 'phone', 'status', 'country_code'
     ];
 
     /**

@@ -20,6 +20,7 @@ use App\Rules\InsuranceExp;
 use App\Models\User;
 use App\Models\BookingData;
 use App\Models\CarType;
+use App\Models\BookingStatusChangeLog;
 use App\Models\Shift;
 use App\Models\UserContract;
 use Illuminate\Support\Facades\Auth;
@@ -182,6 +183,9 @@ class BookingsController extends Controller
         if (!$bookings = Booking::where('id', '=', $booking)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
+
+            $oldStatus = $bookings->status;
+
             if ($request->post('car_type') != 'request') {
                 $rules = array(
                     'car_id' => [new InsuranceExp($booking)],
@@ -225,7 +229,20 @@ class BookingsController extends Controller
                 $price = $request->post('price');
                 $bookings->data->update(['discount_price' => $price]);
             }
+
             $bookings->update($request->all());
+
+            $newStatus = $bookings->status;
+
+            if ($oldStatus != $newStatus) {
+
+                BookingStatusChangeLog::create([
+                    'user_id' => Auth::user()->id,
+                    'booking_id' => $bookings->id,
+                    'status' => $newStatus
+                ]);
+            }
+
 
             Log::addToLog('Booking Log.', $request->all(), 'Edit');
             return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
