@@ -21,8 +21,27 @@ class AuthOtpController extends Controller
      */
     public function generate(Request $request)
     {
+        $rules = array(
+            'country_code' => 'required|starts_with:+',
+            'phone' => 'required'
+        );
+        $messages = array(
+            'country_code.required' => 'country_code field is required.',
+            'country_code.starts_with' => 'country_code field it should start with +.',
+            'phone.required' => 'phone field is required.',
+        );
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+            $errors = $messages->all();
+            return $this->CreateBadResponse($errors);
+        }
+
+
         /* Validate Data */
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('phone', $request->phone)
+        ->where('country_code', $request->country_code)
+        ->first();
         if (!$user)
             return $this->CreateBadResponse("User not found!");
 
