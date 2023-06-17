@@ -18,7 +18,7 @@ class UpdateBookingDataTable extends Migration
             $table->decimal('discount_price', 9, 2);
             $table->decimal('full_discount_price', 9, 2);
             #$table->enum('payment_type', ['Pre', 'Full'])->nullable()->change();
-            DB::statement("ALTER TABLE booking_data MODIFY payment_type ENUM('Pre', 'Full') NULL");
+            DB::statement("ALTER TABLE booking_data MODIFY payment_type ENUM('Pre', 'Full', 'No') NULL");
             $table->dropColumn('paymentIntentSecret');
         });
     }

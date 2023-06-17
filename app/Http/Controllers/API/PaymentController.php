@@ -51,6 +51,39 @@ class PaymentController extends Controller
                 return response()->json([
                     'error' => 'Payment not created for this booking!'
                 ]);
+            if ($data['paymentType'] == 'No') {
+                $user = $request->user('api');
+                if (!$user || $user->role->role  != "admin") {
+                    abort(403);
+                }
+                BookingPayment::create([
+                    'booking_id' => $booking->id,
+                    'paymentIntent' => "NO_PAYMENT",
+                    'status' => "succeeded"
+                ]);
+                $booking_data = $booking->data;
+                Transaction::create([
+                    'type' => 'booking_payment',
+                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
+                    'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
+                    'booking_id' => $booking_data->booking->id
+                ]);
+                Transaction::create([
+                    'type' => 'driver_wage',
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                    'balance' => 0,
+                    'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
+                    'driver_id' => $booking_data->booking->driver_id,
+                    'booking_id' => $booking_data->booking->id
+                ]);
+                $booking_data->update([
+                    'payment_type' => "No"
+                ]);
+                $booking->update(['status' => 1]);
+                return response()->json([
+                    "url" => env('FRONTED_URL') . '//reservations//' . $booking->id
+                ]);
+            }
             if ($booking->status == 9) {
                 if ($booking->payment) {
                     $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
