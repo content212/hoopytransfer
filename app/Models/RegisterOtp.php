@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Helpers\Netgsm;
 use Exception;
+use Twilio\Rest\Client;
 
 class RegisterOtp extends Model
 {

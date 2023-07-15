@@ -40,16 +40,15 @@ class AuthOtpController extends Controller
 
         /* Validate Data */
         $user = User::where('phone', $request->phone)
-        ->where('country_code', $request->country_code)
-        ->first();
+            ->where('country_code', $request->country_code)
+            ->first();
         if (!$user)
             return $this->CreateBadResponse("User not found!");
-
+        $phone = $request->country_code . $request->phone;
         /* Generate An verification number */
         $userOtp = $this->generateOtp($request->phone);
 
-        $userOtp->sendSMS($request->phone);
-
+        $userOtp->sendSMS($phone);
         $content = [
             'user_id' => strval($userOtp->user_id),
             'message' => "Verification number has been sent on Your Mobile Number.",
@@ -177,8 +176,8 @@ class AuthOtpController extends Controller
 
 
         $user = User::where('phone', $request->phone)
-        ->where('country_code', $request->country_code)
-        ->first(); 
+            ->where('country_code', $request->country_code)
+            ->first();
 
         if ($user) {
             $request = new Request([
@@ -195,8 +194,8 @@ class AuthOtpController extends Controller
         $input['expire_at'] = now()->addMinutes(10);
 
         $registerOtp = RegisterOtp::create($input);
-
-        $registerOtp->sendSMS($input['phone']);
+        $phone = $request->country_code . $request->phone;
+        $registerOtp->sendSMS($phone);
 
         $content = [
             'phone' => $registerOtp->phone,
@@ -229,8 +228,8 @@ class AuthOtpController extends Controller
 
         /* Validation Logic */
         $registerOtp = RegisterOtp::where('phone', $request->phone)
-        ->where('country_code',$request->country_code)
-        ->where('otp', $request->otp)->first();
+            ->where('country_code', $request->country_code)
+            ->where('otp', $request->otp)->first();
 
         $now = now();
         if (!$registerOtp) {
