@@ -249,12 +249,11 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->post('/customeraction', 'API\UserController@customersAction');
 
 
-    Route::middleware(['scope:customer,driver, admin'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
-    Route::middleware(['scope:customer,driver, admin'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
-
-    Route::middleware(['scope:customer'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
-    Route::middleware(['scope:customer'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
-    Route::middleware(['scope:customer'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
+    Route::middleware(['scope:customer,driver,admin'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
+    Route::middleware(['scope:customer,driver,admin'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
+    Route::middleware(['scope:customer, admin'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
+    Route::middleware(['scope:customer, admin'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
+    Route::middleware(['scope:customer, admin'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
 
     Route::middleware(['scope:driver'])->get('/driver/jobs', 'API\DriverJobController@index');
     Route::middleware(['scope:driver'])->get('/driver/jobs/{id}', 'API\DriverJobController@detail');
