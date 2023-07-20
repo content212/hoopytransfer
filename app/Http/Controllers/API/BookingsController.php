@@ -236,11 +236,13 @@ class BookingsController extends Controller
 
             if ($oldStatus != $newStatus) {
 
+                /*
                 BookingStatusChangeLog::create([
                     'user_id' => Auth::user()->id,
                     'booking_id' => $bookings->id,
                     'status' => $newStatus
                 ]);
+                */
             }
 
 
