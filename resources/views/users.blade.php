@@ -23,6 +23,7 @@
                     <th>#</th>
                     <th>Status</th>
                     <th>Name</th>
+                    <th>Surname</th>
                     <th>Email</th>
                     <th>Country Code</th>
                     <th>Phone</th>
@@ -47,7 +48,7 @@
                         <input type="hidden" name="id" id="id" value="-1">
                         <div class="row">
 
-                            <div class="col-lg-2 col-md-12">
+                            <div class="col-lg-3 col-md-3">
                                 <label for="status">Type</label>
                                 <select class="form-select" name="status" id="statuss">
                                     <option value="0">Passive</option>
@@ -55,18 +56,21 @@
                                 </select>
                             </div>
 
-                            <div class="col-lg-5 col-md-6">
+                            <div class="col-lg-3 col-md-3">
                                 <label for="name">Name</label>
                                 <input type="text" class="form-control" name="name" id="name">
                             </div>
-
-                            <div class="col-lg-5 col-md-6">
+                            <div class="col-lg-3 col-md-3">
+                                <label for="name">Surname</label>
+                                <input type="text" class="form-control" name="surname" id="surname">
+                            </div>
+                            <div class="col-lg-3 col-md-3">
                                 <label for="role">Type</label>
                                 <select class="form-select" name="role" id="role">
                                     <option value="admin">Admin</option>
-                                    <option value="editor">Editor</option>
                                     <option value="driver">Driver</option>
                                     <option value="driver_manager">Driver Manager</option>
+                                    <option value="editor">Editor</option>
                                 </select>
                             </div>
                         </div>
@@ -163,6 +167,7 @@
                         $('#id').val(-1);
                         $("#password").rules("add", "required");
                         $("#name").rules("add", "required");
+                        $("#surname").rules("add", "required");
                         $("#phone").rules("add", "required");
                         $("#country_code").rules("add", "required");
                         $('#edit_modal').modal('show');
@@ -182,7 +187,7 @@
             processing: true,
             serverSide: true,
             order: [
-                [7, "desc"]
+                [8, "desc"]
             ],
             ajax: {
                 url: "/api/users",
@@ -202,7 +207,10 @@
                     data: 'name',
                     name: 'name'
                 },
-
+                {
+                    data: 'surname',
+                    name: 'surname'
+                },
                 {
                     data: 'email',
                     name: 'email'
@@ -257,6 +265,7 @@
                         $('#id').val(obj.id);
                         $('#statuss').val(obj.status);
                         $('#name').val(obj.name)
+                        $('#surname').val(obj.surname)
                         $('#phone').val(obj.phone)
                         $('#country_code').val(obj.country_code)
                         $('#email').val(obj.email)
@@ -264,7 +273,6 @@
                     }
                 });
             }
-
         });
 
 

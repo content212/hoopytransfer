@@ -24,18 +24,22 @@ class UserController extends Controller
     public function index()
     {
         $users = User::join('roles', 'roles.user_id', '=', 'users.id')
+            ->where ('roles.role', '<>', 'customer')
             ->select(
                 'users.id',
                 DB::raw('(CASE users.status
                 when 0 then \'Passive\'
                 when 1 then \'Active\' END) as status'),
                 'users.name',
+                'users.surname',
                 'users.email',
                 'users.phone',
                 'users.country_code',
                 'roles.role',
                 'users.created_at'
             );
+
+
 
         return DataTables::of($users)
             ->addColumn('edit', function ($row) {
