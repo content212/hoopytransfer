@@ -19,7 +19,7 @@ class CreateBookingServicesTable extends Migration
             $table->string('name');
             $table->string('image')->nullable();
             $table->integer('person_capacity');
-            $table->tinyInteger('discount_rate')->default(0);
+            $table->integer('baggage_capacity');
             $table->tinyInteger('free_cancellation')->default(0);
             $table->timestamps();
         });
