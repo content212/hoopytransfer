@@ -27,6 +27,7 @@
                     <th>Country Code</th>
                     <th>Phone</th>
                     <th>Role</th>
+                    <th>Created At</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -180,14 +181,14 @@
             responsive: true,
             processing: true,
             serverSide: true,
-
+            order: [
+                [7, "desc"]
+            ],
             ajax: {
                 url: "/api/users",
                 type: 'get',
             },
-
             columns: [
-
                 {
                     data: 'id',
                     name: 'id',
@@ -217,6 +218,11 @@
                 {
                     data: 'role',
                     name: 'role',
+                    searchable: false
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at',
                     searchable: false
                 },
                 {

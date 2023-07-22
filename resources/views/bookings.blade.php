@@ -27,9 +27,7 @@
                     <th>#</th>
                     <th>Track Code</th>
                     <th>Status</th>
-                    <th>From Zip</th>
                     <th>From Name</th>
-                    <th>To Zip</th>
                     <th>To Name</th>
                     <th>User Name</th>
                     <th>Created At</th>
@@ -378,7 +376,7 @@
             serverSide: true,
             responsive: true,
             order: [
-                [9, "desc"]
+                [6, "desc"]
             ],
             dom: '<"top"f<"clear">>rt<"bottom"ip<"clear">>',
             pageLength: 50,
@@ -389,7 +387,8 @@
                     "Authorization": "Bearer " + Cookies.get('token')
                 },
             },
-            columns: [{
+            columns: [
+                {
                     data: 'id',
                     name: 'id'
                 },
@@ -402,16 +401,8 @@
                     name: 'status_name'
                 },
                 {
-                    data: 'from',
-                    name: 'from'
-                },
-                {
                     data: 'from_name',
                     name: 'from_name'
-                },
-                {
-                    data: 'to',
-                    name: 'to'
                 },
                 {
                     data: 'to_name',

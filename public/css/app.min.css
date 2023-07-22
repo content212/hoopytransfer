@@ -18991,3 +18991,7 @@ div.table-responsive
   display: none;
 }
 /*# sourceMappingURL=app.min.css.map */
+
+label.error {
+  color: red;
+}

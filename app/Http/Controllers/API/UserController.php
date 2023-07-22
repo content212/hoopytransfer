@@ -33,7 +33,8 @@ class UserController extends Controller
                 'users.email',
                 'users.phone',
                 'users.country_code',
-                'roles.role'
+                'roles.role',
+                'users.created_at'
             );
 
         return DataTables::of($users)
@@ -41,6 +42,9 @@ class UserController extends Controller
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
                 return $btn;
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y H:i:s') : '';
             })
             ->rawColumns(['edit'])
             ->make(true);
@@ -62,7 +66,7 @@ class UserController extends Controller
     {
         $drivers = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','users.created_at')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
         return DataTables::of($drivers)
@@ -70,7 +74,11 @@ class UserController extends Controller
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
                 return $btn;
-            })->rawColumns(['edit'])
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y H:i:s') : '';
+            })
+            ->rawColumns(['edit'])
             ->make(true);
     }
     public function getCustomer($id)

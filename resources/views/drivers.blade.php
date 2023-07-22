@@ -95,13 +95,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="license_date">License Date</label>
-                                <input type="text" class="form-control" name="license_date" id="license_date"
+                                <input type="text" class="form-control my_date_picker" name="license_date" id="license_date"
                                     placeholder="License Date">
                             </div>
                             <div class="form-group">
                                 <label for="license_class">License Class</label>
                                 <input type="text" class="form-control" name="license_class" id="license_class"
-                                    placeholder="License Date">
+                                    placeholder="License Class">
                             </div>
                             <div class="form-group">
                                 <label for="license_no">License No</label>
@@ -109,9 +109,7 @@
                                     placeholder="License No">
                             </div>
                             <div class="form-group">
-
                                 @livewire('dropdowns') 
-                                
                             </div>
                             <div class="form-group">
                                 <label for="address">Address</label>
@@ -176,8 +174,32 @@
                 }, 500);
             });
         });
+
+
+        $("#drivers_form").validate({
+			rules: {
+				name: "required",
+				surname: "required",
+				email: "required",
+				country_code: "required",
+				phone: "required",
+				password: "required",
+				license_date: "required",
+				license_class: "required",
+				license_no: "required",
+				address: "required",
+				country: "required",
+				state: "required",
+			},
+		});
+
+
         $('#save').on('click', function(e) {
             e.preventDefault();
+
+            if (!$("#drivers_form").valid()) {
+                return;
+            }
 
             var form = $('#drivers_form');
             $("#overlay").fadeIn(300);

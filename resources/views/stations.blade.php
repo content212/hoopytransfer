@@ -158,8 +158,30 @@
                 }, 500);
             });
         });
+
+
+        $("#stations_form").validate({
+			rules: {
+				name: "required",
+                official_name: "required",
+                official_phone: "required",
+                country: "required",
+                state: "required",
+                address: "required",
+                latitude: "required",
+                longitude: "required"
+			},
+		});
+
+    
+
         $('#save').on('click', function(e) {
             e.preventDefault();
+
+            if (!$("#stations_form").valid()) {
+                return;
+            }
+
 
             var form = $('#stations_form');
             $("#overlay").fadeIn(300);

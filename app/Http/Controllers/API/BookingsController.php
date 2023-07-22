@@ -58,16 +58,18 @@ class BookingsController extends Controller
                 $join->on('users.id', '=', 'bookings.user_id')->whereNotNull('bookings.user_id');
             })
             ->leftJoin('booking_user_infos', 'booking_user_infos.booking_id', '=', 'bookings.id');
+
         if ($request->get('status') != '') {
             $bookings = $bookings->where('bookings.status', $request->get('status'));
         }
+
         return DataTables::of($bookings)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>';
                 return $btn;
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y') : '';
+                return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y H:i:s') : '';
             })
             ->rawColumns(['edit'])
             ->make(true);

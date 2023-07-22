@@ -31,6 +31,7 @@
     <!-- App css -->
     <link href="{{ asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('css/app.min.css') }}" rel="stylesheet" type="text/css" id="light-style" />
+    <link href="{{ asset('css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
         .modal-confirm {
@@ -540,9 +541,19 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js'></script>
+    <script src="{{ asset('js/bootstrap-datetimepicker.min.js') }}"></script>
     @yield('script')
 
     <script>
+
+        $('.my_date_picker').datetimepicker({
+            "allowInputToggle": true,
+            "showClose": true,
+            "showClear": true,
+            "showTodayButton": true,
+            "format": "YYYY-MM-DD",
+        });
+
         $('#accBtn').on('click', function() {
 
             $.ajax({

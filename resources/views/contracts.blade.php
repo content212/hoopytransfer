@@ -173,10 +173,6 @@
             }
         });
 
-
-       
-
-
         var contracts_table = $('#contracts_table').DataTable({
             sDom: '<"top float-right" Bl> <"clear"><"top" <"test">>rt<"bottom" ip><"clear">',
             dom: 'Bfrtip',

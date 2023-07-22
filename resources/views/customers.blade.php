@@ -27,6 +27,7 @@
                     <th>Email</th>
                     <th>Country Code</th>
                     <th>Phone</th>
+                    <th>Created At</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -153,6 +154,9 @@
         });
         var customers_table = $('#customers_table').DataTable({
             sDom: '<"top float-right" Bl> <"clear"><"top" <"test">>rt<"bottom" ip><"clear">',
+            order: [
+                [7, "desc"]
+            ],
             dom: 'Bfrtip',
             buttons: {
                 buttons: [{
@@ -218,6 +222,10 @@
                 {
                     data: 'phone',
                     name: 'phone'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
                 },
                 {
                     data: 'edit',

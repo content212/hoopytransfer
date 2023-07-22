@@ -76,12 +76,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="insurance_date">Insurance Date</label>
-                                <input type="text" class="form-control" name="insurance_date" id="insurance_date"
+                                <input type="text" class="form-control my_date_picker" name="insurance_date" id="insurance_date"
                                     placeholder="Insurance Date">
                             </div>
                             <div class="form-group">
                                 <label for="inspection_date">Inspection Date</label>
-                                <input type="text" class="form-control" name="inspection_date" id="inspection_date"
+                                <input type="text" class="form-control my_date_picker" name="inspection_date" id="inspection_date"
                                     placeholder="Inspection Date">
                             </div>
                             <div class="form-group">
@@ -146,8 +146,23 @@
                 }, 500);
             });
         });
+
+        $("#cars_form").validate({
+			rules: {
+				plate: "required",
+                type: "required",
+                insurance_date: "required",
+                inspection_date: "required",
+                station_id: "required"
+			},
+		});
+
         $('#save').on('click', function(e) {
             e.preventDefault();
+
+            if (!$("#cars_form").valid()) {
+                return;
+            }
 
             var form = $('#cars_form');
             $("#overlay").fadeIn(300);
@@ -215,6 +230,9 @@
             }
             
         });
+
+    
+
 
         $('#edit-modal').on('hide.bs.modal', function() {
             $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
