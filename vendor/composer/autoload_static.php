@@ -646,6 +646,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Models\\Booking' => __DIR__ . '/../..' . '/app/Models/Booking.php',
         'App\\Models\\BookingData' => __DIR__ . '/../..' . '/app/Models/BookingData.php',
         'App\\Models\\BookingPayment' => __DIR__ . '/../..' . '/app/Models/BookingPayment.php',
+        'App\\Models\\BookingService' => __DIR__ . '/../..' . '/app/Models/BookingService.php',
         'App\\Models\\BookingStatusChangeLog' => __DIR__ . '/../..' . '/app/Models/BookingStatusChangeLog.php',
         'App\\Models\\BookingUserInfo' => __DIR__ . '/../..' . '/app/Models/BookingUserInfo.php',
         'App\\Models\\Car' => __DIR__ . '/../..' . '/app/Models/Car.php',

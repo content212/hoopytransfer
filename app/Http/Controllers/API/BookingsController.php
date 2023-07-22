@@ -19,6 +19,7 @@ use App\Models\Transaction;
 use App\Rules\InsuranceExp;
 use App\Models\User;
 use App\Models\BookingData;
+use App\Models\BookingService;
 use App\Models\CarType;
 use App\Models\BookingStatusChangeLog;
 use App\Models\Shift;
@@ -104,6 +105,17 @@ class BookingsController extends Controller
             }
             $booking->update(['track_code' => $track_code]);
 
+            if ($input['car_type'] != null) {
+                $car_type = CarType::find($input['car_type']);
+                $booking_service = BookingService::create(array(
+                    'booking_id' => $booking->id,
+                    'name' => $car_type->name,
+                    'image' => $car_type->image,
+                    'person_capacity' => $car_type->person_capacity,
+                    'baggage_capacity' => $car_type->baggage_capacity,
+                    'free_cancellation' => $car_type->free_cancellation
+                ));
+            }
             if ($booking->price_id != -1) {
                 $price = Price::find($booking->price_id);
                 $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;
@@ -367,7 +379,7 @@ class BookingsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
-            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'status' ,'service', 'data', 'payment_status');
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'status', 'service', 'data', 'payment_status');
 
         return $bookings;
     }

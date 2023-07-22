@@ -68,6 +68,7 @@ return array(
     'App\\Models\\Booking' => $baseDir . '/app/Models/Booking.php',
     'App\\Models\\BookingData' => $baseDir . '/app/Models/BookingData.php',
     'App\\Models\\BookingPayment' => $baseDir . '/app/Models/BookingPayment.php',
+    'App\\Models\\BookingService' => $baseDir . '/app/Models/BookingService.php',
     'App\\Models\\BookingStatusChangeLog' => $baseDir . '/app/Models/BookingStatusChangeLog.php',
     'App\\Models\\BookingUserInfo' => $baseDir . '/app/Models/BookingUserInfo.php',
     'App\\Models\\Car' => $baseDir . '/app/Models/Car.php',

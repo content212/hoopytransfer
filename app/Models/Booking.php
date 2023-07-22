@@ -71,7 +71,7 @@ class Booking extends Model
     }
     public function service()
     {
-        return $this->hasOne(CarType::class, 'id', 'car_type');
+        return $this->hasOne(BookingService::class, 'booking_id', 'id');
     }
     public static function getAllStatus(): array
     {
@@ -89,7 +89,7 @@ class Booking extends Model
     {
         return self::PAYMENT_STATUS[$this->payment?->status];
     }
-    public function bookingDate() 
+    public function bookingDate()
     {
         return Carbon::parse($this->status_date . ' ' .  $this->status_time);
     }
