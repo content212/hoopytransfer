@@ -100,4 +100,8 @@ class CarController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
+    public function getCarsByType(int $type) {
+        return Car::select('id','plate')->where('type', '=', $type)->get();
+    }
 }

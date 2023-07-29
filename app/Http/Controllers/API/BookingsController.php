@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 use Yajra\DataTables\Contracts\DataTable;
+use App\Helpers\BookingHelper;
+
 
 use function Symfony\Component\VarDumper\Dumper\esc;
 
@@ -53,12 +55,19 @@ class BookingsController extends Controller
             DB::raw('(CASE
             WHEN bookings.user_id IS NULL THEN booking_user_infos.name
             ELSE users.name END ) as user_name'),
+            DB::raw("CONCAT(u.name ,' ', u.surname) as driver_name"),
             'bookings.created_at'
-        )
-            ->leftJoin('users', function ($join) {
-                $join->on('users.id', '=', 'bookings.user_id')->whereNotNull('bookings.user_id');
+        )->leftJoin('users', function ($join) {
+            $join->on('users.id', '=', 'bookings.user_id')->whereNotNull('bookings.user_id');
+        })
+
+            ->leftJoin('booking_user_infos', 'booking_user_infos.booking_id', '=', 'bookings.id')
+            ->leftJoin('drivers as d', function ($join) {
+                $join->on('d.id', '=', 'bookings.driver_id');
             })
-            ->leftJoin('booking_user_infos', 'booking_user_infos.booking_id', '=', 'bookings.id');
+            ->leftJoin('users as u', function ($join) {
+                $join->on('u.id', '=', 'd.user_id');
+            });
 
         if ($request->get('status') != '') {
             $bookings = $bookings->where('bookings.status', $request->get('status'));
@@ -76,10 +85,10 @@ class BookingsController extends Controller
             ->make(true);
     }
 
-    protected function generateRandomNumber($length)
+    protected function generateRandomNumber($length): string
     {
         $track_code = "HPT";
-        srand((float) microtime() * 1000000);
+        srand((float)microtime() * 1000000);
 
         $data = "123456123456789071234567890890";
 
@@ -88,6 +97,7 @@ class BookingsController extends Controller
         }
         return $track_code;
     }
+
     public function store(Request $request)
     {
         try {
@@ -119,7 +129,7 @@ class BookingsController extends Controller
             if ($booking->price_id != -1) {
                 $price = Price::find($booking->price_id);
                 $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;
-                $total = ($price->opening_fee + ($price->km_fee *  $booking->km));
+                $total = ($price->opening_fee + ($price->km_fee * $booking->km));
                 $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
                 $driver_payment = $discount_price * 0.7;
                 $system_payment = $discount_price - $driver_payment;
@@ -138,8 +148,8 @@ class BookingsController extends Controller
                     'full_discount_price' => $full_discount_price,
                     'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
                     'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
-
                 ];
+
             } else {
                 $inputs = [
                     'booking_id' => $booking->id,
@@ -171,13 +181,15 @@ class BookingsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Booking  $booking
+     * @param \App\Models\Booking $booking
      * @return \Illuminate\Http\Response
      */
     public function show(int $booking)
     {
         $user = Auth::user();
-        if (!$bookings = Booking::where('id', '=', $booking)->with('user')->first())
+        if (!$bookings = Booking::where('id', '=', $booking)
+            ->with('service', 'data', 'user')
+            ->first())
             return response()->json(['message' => 'Not Found!'], 404);
         if ($bookings['status'] == 9) {
             $bookings['car_type'] = 'request';
@@ -189,7 +201,7 @@ class BookingsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $booking)
@@ -198,31 +210,13 @@ class BookingsController extends Controller
             return response()->json(['message' => 'Not Found!'], 404);
         try {
 
-            $oldStatus = $bookings->status;
+            $carType = intval($request->post('car_type'));
+            $carId = intval($request->post('car_id'));
+            $driverId = intval($request->post('driver_id'));
+            $price = doubleval($request->post('price'));
 
-            if ($request->post('car_type') != 'request') {
-                $rules = array(
-                    'car_id' => [new InsuranceExp($booking)],
-                    'booking_date' => 'required',
-                    'booking_time' => 'required'
-                );
-            } else {
-                $rules = array(
-                    'car_id' => [new InsuranceExp($booking)],
-                    'booking_date' => 'required',
-                    'booking_time' => 'required',
-                    'price' => 'required'
-                );
-            }
-            $messages = array();
-            $validator = Validator::make($request->all(), $rules, $messages);
-            if ($validator->fails()) {
-                $messages = $validator->messages()->get('*');
-                return response()->json([
-                    'error' => $messages
-                ], 400);
-            }
 
+            /*
             if ($request->post('driver_id') and $request->post('car_id') and $bookings->status == '1') {
                 $request->merge(['status' => '2']);
                 $total = Transaction::where('driver_id', $request->post('driver_id'))
@@ -233,32 +227,12 @@ class BookingsController extends Controller
                 $transaction = Transaction::where('booking_id', $bookings->id)->where('type', 'driver_wage')->first();
                 $transaction->update([
                     'driver_id' => $request->post('driver_id'),
-                    'balance'   => ($total - $transaction->amount)
+                    'balance' => ($total - $transaction->amount)
                 ]);
             }
-            if ($request->post('status') == '5' and in_array($bookings->status, [1, 2])) {
-                $this->cancel($request, $bookings->id);
-            }
-            if ($request->post('car_type') == 'request') {
-                $price = $request->post('price');
-                $bookings->data->update(['discount_price' => $price]);
-            }
+            */
 
-            $bookings->update($request->all());
-
-            $newStatus = $bookings->status;
-
-            if ($oldStatus != $newStatus) {
-
-                /*
-                BookingStatusChangeLog::create([
-                    'user_id' => Auth::user()->id,
-                    'booking_id' => $bookings->id,
-                    'status' => $newStatus
-                ]);
-                */
-            }
-
+            BookingHelper::SetBookingStatus($bookings, $carType, $carId, $driverId, $price, $bookings->status);
 
             Log::addToLog('Booking Log.', $request->all(), 'Edit');
             return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
@@ -270,7 +244,7 @@ class BookingsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Booking  $booking
+     * @param \App\Models\Booking $booking
      * @return \Illuminate\Http\Response
      */
     public function destroy(int $booking)
@@ -285,6 +259,7 @@ class BookingsController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     public function cancel(Request $request, $booking_id)
     {
         try {
@@ -305,6 +280,10 @@ class BookingsController extends Controller
                 $booking->update([
                     'status' => $user->role->role == 'customer' ? 4 : 5
                 ]);
+                //iptal işlemi yapıldı. para iadesi yapıldı.
+                //bildirim vs. gönderilecek.
+                BookingHelper::SetBookingStatus($booking, 0, 0, 0, 0, $booking->status);
+
             }
             $shift = Shift::where('shift_date', '=', $booking->booking_date)
                 ->where('isAssigned', '=', true)
@@ -325,6 +304,7 @@ class BookingsController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     private function private_str($str, $start, $end)
     {
         $after = mb_substr($str, 0, $start, 'utf8');
@@ -332,6 +312,7 @@ class BookingsController extends Controller
         $before = mb_substr($str, ($start + $end), strlen($str), 'utf8');
         return $after . $repeat . $before;
     }
+
     public function track(Request $request)
     {
         $booking = Booking::select(
@@ -344,10 +325,10 @@ class BookingsController extends Controller
         if ($booking) {
             return response()->json(
                 [
-                    'track_code'    => $booking->track_code,
-                    'sender_name'   => $booking->sender_name != '' ? $this->private_str($booking->sender_name, 3, strlen($booking->sender_name) - 1) : '',
-                    'company_name'  => $booking->company_name != '' ? $this->private_str($booking->company_name, 3, strlen($booking->company_name) - 1) : '',
-                    'status'        => $booking->status
+                    'track_code' => $booking->track_code,
+                    'sender_name' => $booking->sender_name != '' ? $this->private_str($booking->sender_name, 3, strlen($booking->sender_name) - 1) : '',
+                    'company_name' => $booking->company_name != '' ? $this->private_str($booking->company_name, 3, strlen($booking->company_name) - 1) : '',
+                    'status' => $booking->status
                 ],
                 200
             );
@@ -355,10 +336,12 @@ class BookingsController extends Controller
             return response()->json(['message' => 'Not Found!'], 404);
         }
     }
+
     public function getBookingsCount($status)
     {
         return Booking::getCount($status);
     }
+
     public function FrontEndCustomerBookings()
     {
         $user = Auth::user();
@@ -383,6 +366,7 @@ class BookingsController extends Controller
 
         return $bookings;
     }
+
     public function FrontEndCustomerBookingsDetail($id)
     {
         if (!$booking = Booking::where('id', $id)
@@ -403,6 +387,7 @@ class BookingsController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
     }
+
     private function random_color_part()
     {
         return str_pad(dechex(mt_rand(50, 150)), 2, '0', STR_PAD_LEFT);
@@ -412,13 +397,14 @@ class BookingsController extends Controller
     {
         return "#" . $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
     }
+
     public function calendarEvents(Request $request)
     {
 
         $bookings = Booking::whereDate('booking_date', '>=', $request->start)
             ->whereDate('booking_date', '<=', $request->end)
             ->where('status', '=', 2);
-        if ($request->user('api')->role->role  == 'driver') {
+        if ($request->user('api')->role->role == 'driver') {
             $bookings = $bookings->where('driver_id', '=', Driver::firstWhere('user_id', $request->user('api')->id)->id);
         }
         $bookings = $bookings->get();
@@ -435,6 +421,7 @@ class BookingsController extends Controller
         }
         return response()->json($data);
     }
+
     public function timeRule(Request $request)
     {
         $time_rule = Setting::firstWhere('code', 'booking_time')->value;

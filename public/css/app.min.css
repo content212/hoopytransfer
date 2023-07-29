@@ -2078,9 +2078,6 @@ progress {
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #dee2e6;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
   border-radius: 0.25rem;
   -webkit-transition: border-color 0.15s ease-in-out,
     -webkit-box-shadow 0.15s ease-in-out;
@@ -18995,3 +18992,5 @@ div.table-responsive
 label.error {
   color: red;
 }
+
+ 

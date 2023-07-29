@@ -285,6 +285,9 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/cars/{car}', 'API\CarController@show');
     Route::middleware(['scope:admin'])->post('/cars/{car}', 'API\CarController@update');
     Route::middleware(['scope:admin'])->delete('/cars/{car}', 'API\CarController@destroy');
+    Route::middleware(['scope:admin'])->get('/carsbytype/{type}', 'API\CarController@getCarsByType');
+
+
 
     Route::middleware(['scope:admin'])->get('/cartypes', 'API\CarTypeController@index');
     Route::middleware(['scope:admin'])->post('/cartypes', 'API\CarTypeController@store');
