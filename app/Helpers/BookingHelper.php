@@ -2,11 +2,10 @@
 
 namespace App\Helpers;
 
+use App\Models\BookingService;
+use App\Models\CarType;
 use App\Models\Price;
-use App\Models\UserContract;
-use App\Models\Booking;
-use App\Models\BookingData;
-use Illuminate\Support\Str;
+use App\Models\Setting;
 
 class BookingHelper
 {
@@ -136,14 +135,38 @@ class BookingHelper
         //muhasebe
     }
 
-    public static function BookingRequest($booking, $driver_id, $car_id, $car_type, $booking_price): void
+    public static function BookingRequest($booking, $driver_id, $car_id, $car_type_id, $booking_price): void
     {
         //fiyat kaydet
         //driver kaydet
         //durumu waiting for booking yap (0)
 
-        if ($driver_id > 0 && $car_id > 0 && $car_type > 0 && $booking_price > 0) {
-            $price = Price::where('car_type', '=', $car_type) . orderBy('km_fee', 'desc')->first();
+        if ($driver_id > 0 && $car_id > 0 && $car_type_id > 0 && $booking_price > 0) {
+
+            $car_type = CarType::where('id','=',$car_type_id)->first();
+
+            $bookingService = BookingService::where('booking_id', '=', $booking->id)->first();
+
+            if ($bookingService) {
+                $bookingService->update(array(
+                    'name' => $car_type->name,
+                    'image' => $car_type->image,
+                    'person_capacity' => $car_type->person_capacity,
+                    'baggage_capacity' => $car_type->baggage_capacity,
+                    'free_cancellation' => $car_type->free_cancellation
+                ));
+            } else {
+                BookingService::create(array(
+                    'booking_id' => $booking->id,
+                    'name' => $car_type->name,
+                    'image' => $car_type->image,
+                    'person_capacity' => $car_type->person_capacity,
+                    'baggage_capacity' => $car_type->baggage_capacity,
+                    'free_cancellation' => $car_type->free_cancellation
+                ));
+            }
+
+            $price = Price::where('car_type', '=', $car_type_id)->orderBy('km_fee', 'desc')->first();
             $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;
             $total = $booking_price;
             $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
@@ -173,7 +196,7 @@ class BookingHelper
                 $booking->update([
                     'driver_id' => $driver_id,
                     'car_id' => $car_id,
-                    'car_type' => $car_type,
+                    'car_type' => $car_type_id,
                     'price_id' => $price->id,
                     'status' => self::WAITING_FOR_BOOKING
                 ]);

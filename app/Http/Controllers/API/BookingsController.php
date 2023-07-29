@@ -126,6 +126,7 @@ class BookingsController extends Controller
                     'free_cancellation' => $car_type->free_cancellation
                 ));
             }
+
             if ($booking->price_id != -1) {
                 $price = Price::find($booking->price_id);
                 $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;

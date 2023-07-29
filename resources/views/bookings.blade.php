@@ -17,6 +17,9 @@
     <style>
         #service_name_container {
             border-bottom: 3px solid #02b9ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 @endsection
@@ -53,17 +56,51 @@
                         <span id="modal_result"></span>
                         <div class="row justify-content-start">
                             <div class="col-md-3">
-
                                 <div class="card">
                                     <div class="card-body">
-                                        <div id="service_image"></div>
-                                        <div id="service_name_container">
-                                            <h5 id="service_name"></h5>
-                                            <div id="service_price"></div>
+                                        <div id="service_container">
+                                            <div id="service_image"></div>
+                                            <div id="service_name_container">
+                                                <h5 id="service_name"></h5>
+                                                <div id="service_price"></div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <ul style="list-style: none; margin: 0; padding: 0">
+                                                    <li>Max. <span id="person"></span> person</li>
+                                                    <li>Max. <span id="suitcase"></span> suitcase</li>
+                                                    <li>Free Cancellation <small id="free_cancellation"></small></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div id="traveler_details_container">
+
+                                            <div class="mt-2">
+                                                <h5>From</h5>
+                                                <div id="from"></div>
+                                            </div>
+
+                                            <div class="mt-2">
+                                                <h5>To</h5>
+                                                <div id="to"></div>
+                                            </div>
+
+                                            <div class="mt-2">
+                                                <h5>Date Time</h5>
+                                                <div id="date"></div>
+                                            </div>
+
+                                            <div class="mt-2">
+                                                <h5>Distance</h5>
+                                                <div id="distance"></div>
+                                            </div>
+
+                                            <div class="mt-2">
+                                                <h5>Estimated Time</h5>
+                                                <div id="estimated_time"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-md-9">
                                 <div class="row">
@@ -91,48 +128,118 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Customer Info
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <h5 class="card-title">Name / Surname</h5>
+                                                        <p class="card-text" id="name"></p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <h5 class="card-title">Phone</h5>
+                                                        <p class="card-text" id="phone"></p>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <h5 class="card-title">Mail</h5>
+                                                        <p class="card-text" id="mail"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                <div class="row" id="cardriver-container">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="service">Service</label>
-                                            <select name="car_type" id="car_type" class="form-control">
-                                                <option value="">Choose a Service</option>
-                                                @foreach (App\Models\CarType::all() as $carType)
-                                                    <option value="{{ $carType->id }}">{{ $carType->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="car">Car</label>
-                                            <select name="car_id" id="car_id" class="form-control">
-                                                <option value="">Choose a Car</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="driver">Driver</label>
-                                            <select name="driver_id" id="driver_id" class="form-control">
-                                                <option value="">Choose a Driver</option>
-                                                @foreach (App\Models\Driver::select('drivers.id','users.name','users.surname')->join('users', 'users.id', '=', 'drivers.user_id')->get() as $driver)
-                                                    <option
-                                                        value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
-                                                @endforeach
-                                            </select>
+                                </div>
+
+                                <div class="row" id="payment_info_container">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Payment Info
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <h5 class="card-title">Type / Status</h5>
+                                                        <p class="card-text" id="payment_type"></p>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h5 class="card-title" id="p1_title"></h5>
+                                                        <p class="card-text" id="p1"></p>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h5 class="card-title" id="p2_title"></h5>
+                                                        <p class="card-text" id="p2"></p>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <h5 class="card-title" id="p3_title"></h5>
+                                                        <p class="card-text" id="p3"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" id="price-container">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="price">Price</label>
-                                            <input
-                                                onkeypress="return onlyNumberKey(event)"
-                                                oninput="enforceNumberValidation(this)"
-                                                class="form-control" placeholder="0.00" name="price" id="price">
+
+                                <div class="row" id="operation-container" style="display: none">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Operation
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row" id="cardriver-container">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="service">Service</label>
+                                                            <select name="car_type" id="car_type" class="form-control">
+                                                                <option value="">Choose a Service</option>
+                                                                @foreach (App\Models\CarType::all() as $carType)
+                                                                    <option
+                                                                        value="{{ $carType->id }}">{{ $carType->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="car">Car</label>
+                                                            <select name="car_id" id="car_id" class="form-control">
+                                                                <option value="">Choose a Car</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="driver">Driver</label>
+                                                            <select name="driver_id" id="driver_id"
+                                                                    class="form-control">
+                                                                <option value="">Choose a Driver</option>
+                                                                @foreach (App\Models\Driver::select('drivers.id','users.name','users.surname')->join('users', 'users.id', '=', 'drivers.user_id')->get() as $driver)
+                                                                    <option
+                                                                        value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" id="price-container">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="price">Price</label>
+                                                            <input
+                                                                onkeypress="return onlyNumberKey(event)"
+                                                                oninput="enforceNumberValidation(this)"
+                                                                class="form-control" placeholder="0.00" name="price"
+                                                                id="price">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -191,7 +298,6 @@
                     cancelBooking(bookingId);
 
 
-
                 }
             })
         })
@@ -213,7 +319,7 @@
         function cancelBooking(id) {
             const token = Cookies.get('token');
             $.ajax({
-                url: "/api/bookings/" + id+ "/cancel",
+                url: "/api/bookings/" + id + "/cancel",
                 type: "POST",
                 headers: {
                     "accept": "application/json",
@@ -281,6 +387,13 @@
                 return;
             }
 
+            $("#cardriver-container").hide();
+            $("#cardriver-container").hide();
+            $("#cancel_booking").hide();
+            $("#price-container").hide();
+            $("#payment_info_container").hide();
+            $("#service_container").hide();
+
             $("#status_id").val(obj.status);
             const statusId = parseInt(obj.status) || -1;
 
@@ -293,32 +406,68 @@
                     $("#driver_id").val("");
                 }
 
-                if (obj.service) {
-                    $("#car_type").val(obj.service.id)
-                    setCar(parseInt(obj.service.id) || 0, parseInt(obj.car_id) || 0);
-                }
+                $("#car_type").val(obj.car_type)
+                setCar(parseInt(obj.car_type) || 0, parseInt(obj.car_id) || 0);
 
                 $("#cardriver-container").show();
                 $("#cancel_booking").show();
+                $("#operation-container").show();
 
-            } else {
-                $("#cardriver-container").hide();
-                $("#cancel_booking").hide();
             }
 
             if (statusId === 9) {
                 //show price form
                 $("#price-container").show();
-            } else {
-                $("#price-container").hide();
+                $("#operation-container").show();
             }
 
 
             $('#booking_date').html(obj.booking_date + ' / ' + obj.booking_time)
             $('#status_name').html(obj.status_name)
             $('#reservation_no').html(obj.track_code)
+            $('#name').html(obj.user.name + ' ' + obj.user.surname);
+            $('#mail').html(obj.user.email);
+            $('#phone').html(obj.user.country_code + obj.user.phone);
+
+            $("#from").html(obj.from_name);
+            $("#to").html(obj.to_name);
+            $("#date").html(obj.booking_date + ' ' + obj.booking_time);
+            $("#estimated_time").html(obj.duration + " min");
+            $("#distance").html(obj.km + " km");
+
+            if (obj.data) {
+                $("#payment_info_container").show();
+                $("#payment_type").html(obj.data.payment_type + ' / ' + obj.payment_status)
+
+                $("#service_price").html("$" + obj.data.total)
+
+                if (obj.data.payment_type === "Pre") {
+
+                    $("#p1_title").html("Total Amount");
+                    $("#p2_title").html("Pre Payment");
+                    $("#p3_title").html("Paid After Trip");
+
+                    $("#p1").html("$" + obj.data.total);
+                    $("#p2").html("$" + obj.data.system_payment);
+                    $("#p3").html("$" + obj.data.driver_payment);
+
+                } else {
+                    $("#p1_title").html("Sub Total");
+                    $("#p2_title").html("Discount");
+                    $("#p3_title").html("Total Price");
+
+                    $("#p1").html("$" + obj.data.discount_price);
+                    $("#p2").html("$-" + (obj.data.discount_price - obj.data.full_discount_price).toFixed(2) + " <span style='color:green'>(%" + parseInt(obj.data.full_discount) + ")</span>");
+                    $("#p3").html("$" + obj.data.full_discount_price);
+                }
+            }
+
 
             if (obj.service) {
+                $("#service_container").show();
+                $("#person").html(obj.service.person_capacity);
+                $("#suitcase").html(obj.service.baggage_capacity);
+                $("#free_cancellation").html("(up to " + obj.service.free_cancellation + " hours)")
                 if (obj.service.image_url) {
                     $("#service_image").html("<img style='width:100%' src='" + obj.service.image_url + "'>")
                 }
@@ -333,7 +482,6 @@
             $('#packets_table').DataTable().clear().destroy();
             $('#modal_result').empty();
         });
-
 
 
         $("#car_type").change(function () {
