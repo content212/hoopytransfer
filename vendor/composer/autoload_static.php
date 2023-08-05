@@ -586,6 +586,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Helpers\\BookingHelper' => __DIR__ . '/../..' . '/app/Helpers/BookingHelper.php',
         'App\\Helpers\\ContractHelper' => __DIR__ . '/../..' . '/app/Helpers/ContractHelper.php',
         'App\\Helpers\\Netgsm' => __DIR__ . '/../..' . '/app/Helpers/Netgsm.php',
         'App\\Helpers\\NotificationHelper' => __DIR__ . '/../..' . '/app/Helpers/NotificationHelper.php',
@@ -656,6 +657,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\Driver' => __DIR__ . '/../..' . '/app/Models/Driver.php',
         'App\\Models\\Log' => __DIR__ . '/../..' . '/app/Models/Log.php',
+        'App\\Models\\Notification' => __DIR__ . '/../..' . '/app/Models/Notification.php',
         'App\\Models\\Price' => __DIR__ . '/../..' . '/app/Models/Price.php',
         'App\\Models\\RegisterOtp' => __DIR__ . '/../..' . '/app/Models/RegisterOtp.php',
         'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',

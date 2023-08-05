@@ -62,6 +62,13 @@ class BookingHelper
     }
 
 
+    public static function SendNotification($booking, $title, $body): void
+    {
+        NotificationHelper::SendNotificationToDriver($booking->driver_id, $title, $body, $booking);
+        NotificationHelper::SendNotificationToUser($booking->user_id, $title, $body, $booking);
+        NotificationHelper::SendNotificationToAdmins($title, $body, $booking);
+    }
+
     public static function WaitingForConfirmation($booking, $driver_id, $car_id, $car_type): void
     {
         //şöföre ata
@@ -72,8 +79,8 @@ class BookingHelper
                 'driver_id' => $driver_id,
                 'car_id' => $car_id,
                 'car_type' => $car_type,
-                'status' => self::TRIP_IS_EXPECTED
             ]);
+            self::TripIsExpected($booking, $driver_id, $car_id, $car_type);
         }
     }
 
@@ -87,16 +94,25 @@ class BookingHelper
                 'driver_id' => $driver_id,
                 'car_id' => $car_id,
                 'car_type' => $car_type,
+                'status' => self::TRIP_IS_EXPECTED
             ]);
+
+            $title = 'Trip Is Expected';
+            $body = 'Trip Is Expected ' . $booking->track_code;
+            self::SendNotification($booking, $title, $body);
         }
     }
 
-    public static function TripIsStarted($booking)
+    public static function TripIsStarted($booking): void
     {
         //seyehat başladı, bildirm gönder
         $booking->update([
             'status' => self::TRIP_IS_STARTED
         ]);
+
+        $title = 'Trip Is Started';
+        $body = 'Trip Is Started ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function CanceledByCustomer($booking): void
@@ -104,6 +120,10 @@ class BookingHelper
         $booking->update([
             'status' => self::CANCELED_BY_CUSTOMER
         ]);
+
+        $title = 'Canceled By Customer';
+        $body = 'Canceled By Customer ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function CanceledBySystem($booking): void
@@ -111,6 +131,10 @@ class BookingHelper
         $booking->update([
             'status' => self::CANCELED_BY_SYSTEM
         ]);
+
+        $title = 'Canceled By System';
+        $body = 'Canceled By System ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function TripIsCompleted($booking): void
@@ -118,6 +142,10 @@ class BookingHelper
         $booking->update([
             'status' => self::TRIP_IS_COMPLETED
         ]);
+
+        $title = 'Trip Is Completed';
+        $body = 'Trip Is Completed ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function TripIsNotCompleted($booking): void
@@ -125,6 +153,10 @@ class BookingHelper
         $booking->update([
             'status' => self::TRIP_IS_NOT_COMPLETED
         ]);
+
+        $title = 'Trip Is Not Completed';
+        $body = 'Trip Is Not Completed ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function Completed($booking): void
@@ -133,6 +165,10 @@ class BookingHelper
             'status' => self::COMPLETED
         ]);
         //muhasebe
+
+        $title = 'Completed';
+        $body = 'Completed ' . $booking->track_code;
+        self::SendNotification($booking, $title, $body);
     }
 
     public static function BookingRequest($booking, $driver_id, $car_id, $car_type_id, $booking_price): void
@@ -143,7 +179,7 @@ class BookingHelper
 
         if ($driver_id > 0 && $car_id > 0 && $car_type_id > 0 && $booking_price > 0) {
 
-            $car_type = CarType::where('id','=',$car_type_id)->first();
+            $car_type = CarType::where('id', '=', $car_type_id)->first();
 
             $bookingService = BookingService::where('booking_id', '=', $booking->id)->first();
 
@@ -183,6 +219,7 @@ class BookingHelper
                 'system_payment' => $system_payment,
                 'driver_payment' => $driver_payment,
                 'total' => $total,
+                'payment_type' => 'Full',
                 'full_discount' => $full_discount,
                 'full_discount_price' => $full_discount_price,
                 'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
@@ -201,6 +238,9 @@ class BookingHelper
                     'status' => self::WAITING_FOR_BOOKING
                 ]);
 
+                $title = 'Price Offer Has Been Completed';
+                $body = 'Price Offer Has Been Completed ' . $booking->track_code;
+                self::SendNotification($booking, $title, $body);
             }
         }
     }

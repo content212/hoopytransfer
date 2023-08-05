@@ -335,6 +335,14 @@
                         'Reservation has been canceled.',
                         'success'
                     );
+                },
+                error: function (error) {
+                    console.log(error);
+                    Swal.fire(
+                        'Cancellation Failed!',
+                        error.responseJSON.message,
+                        'warning'
+                    );
                 }
             });
         }
@@ -406,8 +414,16 @@
                     $("#driver_id").val("");
                 }
 
-                $("#car_type").val(obj.car_type)
-                setCar(parseInt(obj.car_type) || 0, parseInt(obj.car_id) || 0);
+                const carType = parseInt(obj.car_type) || 0;
+                const carId = parseInt(obj.car_id) || 0;
+
+                if (carType > 0) {
+                    $("#car_type").val(carType)
+                } else {
+                    $("#car_type").val("")
+                }
+
+                setCar(carType, carId);
 
                 $("#cardriver-container").show();
                 $("#cancel_booking").show();

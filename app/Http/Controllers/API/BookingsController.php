@@ -272,7 +272,7 @@ class BookingsController extends Controller
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
             if (Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) < $booking->service->free_cancellation or !in_array($booking->status, [0, 1, 2, 9])) {
-                return response()->json(['message' => 'You can not cancel this booking!'], 400);
+                return response()->json(['message' => 'You can not cancel this booking. Cancellable time has expired.'], 400);
             }
             $refundRequest = new Request([
                 'payment_intent' => $booking->payment->paymentIntent

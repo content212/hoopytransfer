@@ -192,6 +192,10 @@
         .modal {
             background: rgba(0, 0, 0, 0.5);
         }
+
+        .menu-arrow-down {
+            position: absolute;top: 13px; right: 30px
+        }
     </style>
 
 
@@ -230,10 +234,11 @@
                 @endif
                 @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                     <li class="side-nav-item">
-                        <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
+                        <a style="position:relative;" data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
                            aria-controls="sidebarDashboards" class="side-nav-link">
                             <i class="uil-home-alt"></i>
                             <span> Bookings </span>
+                            <i  class="uil-angle-down menu-arrow-down"></i>
                         </a>
                         <div class="collapse" id="sidebarDashboards">
                             <ul class="side-nav-second-level">
@@ -355,10 +360,50 @@
                 @if (trim($__env->yieldContent('role') == 'Admin'))
                     <li class="side-nav-item">
                         <a href="/contracts" class="side-nav-link">
-                            <i class="uil-newspaper"></i>
+                            <i class="uil-file"></i>
                             <span>Contracts</span>
                         </a>
                     </li>
+                @endif
+                @if (trim($__env->yieldContent('role') == 'Admin'))
+                    <li class="side-nav-item">
+                        <a style="position:relative;" data-bs-toggle="collapse" href="#notifications" aria-expanded="false"
+                           aria-controls="sidebarDashboards" class="side-nav-link">
+                            <i class="uil-envelope"></i>
+                            <span> Notifications </span>
+                            <i  class="uil-angle-down menu-arrow-down"></i>
+
+                        </a>
+                        <div class="collapse" id="notifications">
+                            <ul class="side-nav-second-level">
+                                <li>
+                                    <a aria-current="page"
+                                       href="/notifications?role=admin">
+                                        Admin
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/notifications?role=driver_manager">
+                                        Driver Manager
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/notifications?role=driver">
+                                        Driver
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/notifications?role=customer">
+                                        Customer
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
                 @endif
             </ul>
             <!-- End Sidebar -->

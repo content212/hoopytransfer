@@ -19,20 +19,25 @@ class User extends Authenticatable
     {
         return $this->hasOne(Role::class);
     }
-    public function sendNotification($title, $body)
+    public function sendNotification($title, $body, $booking)
     {
         $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');
         $devices = DB::table('user_devices')->select('id', 'device_token')->where('user_id', $this->id)->get();
         foreach ($devices as $device) {
+
             $data = [
-                "registration_ids" => $device['device_token'],
+                "to" => $device->device_token,
+                "data" => [
+                    "bookingId" => $booking->id,
+                ],
                 "notification" => [
                     "title" => $title,
                     "body" => $body,
                 ]
             ];
-            $dataString = json_encode($data);
 
+            $dataString = json_encode($data);
+            echo $dataString;
             $headers = [
                 'Authorization: key=' . $SERVER_API_KEY,
                 'Content-Type: application/json',

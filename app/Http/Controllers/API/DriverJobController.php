@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\BookingHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Driver;
@@ -11,7 +12,7 @@ use App\Models\User;
 
 class DriverJobController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $user = $request->user();
 
@@ -34,7 +35,7 @@ class DriverJobController extends Controller
         return response()->json($bookings);
     }
 
-    public function detail($id,Request $request) 
+    public function detail($id,Request $request)
     {
         $user = $request->user();
 
@@ -62,7 +63,7 @@ class DriverJobController extends Controller
         return response()->json($booking);
     }
 
-    public function tripIsStarted($booking_id, Request $request) 
+    public function tripIsStarted($booking_id, Request $request)
     {
         $user = $request->user();
 
@@ -79,12 +80,11 @@ class DriverJobController extends Controller
         if (!$booking) {
             return response()->json(['message' => 'Bad request!'], 400);
         }
-        $booking->status = 3; // Trip is stared
-        $booking->save();
+        BookingHelper::SetBookingStatus($booking,0,0,0,0,3);
         return response()->json(['message' => 'Update success.'], 200);
     }
 
-    public function tripIsCompleted($booking_id, Request $request) 
+    public function tripIsCompleted($booking_id, Request $request)
     {
         $user = $request->user();
 
@@ -101,12 +101,11 @@ class DriverJobController extends Controller
         if (!$booking) {
             return response()->json(['message' => 'Bad request!'], 400);
         }
-        $booking->status = 6; // Trip is completed
-        $booking->save();
+        BookingHelper::SetBookingStatus($booking,0,0,0,0,6);
         return response()->json(['message' => 'Update success.'], 200);
     }
 
-    public function tripIsNotCompleted($booking_id, Request $request) 
+    public function tripIsNotCompleted($booking_id, Request $request)
     {
         $user = $request->user();
 
@@ -123,8 +122,7 @@ class DriverJobController extends Controller
         if (!$booking) {
             return response()->json(['message' => 'Bad request!'], 400);
         }
-        $booking->status = 7; // Trip is not completed
-        $booking->save();
+        BookingHelper::SetBookingStatus($booking,0,0,0,0,7);
         return response()->json(['message' => 'Update success.'], 200);
     }
 }

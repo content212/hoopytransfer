@@ -113,7 +113,7 @@ class UserController extends Controller
             'role' => $userRole->role,
         ]);
     }
-    
+
     public function FrontEndCustomerUpdate(Request $request)
     {
 
@@ -396,10 +396,12 @@ class UserController extends Controller
 
             $user_device = UserDevice::where('device_token','=',$input['device_token'])->first();
 
-            if ($user_device) 
+            if ($user_device)
             {
                 //update
-                DB::table('user_devices')->update([
+                DB::table('user_devices')
+                    ->where('device_token','=', $input['device_token'])
+                    ->update([
                     'user_id' => $user_id,
                     'platform' => $input['platform'],
                     'version' => $input['version'],
@@ -407,9 +409,9 @@ class UserController extends Controller
                     'updated_at' => Carbon::now(),
                 ]);
             }
-            else 
+            else
             {
-                //insert  
+                //insert
                 DB::table('user_devices')->insert([
                     'user_id' => $user_id,
                     'device_token' => $input['device_token'],
@@ -417,11 +419,11 @@ class UserController extends Controller
                     'version' => $input['version'],
                     'build_number' => $input['build_number'],
                     'created_at' => Carbon::now(),
-                ]);  
+                ]);
             }
 
             return response()->json(['message' => 'Added!'], 200);
-            
+
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }

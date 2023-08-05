@@ -47,6 +47,9 @@ Route::get('/users', 'UsersController@index');
 
 Route::get('/contracts', 'ContractController@index');
 
+Route::get('/notifications', 'NotificationController@index');
+Route::post('/notifications', 'NotificationController@store');
+
 Route::get('/logs', 'LogsController@index');
 
 Route::get('/pricelist', 'PriceListController@index');
