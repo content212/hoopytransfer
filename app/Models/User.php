@@ -19,6 +19,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Role::class);
     }
+
+
     public function sendNotification($title, $body, $booking)
     {
         $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');

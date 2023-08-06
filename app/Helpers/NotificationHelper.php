@@ -3,40 +3,196 @@
 namespace App\Helpers;
 
 use App\Models\Driver;
+use App\Models\Notification;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\Setting;
+use Illuminate\Support\Facades\DB;
+use Twilio\Exceptions\ConfigurationException;
+use Twilio\Exceptions\TwilioException;
+use Twilio\Rest\Client;
 
 
 class NotificationHelper
 {
-    public static function SendNotificationToDriver($driver_id, $title, $body, $booking): void
+    public static function SendNotificationToDriver($booking, $status): void
     {
-        $driver = Driver::where('id', '=', $driver_id)->first();
+        $driver = Driver::where('id', '=', $booking->driver_id)->first();
         if ($driver) {
             $driver_user = User::where('id', '=', $driver->user_id)->first();
             if ($driver_user) {
-                $driver_user->sendNotification($title, $body, $booking);
+                $notification = Notification::where('role', 'driver', 'status', $status)->first();
+                if ($notification) {
+                    self::Send($notification, $driver_user, $booking);
+                }
             }
         }
     }
 
-    public static function SendNotificationToUser($user_id, $title, $body, $booking): void
+
+    public static function SendNotificationToCustomer($booking, $status): void
     {
-        $user = User::where('id', '=', $user_id)->first();
+        $user = User::where('id', '=', $booking->user_id)->first();
         if ($user) {
-            $user->sendNotification($title, $body, $booking);
+            $notification = Notification::where('role', 'customer')
+                ->where('status', $status)
+                ->first();
+
+            if ($notification) {
+                self::Send($notification, $user, $booking);
+            }
         }
     }
 
-    public static function SendNotificationToAdmins($title, $body, $booking): void
+    public static function SendNotificationToAdmins($booking, $status): void
     {
         $admin_users = Role::where('role', '=', 'admin')->get();
         foreach ($admin_users as $admin_user) {
             $adminUser = User::where('id', '=', $admin_user->user_id)->first();
             if ($adminUser) {
-                $adminUser->sendNotification($title, $body, $booking);
+                $notification = Notification::where('role', 'admin')
+                    ->where('status', $status)
+                    ->first();
+                if ($notification) {
+                    self::Send($notification, $adminUser, $booking);
+                }
             }
+        }
+    }
+
+    public static function SendNotificationToDriverManagers($booking, $status): void
+    {
+        $drivermanager_users = Role::where('role', '=', 'driver_manager')->get();
+        foreach ($drivermanager_users as $drivermanager_user) {
+            $driverManagerUser = User::where('id', '=', $drivermanager_user->user_id)->first();
+            if ($driverManagerUser) {
+                $notification = Notification::where('role', 'driver_manager')
+                    ->where('status', $status)
+                    ->first();
+                if ($notification) {
+                    self::Send($notification, $driverManagerUser, $booking);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * @throws ConfigurationException
+     * @throws TwilioException
+     */
+    public static function Send($notification, $user, $booking)
+    {
+        if ($user && $booking) {
+            if ($notification->push_enabled && $notification->push_title && $notification->push_body) {
+                //self::SendFirebaseNotification($user, $booking, $notification->push_title, $notification->push_body);
+            }
+
+            if ($notification->sms_enabled && $notification->sms_body) {
+                self::SendSms($user->country_code . $user->phone, $notification->sms_body);
+            }
+
+            if ($notification->email_enabled && $notification->email_subject && $notification->email_body) {
+                self::SendEmail($user, $booking, $notification->email_subject, $notification->email_body);
+            }
+        }
+    }
+
+    /**
+     * @throws ConfigurationException
+     * @throws TwilioException
+     */
+    public static function SendSms($receiverNumber, $message)
+    {
+        $account_sid = getenv("TWILIO_SID");
+        $auth_token = getenv("TWILIO_TOKEN");
+        $twilio_number = getenv("TWILIO_FROM");
+        $client = new Client($account_sid, $auth_token);
+        $client->messages->create($receiverNumber, [
+            'from' => $twilio_number,
+            'body' => $message
+        ]);
+    }
+
+    public static function SendEmail($user, $booking, $subject, $mail)
+    {
+        $SENDGRID_API_KEY = env('SENDGRID_API_KEY');
+        $SENDGRID_TEMPLATE_ID = env('SENDGRID_TEMPLATE_ID');
+        $SENDGRID_SENDER = env('SENDGRID_SENDER');
+
+        $headers = [
+            'Authorization: Bearer ' . $SENDGRID_API_KEY,
+            'Content-Type: application/json',
+        ];
+
+        $data = '
+        {
+           "from":{
+              "email":"' . $SENDGRID_SENDER . '"
+           },
+           "personalizations":[
+              {
+                 "to":[
+                    {
+                       "email":"ayhanselek@gmail.com"
+                    }
+                 ],
+                 "dynamic_template_data":{
+                    "subject": "Your dynamic subject",
+                    "icerik":"' . $mail . '",
+                  }
+              }
+           ],
+           "template_id":"' . $SENDGRID_TEMPLATE_ID . '"
+        }
+        ';
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://api.sendgrid.com/v3/mail/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        curl_exec($ch);
+
+    }
+
+    public static function SendFirebaseNotification($user, $booking, $title, $body)
+    {
+        $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');
+        $devices = DB::table('user_devices')->select('id', 'device_token')->where('user_id', $user->id)->get();
+        foreach ($devices as $device) {
+
+            $data = [
+                "to" => $device->device_token,
+                "data" => [
+                    "bookingId" => $booking->id,
+                ],
+                "notification" => [
+                    "title" => $title,
+                    "body" => $body,
+                ]
+            ];
+
+            $dataString = json_encode($data);
+            echo $dataString;
+            $headers = [
+                'Authorization: key=' . $SERVER_API_KEY,
+                'Content-Type: application/json',
+            ];
+
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+            curl_exec($ch);
         }
     }
 }

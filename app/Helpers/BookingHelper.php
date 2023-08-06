@@ -62,11 +62,12 @@ class BookingHelper
     }
 
 
-    public static function SendNotification($booking, $title, $body): void
+    public static function SendNotification($booking, $status): void
     {
-        NotificationHelper::SendNotificationToDriver($booking->driver_id, $title, $body, $booking);
-        NotificationHelper::SendNotificationToUser($booking->user_id, $title, $body, $booking);
-        NotificationHelper::SendNotificationToAdmins($title, $body, $booking);
+        //NotificationHelper::SendNotificationToDriver($booking, $status);
+        NotificationHelper::SendNotificationToCustomer($booking, $status);
+        //NotificationHelper::SendNotificationToAdmins($booking, $status);
+        //NotificationHelper::SendNotificationToDriverManagers($booking, $status);
     }
 
     public static function WaitingForConfirmation($booking, $driver_id, $car_id, $car_type): void
@@ -97,9 +98,7 @@ class BookingHelper
                 'status' => self::TRIP_IS_EXPECTED
             ]);
 
-            $title = 'Trip Is Expected';
-            $body = 'Trip Is Expected ' . $booking->track_code;
-            self::SendNotification($booking, $title, $body);
+            self::SendNotification($booking, self::TRIP_IS_EXPECTED);
         }
     }
 
@@ -109,10 +108,7 @@ class BookingHelper
         $booking->update([
             'status' => self::TRIP_IS_STARTED
         ]);
-
-        $title = 'Trip Is Started';
-        $body = 'Trip Is Started ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::TRIP_IS_STARTED);
     }
 
     public static function CanceledByCustomer($booking): void
@@ -120,10 +116,7 @@ class BookingHelper
         $booking->update([
             'status' => self::CANCELED_BY_CUSTOMER
         ]);
-
-        $title = 'Canceled By Customer';
-        $body = 'Canceled By Customer ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::CANCELED_BY_CUSTOMER);
     }
 
     public static function CanceledBySystem($booking): void
@@ -131,10 +124,7 @@ class BookingHelper
         $booking->update([
             'status' => self::CANCELED_BY_SYSTEM
         ]);
-
-        $title = 'Canceled By System';
-        $body = 'Canceled By System ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::CANCELED_BY_SYSTEM);
     }
 
     public static function TripIsCompleted($booking): void
@@ -143,9 +133,7 @@ class BookingHelper
             'status' => self::TRIP_IS_COMPLETED
         ]);
 
-        $title = 'Trip Is Completed';
-        $body = 'Trip Is Completed ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::TRIP_IS_COMPLETED);
     }
 
     public static function TripIsNotCompleted($booking): void
@@ -153,10 +141,7 @@ class BookingHelper
         $booking->update([
             'status' => self::TRIP_IS_NOT_COMPLETED
         ]);
-
-        $title = 'Trip Is Not Completed';
-        $body = 'Trip Is Not Completed ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::TRIP_IS_NOT_COMPLETED);
     }
 
     public static function Completed($booking): void
@@ -165,10 +150,7 @@ class BookingHelper
             'status' => self::COMPLETED
         ]);
         //muhasebe
-
-        $title = 'Completed';
-        $body = 'Completed ' . $booking->track_code;
-        self::SendNotification($booking, $title, $body);
+        self::SendNotification($booking, self::COMPLETED);
     }
 
     public static function BookingRequest($booking, $driver_id, $car_id, $car_type_id, $booking_price): void
@@ -238,9 +220,7 @@ class BookingHelper
                     'status' => self::WAITING_FOR_BOOKING
                 ]);
 
-                $title = 'Price Offer Has Been Completed';
-                $body = 'Price Offer Has Been Completed ' . $booking->track_code;
-                self::SendNotification($booking, $title, $body);
+                self::SendNotification($booking, self::WAITING_FOR_BOOKING);
             }
         }
     }

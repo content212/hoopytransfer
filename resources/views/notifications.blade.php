@@ -21,7 +21,10 @@
             <div class="flash-message">
                 @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                     @if(Session::has('alert-' . $msg))
-                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close"
+                                                                                                 data-dismiss="alert"
+                                                                                                 aria-label="close">&times;</a>
+                        </p>
                     @endif
                 @endforeach
             </div>
@@ -65,32 +68,41 @@
                             <td>{{$status}}</td>
                             <!-- push -->
                             <td class="td-center" valign="middle">
-                                <input type="checkbox" value="1" {{ $notification->push_enabled ? "checked": "" }}  name="push_enabled_{{$loop->index}}">
+                                <input type="checkbox" value="1"
+                                       {{ ($notification->push_enabled ?? false) ? "checked": "" }}  name="push_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->push_title}}" name="push_title_{{$loop->index}}" type="text">
+                                <input class="form-control"
+                                       value="{{  $notification->push_title ?? "" }}"
+                                       name="push_title_{{$loop->index}}" type="text">
                             </td>
                             <td>
-                                <input class="form-control"  value="{{$notification->push_body}}" name="push_body_{{$loop->index}}" type="text">
+                                <input class="form-control" value="{{$notification->push_body ?? "" }}"
+                                       name="push_body_{{$loop->index}}" type="text">
                             </td>
                             <!-- push -->
                             <!-- sms -->
                             <td class="td-center">
-                                <input type="checkbox" {{ $notification->sms_enabled ? "checked": "" }} value="1" name="sms_enabled_{{$loop->index}}">
+                                <input type="checkbox" {{ ($notification->sms_enabled ?? false) ? "checked": "" }} value="1"
+                                       name="sms_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->sms_body}}" name="sms_body_{{$loop->index}}" type="text">
+                                <input class="form-control" value="{{$notification->sms_body ?? "" }}"
+                                       name="sms_body_{{$loop->index}}" type="text">
                             </td>
                             <!-- sms -->
                             <!-- mail -->
                             <td class="td-center">
-                                <input type="checkbox" {{ $notification->email_enabled ? "checked": "" }} value="1" name="email_enabled_{{$loop->index}}">
+                                <input type="checkbox" {{ ($notification->email_enabled ?? false) ? "checked": "" }} value="1"
+                                       name="email_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->email_subject}}" name="email_subject_{{$loop->index}}" type="text">
+                                <input class="form-control" value="{{$notification->email_subject ?? ""}}"
+                                       name="email_subject_{{$loop->index}}" type="text">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->email_body}}" name="email_body_{{$loop->index}}" type="text">
+                                <input class="form-control" value="{{$notification->email_body ?? ""}}"
+                                       name="email_body_{{$loop->index}}" type="text">
                             </td>
                             <!-- mail -->
                         </tr>

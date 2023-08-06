@@ -21,7 +21,7 @@ class UserOtp extends Model
     /**
      * Write code on Method
      *
-     * @return response()
+     * @return string()
      */
     public function sendSMS($receiverNumber)
     {
@@ -47,7 +47,7 @@ class UserOtp extends Model
         //    $client = new Netgsm();
         //    $response = $client->sendSMS($receiverNumber, $message);
         //    error_log($message);
-        //    
+        //
         //} catch (Exception $e) {
         //    info("Error: " . $e->getMessage());
         //}
