@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Models\CarType;
 use App\Models\Price;
-use Livewire\Request;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 

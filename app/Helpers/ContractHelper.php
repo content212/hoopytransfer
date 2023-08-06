@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Helpers;
-use App\Models\UserContract;
-use App\Models\User;
 use App\Models\BookingData;
-use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\UserContract;
 
-class ContractHelper 
+class ContractHelper
 {
     public static function getOrderInformationTag() {
         return '@order-information';
     }
 
-    public static function BuildContract($contract, $booking, $paymentType) 
+    public static function BuildContract($contract, $booking, $paymentType)
     {
         if (!$booking)
         {
@@ -42,7 +41,7 @@ class ContractHelper
         $html .= "Email: " . $user->email . "<br>";
         $html .= "Phone: " . $user->phone . "<br>";
 
-       
+
         $html .= "<br><b>From</b><br>";
         $html .= "From: " . $booking->from_name . "<br>";
         $html .= "Address: " . $booking->from_address . "<br>";
@@ -56,11 +55,11 @@ class ContractHelper
 
         $paymentType = strtolower($paymentType);
 
-        if ($paymentType) 
+        if ($paymentType)
         {
             $html .= "<br><b>Payment Information</b><br>";
 
-            if ($paymentType == 'full') 
+            if ($paymentType == 'full')
             {
                 //pre
                 $discount_amount = $bookingData->discount_price * $bookingData->full_discount / 100;
@@ -82,14 +81,14 @@ class ContractHelper
         return nl2br(str_replace(ContractHelper::getOrderInformationTag(), $html, $contract->contract));
     }
 
-    public static function SaveContract($contract, $booking, $user, $paymentType) 
+    public static function SaveContract($contract, $booking, $user, $paymentType)
     {
-        if (!$contract) 
+        if (!$contract)
         {
             return false;
         }
 
-        if (!$user) 
+        if (!$user)
         {
             return false;
         }

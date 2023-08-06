@@ -1,7 +1,7 @@
 @extends('test')
 
 @if (app('request')->input('status') != '')
-    @section('title', 'Bookings - ' . App\Models\Booking::getAllStatus()[app('request')->input('status')])
+    @section('title', 'Bookings - ' . \App\Models\Booking::getAllStatus()[app('request')->input('status')])
 @else
     @section('title', 'Bookings')
 @endif
@@ -198,9 +198,9 @@
                                                             <label for="service">Service</label>
                                                             <select name="car_type" id="car_type" class="form-control">
                                                                 <option value="">Choose a Service</option>
-                                                                @foreach (App\Models\CarType::all() as $carType)
+                                                                @foreach (\App\Models\CarType::all() as $carType)
                                                                     <option
-                                                                        value="{{ $carType->id }}">{{ $carType->name }}</option>
+                                                                            value="{{ $carType->id }}">{{ $carType->name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -219,9 +219,9 @@
                                                             <select name="driver_id" id="driver_id"
                                                                     class="form-control">
                                                                 <option value="">Choose a Driver</option>
-                                                                @foreach (App\Models\Driver::select('drivers.id','users.name','users.surname')->join('users', 'users.id', '=', 'drivers.user_id')->get() as $driver)
+                                                                @foreach (\App\Models\Driver::select('drivers.id','users.name','users.surname')->join('users', 'users.id', '=', 'drivers.user_id')->get() as $driver)
                                                                     <option
-                                                                        value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
+                                                                            value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -232,10 +232,10 @@
                                                         <div class="form-group">
                                                             <label for="price">Price</label>
                                                             <input
-                                                                onkeypress="return onlyNumberKey(event)"
-                                                                oninput="enforceNumberValidation(this)"
-                                                                class="form-control" placeholder="0.00" name="price"
-                                                                id="price">
+                                                                    onkeypress="return onlyNumberKey(event)"
+                                                                    oninput="enforceNumberValidation(this)"
+                                                                    class="form-control" placeholder="0.00" name="price"
+                                                                    id="price">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -609,7 +609,7 @@
         });
 
         function reloadCounts() {
-            @foreach (App\Models\Booking::getAllStatus() as  $status)
+            @foreach (\App\Models\Booking::getAllStatus() as  $status)
             $.get('{{ route('count', $loop->index ) }}').then(function (response) {
                 $('#count' + {{ $loop->index }}).html(
                     response)

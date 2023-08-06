@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Helpers\Netgsm;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Twilio\Rest\Client;
 
 class RegisterOtp extends Model
@@ -42,7 +41,7 @@ class RegisterOtp extends Model
         //    $client = new Netgsm();
         //    $response = $client->sendSMS($receiverNumber, $message);
         //    error_log($message);
-        //    
+        //
         //} catch (Exception $e) {
         //    info("Error: " . $e->getMessage());
         //}

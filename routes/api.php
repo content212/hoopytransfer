@@ -1,22 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-
 use App\Http\Controllers\API\GoogleMapsApiController;
 use App\Http\Controllers\API\PaymentController;
 use App\Models\Booking;
-use App\Models\BookingData;
 use App\Models\BookingPayment;
 use App\Models\Setting;
 use App\Models\Shift;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
-
+use Illuminate\Support\Facades\Route;
 
 
 /*

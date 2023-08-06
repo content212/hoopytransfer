@@ -2,38 +2,26 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Log;
-use App\Models\Booking;
-use App\Models\BookingUserInfo;
-use Carbon\Carbon;
 use App\BookingPackets;
-use App\Models\Car;
-use App\Models\Driver;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\BookingHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Price;
-use App\Models\Setting;
-use App\Models\Transaction;
-use App\Rules\InsuranceExp;
-use App\Models\User;
+use App\Models\Booking;
 use App\Models\BookingData;
 use App\Models\BookingService;
 use App\Models\CarType;
-use App\Models\BookingStatusChangeLog;
+use App\Models\Driver;
+use App\Models\Log;
+use App\Models\Price;
+use App\Models\Setting;
 use App\Models\Shift;
 use App\Models\UserContract;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Validator;
-use stdClass;
-use Yajra\DataTables\Contracts\DataTable;
-use App\Helpers\BookingHelper;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
-
-use function Symfony\Component\VarDumper\Dumper\esc;
 
 class BookingsController extends Controller
 {

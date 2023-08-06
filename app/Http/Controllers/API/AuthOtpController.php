@@ -4,12 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\RegisterOtp;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserOtp;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use \Validator;
+use Validator;
 
 class AuthOtpController extends Controller
 {

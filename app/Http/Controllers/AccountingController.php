@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Models\Driver;
 use Illuminate\Http\Request;
-use App\Helpers\Utils;
 
 class AccountingController extends Controller
 {

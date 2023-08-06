@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Helpers\Utils;
 use App\Models\Driver;
-use App\Models\Setting;
+use Illuminate\Http\Request;
 
 class ShiftController extends Controller
 {

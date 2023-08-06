@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Helpers\Utils;
 use App\Models\CarType;
-
-use Yajra\DataTables\DataTables;
+use Illuminate\Http\Request;
 
 class PricesController extends Controller
 {

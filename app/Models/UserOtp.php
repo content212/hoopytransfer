@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Helpers\Netgsm;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Exception;
 use Twilio\Rest\Client;
 
 class UserOtp extends Model

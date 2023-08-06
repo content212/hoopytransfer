@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Helpers\Utils;
 use App\Models\Setting;
+use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {

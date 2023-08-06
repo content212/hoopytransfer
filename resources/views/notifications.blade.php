@@ -58,7 +58,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (App\Models\Booking::getAllStatus() as $status)
+                    @foreach (\App\Models\Booking::getAllStatus() as $status)
 
                         @php
                             $notification = $notifications->where('status', $loop->index)->first();
@@ -83,7 +83,8 @@
                             <!-- push -->
                             <!-- sms -->
                             <td class="td-center">
-                                <input type="checkbox" {{ ($notification->sms_enabled ?? false) ? "checked": "" }} value="1"
+                                <input type="checkbox"
+                                       {{ ($notification->sms_enabled ?? false) ? "checked": "" }} value="1"
                                        name="sms_enabled_{{$loop->index}}">
                             </td>
                             <td>
@@ -93,7 +94,8 @@
                             <!-- sms -->
                             <!-- mail -->
                             <td class="td-center">
-                                <input type="checkbox" {{ ($notification->email_enabled ?? false) ? "checked": "" }} value="1"
+                                <input type="checkbox"
+                                       {{ ($notification->email_enabled ?? false) ? "checked": "" }} value="1"
                                        name="email_enabled_{{$loop->index}}">
                             </td>
                             <td>

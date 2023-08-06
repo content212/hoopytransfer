@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\Log;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
-use Illuminate\Database\QueryException;
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\DataTables;
 
 class DriverController extends Controller
 {

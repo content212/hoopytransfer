@@ -5,8 +5,6 @@ namespace App\Helpers;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Token\Parser;

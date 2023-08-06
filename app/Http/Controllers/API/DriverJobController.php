@@ -4,10 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\BookingHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Driver;
 use App\Models\Booking;
-use App\Models\User;
+use App\Models\Driver;
+use Illuminate\Http\Request;
 
 
 class DriverJobController extends Controller

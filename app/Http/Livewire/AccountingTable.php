@@ -4,8 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\Driver;
 use App\Models\Transaction;
+use DB;
 use Livewire\Component;
-use \DB;
 
 class AccountingTable extends Component
 {

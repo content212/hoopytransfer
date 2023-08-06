@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Booking;
-use App\Models\BookingData;
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\BookingPayment;
 use App\Models\Price;
 use App\Models\Setting;
@@ -12,7 +11,6 @@ use App\Models\Transaction;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Stripe\Exception\CardException;
 use Stripe\StripeClient;
 
 class PaymentController extends Controller

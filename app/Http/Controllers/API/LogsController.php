@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Log;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 
 class LogsController extends Controller
 {

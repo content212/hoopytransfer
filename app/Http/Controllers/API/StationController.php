@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Station;
+use App\Http\Controllers\Controller;
 use App\Models\Log;
+use App\Models\Station;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use Illuminate\Database\QueryException;
 
 class StationController extends Controller
 {

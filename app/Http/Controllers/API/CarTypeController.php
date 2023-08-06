@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\CarType;
 use App\Models\Log;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Illuminate\Database\QueryException;
-use App\Http\Controllers\Controller;
 
 class CarTypeController extends Controller
 {

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Price;
-use App\Models\Log;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
-use Illuminate\Database\QueryException;
 use App\Http\Controllers\Controller;
+use App\Models\Log;
+use App\Models\Price;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
 class PriceController extends Controller
 {

@@ -194,7 +194,9 @@
         }
 
         .menu-arrow-down {
-            position: absolute;top: 13px; right: 30px
+            position: absolute;
+            top: 13px;
+            right: 30px
         }
     </style>
 
@@ -234,22 +236,23 @@
                 @endif
                 @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
                     <li class="side-nav-item">
-                        <a style="position:relative;" data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
+                        <a style="position:relative;" data-bs-toggle="collapse" href="#sidebarDashboards"
+                           aria-expanded="false"
                            aria-controls="sidebarDashboards" class="side-nav-link">
                             <i class="uil-home-alt"></i>
                             <span> Bookings </span>
-                            <i  class="uil-angle-down menu-arrow-down"></i>
+                            <i class="uil-angle-down menu-arrow-down"></i>
                         </a>
                         <div class="collapse" id="sidebarDashboards">
                             <ul class="side-nav-second-level">
                                 <li>
                                     <a href="/bookings">All Bookings</a>
                                 </li>
-                                @foreach (App\Models\Booking::getAllStatus() as $status)
+                                @foreach (\App\Models\Booking::getAllStatus() as $status)
                                     <li>
                                         <a id="count{{ $loop->index }}" aria-current="page"
                                            href="/bookings?status={{ $loop->index }}">
-                                            {{ App\Models\Booking::getCount($loop->index) }}
+                                            {{ \App\Models\Booking::getCount($loop->index) }}
                                         </a>
                                     </li>
                                 @endforeach
@@ -367,11 +370,12 @@
                 @endif
                 @if (trim($__env->yieldContent('role') == 'Admin'))
                     <li class="side-nav-item">
-                        <a style="position:relative;" data-bs-toggle="collapse" href="#notifications" aria-expanded="false"
+                        <a style="position:relative;" data-bs-toggle="collapse" href="#notifications"
+                           aria-expanded="false"
                            aria-controls="sidebarDashboards" class="side-nav-link">
                             <i class="uil-envelope"></i>
                             <span> Notifications </span>
-                            <i  class="uil-angle-down menu-arrow-down"></i>
+                            <i class="uil-angle-down menu-arrow-down"></i>
 
                         </a>
                         <div class="collapse" id="notifications">

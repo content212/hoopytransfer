@@ -1,18 +1,12 @@
 <?php
 
+use App\CustomClass\CalculateSalary;
+use App\Http\Controllers\PaymentController;
 use App\Lager;
 use App\PriceList;
 use App\WorkHours;
 use App\WorkInput;
 use App\WorkLager;
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\DB;
-use App\CustomClass\CalculateSalary;
-use App\Models\Driver;
-use App\Http\Controllers\PaymentController;
-use App\Models\Setting;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 

@@ -5,7 +5,6 @@ namespace App\Http\Livewire;
 use App\Models\CarType;
 use App\Models\Price;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 class Prices extends Component
 {

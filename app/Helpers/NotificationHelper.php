@@ -84,7 +84,7 @@ class NotificationHelper
     {
         if ($user && $booking) {
             if ($notification->push_enabled && $notification->push_title && $notification->push_body) {
-                //self::SendFirebaseNotification($user, $booking, $notification->push_title, $notification->push_body);
+                self::SendFirebaseNotification($user, $booking, $notification->push_title, $notification->push_body);
             }
 
             if ($notification->sms_enabled && $notification->sms_body) {
@@ -103,9 +103,9 @@ class NotificationHelper
      */
     public static function SendSms($receiverNumber, $message)
     {
-        $account_sid = getenv("TWILIO_SID");
-        $auth_token = getenv("TWILIO_TOKEN");
-        $twilio_number = getenv("TWILIO_FROM");
+        $account_sid = env("TWILIO_SID");
+        $auth_token = env("TWILIO_TOKEN");
+        $twilio_number = env("TWILIO_FROM");
         $client = new Client($account_sid, $auth_token);
         $client->messages->create($receiverNumber, [
             'from' => $twilio_number,
@@ -115,6 +115,7 @@ class NotificationHelper
 
     public static function SendEmail($user, $booking, $subject, $mail)
     {
+
         $SENDGRID_API_KEY = env('SENDGRID_API_KEY');
         $SENDGRID_TEMPLATE_ID = env('SENDGRID_TEMPLATE_ID');
         $SENDGRID_SENDER = env('SENDGRID_SENDER');
@@ -133,11 +134,11 @@ class NotificationHelper
               {
                  "to":[
                     {
-                       "email":"ayhanselek@gmail.com"
+                       "email":"' . $user->email . '"
                     }
                  ],
                  "dynamic_template_data":{
-                    "subject": "Your dynamic subject",
+                    "subject": "' . $subject . '",
                     "icerik":"' . $mail . '",
                   }
               }
