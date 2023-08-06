@@ -33,7 +33,7 @@
                 <table class="table table-hover table-bordered">
                     <thead>
                     <tr>
-                        <th width="250" rowspan="2">
+                        <th width="200" rowspan="2">
                             Status
                         </th>
                         <th colspan="3">
@@ -47,14 +47,14 @@
                         </th>
                     </tr>
                     <tr>
-                        <th width="50">Enabled</th>
-                        <th width="200">Title</th>
-                        <th width="200">Body</th>
-                        <th width="50">Enabled</th>
-                        <th width="200">Sms</th>
-                        <th width="50">Enabled</th>
-                        <th width="200">Subject</th>
-                        <th width="200">Mail</th>
+                        <th width="40">Enabled</th>
+                        <th width="220">Title</th>
+                        <th width="220">Body</th>
+                        <th width="40">Enabled</th>
+                        <th width="220">Sms</th>
+                        <th width="40">Enabled</th>
+                        <th width="220">Subject</th>
+                        <th width="220">Mail</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -65,50 +65,50 @@
                         @endphp
 
                         <tr>
-                            <td>{{$status}}</td>
-                            <!-- push -->
+                            <td class="td-center">{{$status}}</td>
                             <td class="td-center" valign="middle">
                                 <input type="checkbox" value="1"
                                        {{ ($notification->push_enabled ?? false) ? "checked": "" }}  name="push_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control"
-                                       value="{{  $notification->push_title ?? "" }}"
-                                       name="push_title_{{$loop->index}}" type="text">
+                                <textarea class="form-control"
+                                          rows="4"
+                                          name="push_title_{{$loop->index}}"
+                                          type="text">{{  $notification->push_title ?? "" }}</textarea>
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->push_body ?? "" }}"
-                                       name="push_body_{{$loop->index}}" type="text">
+                                <textarea class="form-control"
+                                          rows="4"
+                                          name="push_body_{{$loop->index}}"
+                                          type="text">{{$notification->push_body ?? "" }}</textarea>
                             </td>
-                            <!-- push -->
-                            <!-- sms -->
                             <td class="td-center">
                                 <input type="checkbox"
                                        {{ ($notification->sms_enabled ?? false) ? "checked": "" }} value="1"
                                        name="sms_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->sms_body ?? "" }}"
-                                       name="sms_body_{{$loop->index}}" type="text">
+                                <textarea class="form-control"
+                                          rows="4"
+                                          name="sms_body_{{$loop->index}}"
+                                          type="text">{{$notification->sms_body ?? "" }}</textarea>
                             </td>
-                            <!-- sms -->
-                            <!-- mail -->
                             <td class="td-center">
                                 <input type="checkbox"
                                        {{ ($notification->email_enabled ?? false) ? "checked": "" }} value="1"
                                        name="email_enabled_{{$loop->index}}">
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->email_subject ?? ""}}"
-                                       name="email_subject_{{$loop->index}}" type="text">
+                                <textarea class="form-control"
+                                          rows="4"
+                                          name="email_subject_{{$loop->index}}">{{$notification->email_subject ?? ""}}</textarea>
                             </td>
                             <td>
-                                <input class="form-control" value="{{$notification->email_body ?? ""}}"
-                                       name="email_body_{{$loop->index}}" type="text">
+                                <textarea class="form-control"
+                                          rows="4"
+                                          name="email_body_{{$loop->index}}">{{$notification->email_body ?? ""}}</textarea>
                             </td>
-                            <!-- mail -->
                         </tr>
-
                     @endforeach
                     </tbody>
                 </table>

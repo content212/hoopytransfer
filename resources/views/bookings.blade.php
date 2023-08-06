@@ -200,7 +200,7 @@
                                                                 <option value="">Choose a Service</option>
                                                                 @foreach (\App\Models\CarType::all() as $carType)
                                                                     <option
-                                                                            value="{{ $carType->id }}">{{ $carType->name }}</option>
+                                                                        value="{{ $carType->id }}">{{ $carType->name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -221,7 +221,7 @@
                                                                 <option value="">Choose a Driver</option>
                                                                 @foreach (\App\Models\Driver::select('drivers.id','users.name','users.surname')->join('users', 'users.id', '=', 'drivers.user_id')->get() as $driver)
                                                                     <option
-                                                                            value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
+                                                                        value="{{$driver->id}}">{{ $driver->name }} {{$driver->surname}}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -232,10 +232,12 @@
                                                         <div class="form-group">
                                                             <label for="price">Price</label>
                                                             <input
-                                                                    onkeypress="return onlyNumberKey(event)"
-                                                                    oninput="enforceNumberValidation(this)"
-                                                                    class="form-control" placeholder="0.00" name="price"
-                                                                    id="price">
+                                                                type="text"
+                                                                pattern="[0-9]+"
+                                                                class="form-control"
+                                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                                                                name="price"
+                                                                id="price">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -276,6 +278,11 @@
             $('#edit-modal').modal('show');
         });
 
+        $('#price').keydown(function(e) {
+            if (e.keyCode === 190 || e.keyCode === 110) {
+                e.preventDefault();
+            }
+        });
 
         $("#cancel_booking").click(function () {
             Swal.fire({

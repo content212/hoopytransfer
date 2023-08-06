@@ -84,17 +84,24 @@ class NotificationHelper
     {
         if ($user && $booking) {
             if ($notification->push_enabled && $notification->push_title && $notification->push_body) {
-                self::SendFirebaseNotification($user, $booking, $notification->push_title, $notification->push_body);
+                self::SendFirebaseNotification($user, $booking, self::Replace($notification->push_title, $booking), self::Replace($notification->push_body, $booking));
             }
 
             if ($notification->sms_enabled && $notification->sms_body) {
-                self::SendSms($user->country_code . $user->phone, $notification->sms_body);
+                self::SendSms($user->country_code . $user->phone, self::Replace($notification->sms_body, $booking));
             }
 
             if ($notification->email_enabled && $notification->email_subject && $notification->email_body) {
-                self::SendEmail($user, $booking, $notification->email_subject, $notification->email_body);
+                self::SendEmail($user, $booking, self::Replace($notification->email_subject, $booking), self::Replace($notification->email_body, $booking));
             }
         }
+    }
+
+    public static function Replace($text, $booking)
+    {
+        $booking_date_time = $booking->booking_date . ' ' . $booking->booking_time;
+        $text = str_replace("{reservation_no}", $booking->track_code, $text);
+        return str_replace("{booking_date_time}", $booking_date_time, $text);
     }
 
     /**

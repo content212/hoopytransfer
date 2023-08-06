@@ -48,7 +48,6 @@ class BookingsController extends Controller
         )->leftJoin('users', function ($join) {
             $join->on('users.id', '=', 'bookings.user_id')->whereNotNull('bookings.user_id');
         })
-
             ->leftJoin('booking_user_infos', 'booking_user_infos.booking_id', '=', 'bookings.id')
             ->leftJoin('drivers as d', function ($join) {
                 $join->on('d.id', '=', 'bookings.driver_id');
@@ -202,7 +201,7 @@ class BookingsController extends Controller
             $carType = intval($request->post('car_type'));
             $carId = intval($request->post('car_id'));
             $driverId = intval($request->post('driver_id'));
-            $price = doubleval($request->post('price'));
+            $price = intval($request->post('price'));
 
 
             /*
@@ -342,16 +341,17 @@ class BookingsController extends Controller
             'to_name',
             'status',
             'booking_date',
-            'car_type',
-        )
-            ->with('service:id,free_cancellation', 'data')
+            'booking_time',
+            'car_type'
+        )->with('service:id,free_cancellation', 'data')
             #->addSelect(['free_cancellation' => CarType::select('free_cancellation')])
             ->where('bookings.user_id', $user->id)
             ->orWhere('bookings.other_user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
-            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'status_name', 'status', 'service', 'data', 'payment_status');
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date','booking_time', 'status_name', 'status', 'service', 'data', 'payment_status');
+
 
         return $bookings;
     }
@@ -371,10 +371,17 @@ class BookingsController extends Controller
 
             $booking['contracts'] = $bookingContracts;
 
+            $booking['cancelable'] = self::cancelable($booking);
+
             return response()->json($booking, 200);
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+    }
+
+    private function cancelable($booking): bool
+    {
+        return Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) > intval($booking->service->free_cancellation) && in_array($booking->status, [1, 1, 3]);
     }
 
     private function random_color_part()
