@@ -76,10 +76,6 @@ class NotificationHelper
     }
 
 
-    /**
-     * @throws ConfigurationException
-     * @throws TwilioException
-     */
     public static function Send($notification, $user, $booking)
     {
         if ($user && $booking) {
@@ -104,20 +100,23 @@ class NotificationHelper
         return str_replace("{booking_date_time}", $booking_date_time, $text);
     }
 
-    /**
-     * @throws ConfigurationException
-     * @throws TwilioException
-     */
     public static function SendSms($receiverNumber, $message)
     {
         $account_sid = env("TWILIO_SID");
         $auth_token = env("TWILIO_TOKEN");
         $twilio_number = env("TWILIO_FROM");
-        $client = new Client($account_sid, $auth_token);
-        $client->messages->create($receiverNumber, [
-            'from' => $twilio_number,
-            'body' => $message
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://api.twilio.com/2010-04-01/Accounts/' . $account_sid . '/Messages.json');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
         ]);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_USERPWD, $account_sid . ':' . $auth_token);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, 'To=' . $receiverNumber . '&From=' . $twilio_number . '&Body=' . $message);
+        $response = curl_exec($ch);
+        curl_close($ch);
     }
 
     public static function SendEmail($user, $booking, $subject, $mail)

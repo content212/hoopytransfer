@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingData;
 use App\Models\BookingPayment;
 use App\Models\Price;
 use App\Models\Setting;
@@ -16,6 +17,7 @@ use Stripe\StripeClient;
 class PaymentController extends Controller
 {
     private $stripe;
+
     public function __construct()
     {
         $this->stripe = new StripeClient(env('STRIPE_SECRET'));
@@ -42,6 +44,8 @@ class PaymentController extends Controller
                 'error' => $messages
             ], 400);
         }
+
+
         try {
             $data = $request->all();
             $booking = Booking::find($data['bookingId']);
@@ -49,9 +53,10 @@ class PaymentController extends Controller
                 return response()->json([
                     'error' => 'Payment not created for this booking!'
                 ]);
+
             if ($data['paymentType'] == 'No') {
                 $user = $request->user('api');
-                if (!$user || $user->role->role  != "admin") {
+                if (!$user || $user->role->role != "admin") {
                     abort(403);
                 }
                 BookingPayment::create([
@@ -62,7 +67,7 @@ class PaymentController extends Controller
                 $booking_data = $booking->data;
                 Transaction::create([
                     'type' => 'booking_payment',
-                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
                     'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
                     'booking_id' => $booking_data->booking->id
                 ]);
@@ -82,6 +87,8 @@ class PaymentController extends Controller
                     "url" => env('FRONTED_URL') . '//reservations//' . $booking->id
                 ]);
             }
+
+
             if ($booking->status == 9) {
                 if ($booking->payment) {
                     $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
@@ -107,9 +114,10 @@ class PaymentController extends Controller
                 ];
                 return response()->json($output);
             }
+
             $price = Price::find($booking->price_id);
             $full_discount = Setting::firstWhere('code', 'full_discount')->value;
-            $total = ($price->opening_fee + ($price->km_fee *  $booking->km));
+            $total = ($price->opening_fee + ($price->km_fee * $booking->km));
             $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
             $driver_payment = $discount_price * 0.7;
             $system_payment = $discount_price - $driver_payment;
@@ -130,7 +138,9 @@ class PaymentController extends Controller
                 'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
                 'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
             ];
+
             $booking->data->update($inputs);
+
             if ($booking->payment) {
                 $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
                     'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price), 2) * 100
@@ -150,14 +160,17 @@ class PaymentController extends Controller
                     'metadata' => ['booking_id' => $booking->id]
                 ]);
             }
+
             $output = [
                 'clientSecret' => $paymentIntent->client_secret,
             ];
+
             return response()->json($output);
         } catch (\Throwable $th) {
             throw $th;
         }
     }
+
     public function success(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -176,6 +189,7 @@ class PaymentController extends Controller
             //throw $th;
         }
     }
+
     public function refund(Request $request)
     {
         $validator = Validator::make($request->all(), [
