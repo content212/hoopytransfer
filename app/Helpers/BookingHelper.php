@@ -64,7 +64,7 @@ class BookingHelper
 
     public static function SendNotification($booking, $status): void
     {
-        //NotificationHelper::SendNotificationToDriver($booking, $status);
+        NotificationHelper::SendNotificationToDriver($booking, $status);
         NotificationHelper::SendNotificationToCustomer($booking, $status);
         //NotificationHelper::SendNotificationToAdmins($booking, $status);
         //NotificationHelper::SendNotificationToDriverManagers($booking, $status);
@@ -184,19 +184,23 @@ class BookingHelper
                 ));
             }
 
-            $price = Price::where('car_type', '=', $car_type_id)->orderBy('km_fee', 'desc')->first();
-            $full_discount = Setting::firstWhere('code', 'full_discount')->value ?? 0;
+            $full_discount = 0;
             $total = $booking_price;
-            $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
+            $discount_price = $total * (1.0 - (0 / 100.0));
             $driver_payment = $discount_price * 0.7;
             $system_payment = $discount_price - $driver_payment;
             $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
+
+            $opening_fee = 0;
+
+            $km_fee = $total / $booking->km;
+
             $inputs = [
                 'booking_id' => $booking->id,
                 'km' => $booking->km,
-                'opening_fee' => $price->opening_fee,
-                'km_fee' => $price->km_fee,
-                'discount_rate' => $price->carType->discount_rate,
+                'opening_fee' => $opening_fee,
+                'km_fee' => $km_fee,
+                'discount_rate' => 0,
                 'discount_price' => $discount_price,
                 'system_payment' => $system_payment,
                 'driver_payment' => $driver_payment,
@@ -208,20 +212,17 @@ class BookingHelper
                 'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
             ];
 
-            if ($price) {
+            $booking->data->update($inputs);
 
-                $booking->data->update($inputs);
+            $booking->update([
+                'driver_id' => $driver_id,
+                'car_id' => $car_id,
+                'car_type' => $car_type_id,
+                'price_id' => 0,
+                'status' => self::WAITING_FOR_BOOKING
+            ]);
 
-                $booking->update([
-                    'driver_id' => $driver_id,
-                    'car_id' => $car_id,
-                    'car_type' => $car_type_id,
-                    'price_id' => $price->id,
-                    'status' => self::WAITING_FOR_BOOKING
-                ]);
-
-                self::SendNotification($booking, self::WAITING_FOR_BOOKING);
-            }
+            self::SendNotification($booking, self::WAITING_FOR_BOOKING);
         }
     }
 }

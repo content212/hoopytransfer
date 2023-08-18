@@ -20,7 +20,9 @@ class NotificationHelper
         if ($driver) {
             $driver_user = User::where('id', '=', $driver->user_id)->first();
             if ($driver_user) {
-                $notification = Notification::where('role', 'driver', 'status', $status)->first();
+                $notification = Notification::where('role', 'driver')
+                    ->where('status', $status)
+                    ->first();
                 if ($notification) {
                     self::Send($notification, $driver_user, $booking);
                 }
@@ -170,12 +172,19 @@ class NotificationHelper
     {
         $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');
         $devices = DB::table('user_devices')->select('id', 'device_token')->where('user_id', $user->id)->get();
-        foreach ($devices as $device) {
+        $role = Role::where('user_id', '=', $user->id)->first();
 
+        $roleName = "customer";
+        if ($role && $role->role) {
+            $roleName = $role->role;
+        }
+
+        foreach ($devices as $device) {
             $data = [
                 "to" => $device->device_token,
                 "data" => [
                     "bookingId" => $booking->id,
+                    "role" => $roleName,
                 ],
                 "notification" => [
                     "title" => $title,
@@ -184,7 +193,6 @@ class NotificationHelper
             ];
 
             $dataString = json_encode($data);
-            echo $dataString;
             $headers = [
                 'Authorization: key=' . $SERVER_API_KEY,
                 'Content-Type: application/json',

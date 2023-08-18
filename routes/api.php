@@ -48,7 +48,7 @@ Route::post('/webhook', function (Request $request) {
 
     $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
     $payload = $request->getContent();
-    $sig_header =  $_SERVER['HTTP_STRIPE_SIGNATURE'];
+    $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
     $event = null;
     $secret = env('STRIPE_WEBHOOK_SECRET');
     #$secret = 'whsec_180755da0ce75da72324feea1f3d308b070eea611c78f2a477e7db50e6ceaa4a';
@@ -77,7 +77,7 @@ Route::post('/webhook', function (Request $request) {
             $booking_data = Booking::find($event->data->object->metadata->booking_id)->data;
             Transaction::create([
                 'type' => 'booking_payment',
-                'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
+                'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
                 'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
                 'booking_id' => $booking_data->booking->id
             ]);
@@ -127,7 +127,7 @@ Route::post('/webhook', function (Request $request) {
                             $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
                             $transaction->update([
                                 'driver_id' => $request->post('driver_id'),
-                                'balance'   => ($total - $transaction->amount)
+                                'balance' => ($total - $transaction->amount)
                             ]);
                             $booking_data->booking->update([
                                 'status' => 2,
@@ -156,7 +156,7 @@ Route::post('/webhook', function (Request $request) {
             if ($refund->status == 'succeeded') {
                 Transaction::create([
                     'type' => 'refund',
-                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
                     'note' => 'Refund from #' . $payment->booking_id . ' booking.',
                     'booking_id' => $payment->booking_id
                 ]);
@@ -182,13 +182,13 @@ Route::post('/webhook', function (Request $request) {
             $refund = $stripe->refunds->retrieve($payment->refund);
             $booking_data = $payment->booking->data;
             $payment->update([
-                'status' => 'refund_' .  $event->data->object->status,
+                'status' => 'refund_' . $event->data->object->status,
                 'last_message' => null
             ]);
             if ($refund->status == 'succeeded') {
                 Transaction::create([
                     'type' => 'refund',
-                    'amount' => $booking_data->payment_type == 'Full' ?  $booking_data->full_discount_price : $booking_data->system_payment,
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
                     'note' => 'Refund from #' . $payment->booking_id . ' booking.',
                     'booking_id' => $payment->booking_id
                 ]);
@@ -217,10 +217,7 @@ Route::post('/webhook', function (Request $request) {
 });
 
 
-
-
 Route::middleware(['auth:api', 'role'])->group(function () {
-
 
 
     Route::middleware(['scope:admin'])->get('/users', 'API\UserController@index');
@@ -244,9 +241,9 @@ Route::middleware(['auth:api', 'role'])->group(function () {
 
     Route::middleware(['scope:customer,driver,admin'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
     Route::middleware(['scope:customer,driver,admin'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
-    Route::middleware(['scope:customer, admin'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
-    Route::middleware(['scope:customer, admin'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
-    Route::middleware(['scope:customer, admin'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
+    Route::middleware(['scope:customer,admin'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
+    Route::middleware(['scope:customer,driver,admin'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
+    Route::middleware(['scope:customer,driver,admin'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');
 
     Route::middleware(['scope:driver'])->get('/driver/jobs', 'API\DriverJobController@index');
     Route::middleware(['scope:driver'])->get('/driver/jobs/{id}', 'API\DriverJobController@detail');
@@ -260,7 +257,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->delete('/bookings/{booking}', 'API\BookingsController@destroy');
     Route::middleware(['scope:admin,driver'])->get('/caledarEvents', "API\BookingsController@calendarEvents");
 
-    Route::middleware(['scope:admin,customer'])->post('/bookings/{booking}/cancel', 'API\BookingsController@cancel');
+    Route::middleware(['scope:admin,customer,driver'])->post('/bookings/{booking}/cancel', 'API\BookingsController@cancel');
 
     Route::middleware(['scope:admin,editor'])->get('/bookingscount/{status}', 'API\BookingsController@getBookingsCount')->name('count');;
 
@@ -279,7 +276,6 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->post('/cars/{car}', 'API\CarController@update');
     Route::middleware(['scope:admin'])->delete('/cars/{car}', 'API\CarController@destroy');
     Route::middleware(['scope:admin'])->get('/carsbytype/{type}', 'API\CarController@getCarsByType');
-
 
 
     Route::middleware(['scope:admin'])->get('/cartypes', 'API\CarTypeController@index');

@@ -92,7 +92,7 @@ class PaymentController extends Controller
             if ($booking->status == 9) {
                 if ($booking->payment) {
                     $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
-                        'amount' => number_format((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price), 2) * 100
+                        'amount' => floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price)) * 100
                     ]);
                     $booking->payment->update([
                         'status' => $paymentIntent->status,
@@ -101,7 +101,7 @@ class PaymentController extends Controller
                     ]);
                 } else {
                     $paymentIntent = $this->stripe->paymentIntents->create([
-                        'amount' => number_format((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price), 2) * 100,
+                        'amount' => floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price)) * 100,
                         'currency' => 'usd',
                         'automatic_payment_methods' => [
                             'enabled' => true,
@@ -115,35 +115,41 @@ class PaymentController extends Controller
                 return response()->json($output);
             }
 
-            $price = Price::find($booking->price_id);
-            $full_discount = Setting::firstWhere('code', 'full_discount')->value;
-            $total = ($price->opening_fee + ($price->km_fee * $booking->km));
-            $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
-            $driver_payment = $discount_price * 0.7;
-            $system_payment = $discount_price - $driver_payment;
-            $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
-            $inputs = [
-                'booking_id' => $booking->id,
-                'km' => $booking->km,
-                'opening_fee' => $price->opening_fee,
-                'km_fee' => $price->km_fee,
-                'payment_type' => $data['paymentType'],
-                'discount_rate' => $price->carType->discount_rate,
-                'discount_price' => $discount_price,
-                'system_payment' => $system_payment,
-                'driver_payment' => $driver_payment,
-                'total' => $total,
-                'full_discount' => $full_discount,
-                'full_discount_price' => $full_discount_price,
-                'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
-                'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
-            ];
 
-            $booking->data->update($inputs);
+            $price = Price::find($booking->price_id);
+
+            if ($price) {
+
+                $full_discount = Setting::firstWhere('code', 'full_discount')->value;
+                $total = ($price->opening_fee + ($price->km_fee * $booking->km));
+                $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
+                $driver_payment = $discount_price * 0.7;
+                $system_payment = $discount_price - $driver_payment;
+                $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
+                $inputs = [
+                    'booking_id' => $booking->id,
+                    'km' => $booking->km,
+                    'opening_fee' => $price->opening_fee,
+                    'km_fee' => $price->km_fee,
+                    'payment_type' => $data['paymentType'],
+                    'discount_rate' => $price->carType->discount_rate,
+                    'discount_price' => $discount_price,
+                    'system_payment' => $system_payment,
+                    'driver_payment' => $driver_payment,
+                    'total' => $total,
+                    'full_discount' => $full_discount,
+                    'full_discount_price' => $full_discount_price,
+                    'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
+                    'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
+                ];
+
+                $booking->data->update($inputs);
+            }
+
 
             if ($booking->payment) {
                 $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
-                    'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price), 2) * 100
+                    'amount' => floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price)) * 100
                 ]);
                 $booking->payment->update([
                     'status' => $paymentIntent->status,
@@ -152,7 +158,7 @@ class PaymentController extends Controller
                 ]);
             } else {
                 $paymentIntent = $this->stripe->paymentIntents->create([
-                    'amount' => number_format((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price), 2) * 100,
+                    'amount' => floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price)) * 100,
                     'currency' => 'usd',
                     'automatic_payment_methods' => [
                         'enabled' => true,

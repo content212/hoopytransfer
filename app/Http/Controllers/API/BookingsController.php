@@ -350,7 +350,7 @@ class BookingsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map
-            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date','booking_time', 'status_name', 'status', 'service', 'data', 'payment_status');
+            ->only('id', 'track_code', 'created_at', 'from_name', 'to_name', 'booking_date', 'booking_time', 'status_name', 'status', 'service', 'data', 'payment_status');
 
 
         return $bookings;
@@ -381,6 +381,19 @@ class BookingsController extends Controller
 
     private function cancelable($booking): bool
     {
+        if (!$booking) {
+            return false;
+        }
+
+        if (!$booking->service) {
+            return false;
+        }
+
+        if (!$booking->service->free_cancellation) {
+            return false;
+        }
+
+
         return Carbon::parse($booking->booking_date . " " . $booking->booking_time)->diffInHours(now()) > intval($booking->service->free_cancellation) && in_array($booking->status, [1, 1, 3]);
     }
 
