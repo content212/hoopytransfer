@@ -7,9 +7,6 @@ use App\Models\Notification;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Twilio\Exceptions\ConfigurationException;
-use Twilio\Exceptions\TwilioException;
-use Twilio\Rest\Client;
 
 
 class NotificationHelper

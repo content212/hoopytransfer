@@ -66,8 +66,8 @@ class BookingHelper
     {
         NotificationHelper::SendNotificationToDriver($booking, $status);
         NotificationHelper::SendNotificationToCustomer($booking, $status);
-        //NotificationHelper::SendNotificationToAdmins($booking, $status);
-        //NotificationHelper::SendNotificationToDriverManagers($booking, $status);
+        NotificationHelper::SendNotificationToAdmins($booking, $status);
+        NotificationHelper::SendNotificationToDriverManagers($booking, $status);
     }
 
     public static function WaitingForConfirmation($booking, $driver_id, $car_id, $car_type): void
