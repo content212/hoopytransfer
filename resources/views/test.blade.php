@@ -325,7 +325,9 @@
                 @if (trim($__env->yieldContent('role') == 'Admin'))
                     <li class="side-nav-title side-nav-item">Accounting</li>
                 @endif
-                @if (trim($__env->yieldContent('role') == 'Admin'))
+                @if (trim($__env->yieldContent('role') == 'Admin') ||
+             trim($__env->yieldContent('role') == 'Driver') ||
+             trim($__env->yieldContent('role') == 'DriverManager'))
                     <li class="side-nav-item">
                         <a href="/accounting" class="side-nav-link">
                             <i class="mdi mdi-safe"></i>

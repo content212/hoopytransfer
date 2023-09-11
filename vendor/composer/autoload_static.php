@@ -23,7 +23,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '9cdd7b9056abc3081735233ba9dd9c7f' => __DIR__ . '/..' . '/facade/flare-client-php/src/helpers.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '07d7f1a47144818725fd8d91a907ac57' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/create_uploaded_file.php',
         'da94ac5d3ca7d2dbab84ce561ce72bfd' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_headers_from_sapi.php',
         '3d97c8dcdfba8cb85d3b34f116bb248b' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_method_from_sapi.php',
@@ -52,6 +51,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         'f18cc91337d49233e5754e93f3ed9ec3' => __DIR__ . '/..' . '/laravelcollective/html/src/helpers.php',
         '40275907c8566c390185147049ef6e5d' => __DIR__ . '/..' . '/livewire/livewire/src/helpers.php',
+        'c72349b1fe8d0deeedd3a52e8aa814d8' => __DIR__ . '/..' . '/mockery/mockery/library/helpers.php',
+        'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         '0b47d6d4a00ca9112ba3953b49e7c9a4' => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src/helper.php',
     );
 
@@ -142,6 +143,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'M' => 
         array (
             'Monolog\\' => 8,
+            'Mockery\\' => 8,
         ),
         'L' => 
         array (
@@ -426,14 +428,18 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
+        'Mockery\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mockery/mockery/library/Mockery',
+        ),
         'Livewire\\' => 
         array (
             0 => __DIR__ . '/..' . '/livewire/livewire/src',
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri/src',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            1 => __DIR__ . '/..' . '/league/uri/src',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -573,16 +579,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         ),
     );
 
-    public static $prefixesPsr0 = array (
-        'M' => 
-        array (
-            'Mockery' => 
-            array (
-                0 => __DIR__ . '/..' . '/mockery/mockery/library',
-            ),
-        ),
-    );
-
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
@@ -621,6 +617,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Http\\Controllers\\ExcelController' => __DIR__ . '/../..' . '/app/Http/Controllers/ExcelController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\LogsController' => __DIR__ . '/../..' . '/app/Http/Controllers/LogsController.php',
+        'App\\Http\\Controllers\\NotificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/NotificationController.php',
         'App\\Http\\Controllers\\PriceListController' => __DIR__ . '/../..' . '/app/Http/Controllers/PriceListController.php',
         'App\\Http\\Controllers\\PricesController' => __DIR__ . '/../..' . '/app/Http/Controllers/PricesController.php',
         'App\\Http\\Controllers\\SettingController' => __DIR__ . '/../..' . '/app/Http/Controllers/SettingController.php',
@@ -696,6 +693,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Brick\\Math\\Internal\\Calculator\\GmpCalculator' => __DIR__ . '/..' . '/brick/math/src/Internal/Calculator/GmpCalculator.php',
         'Brick\\Math\\Internal\\Calculator\\NativeCalculator' => __DIR__ . '/..' . '/brick/math/src/Internal/Calculator/NativeCalculator.php',
         'Brick\\Math\\RoundingMode' => __DIR__ . '/..' . '/brick/math/src/RoundingMode.php',
+        'CURLStringFile' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php',
         'Carbon\\AbstractTranslator' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/AbstractTranslator.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonConverterInterface' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonConverterInterface.php',
@@ -1517,6 +1515,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Faker\\Provider\\nl_NL\\PhoneNumber' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/nl_NL/PhoneNumber.php',
         'Faker\\Provider\\nl_NL\\Text' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/nl_NL/Text.php',
         'Faker\\Provider\\pl_PL\\Address' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/pl_PL/Address.php',
+        'Faker\\Provider\\pl_PL\\Color' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/pl_PL/Color.php',
         'Faker\\Provider\\pl_PL\\Company' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/pl_PL/Company.php',
         'Faker\\Provider\\pl_PL\\Internet' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/pl_PL/Internet.php',
         'Faker\\Provider\\pl_PL\\LicensePlate' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Provider/pl_PL/LicensePlate.php',
@@ -3150,6 +3149,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'League\\Flysystem\\Util\\MimeType' => __DIR__ . '/..' . '/league/flysystem/src/Util/MimeType.php',
         'League\\Flysystem\\Util\\StreamHasher' => __DIR__ . '/..' . '/league/flysystem/src/Util/StreamHasher.php',
         'League\\MimeTypeDetection\\EmptyExtensionToMimeTypeMap' => __DIR__ . '/..' . '/league/mime-type-detection/src/EmptyExtensionToMimeTypeMap.php',
+        'League\\MimeTypeDetection\\ExtensionLookup' => __DIR__ . '/..' . '/league/mime-type-detection/src/ExtensionLookup.php',
         'League\\MimeTypeDetection\\ExtensionMimeTypeDetector' => __DIR__ . '/..' . '/league/mime-type-detection/src/ExtensionMimeTypeDetector.php',
         'League\\MimeTypeDetection\\ExtensionToMimeTypeMap' => __DIR__ . '/..' . '/league/mime-type-detection/src/ExtensionToMimeTypeMap.php',
         'League\\MimeTypeDetection\\FinfoMimeTypeDetector' => __DIR__ . '/..' . '/league/mime-type-detection/src/FinfoMimeTypeDetector.php',
@@ -3354,7 +3354,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Livewire\\Wireable' => __DIR__ . '/..' . '/livewire/livewire/src/Wireable.php',
         'Livewire\\WithFileUploads' => __DIR__ . '/..' . '/livewire/livewire/src/WithFileUploads.php',
         'Livewire\\WithPagination' => __DIR__ . '/..' . '/livewire/livewire/src/WithPagination.php',
-        'Mockery' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegration' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegration.php',
         'Mockery\\Adapter\\Phpunit\\MockeryPHPUnitIntegrationAssertPostConditions' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryPHPUnitIntegrationAssertPostConditions.php',
         'Mockery\\Adapter\\Phpunit\\MockeryTestCase' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/MockeryTestCase.php',
@@ -3375,6 +3374,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Mockery\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/InvalidArgumentException.php',
         'Mockery\\Exception\\InvalidCountException' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/InvalidCountException.php',
         'Mockery\\Exception\\InvalidOrderException' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/InvalidOrderException.php',
+        'Mockery\\Exception\\MockeryExceptionInterface' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/MockeryExceptionInterface.php',
         'Mockery\\Exception\\NoMatchingExpectationException' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/NoMatchingExpectationException.php',
         'Mockery\\Exception\\RuntimeException' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Exception/RuntimeException.php',
         'Mockery\\Expectation' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Expectation.php',
@@ -3393,6 +3393,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Mockery\\Generator\\StringManipulationGenerator' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulationGenerator.php',
         'Mockery\\Generator\\StringManipulation\\Pass\\AvoidMethodClashPass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/AvoidMethodClashPass.php',
         'Mockery\\Generator\\StringManipulation\\Pass\\CallTypeHintPass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/CallTypeHintPass.php',
+        'Mockery\\Generator\\StringManipulation\\Pass\\ClassAttributesPass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/ClassAttributesPass.php',
         'Mockery\\Generator\\StringManipulation\\Pass\\ClassNamePass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/ClassNamePass.php',
         'Mockery\\Generator\\StringManipulation\\Pass\\ClassPass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/ClassPass.php',
         'Mockery\\Generator\\StringManipulation\\Pass\\ConstantsPass' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Generator/StringManipulation/Pass/ConstantsPass.php',
@@ -3423,6 +3424,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Mockery\\Matcher\\Ducktype' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/Ducktype.php',
         'Mockery\\Matcher\\HasKey' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/HasKey.php',
         'Mockery\\Matcher\\HasValue' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/HasValue.php',
+        'Mockery\\Matcher\\IsEqual' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/IsEqual.php',
+        'Mockery\\Matcher\\IsSame' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/IsSame.php',
         'Mockery\\Matcher\\MatcherAbstract' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/MatcherAbstract.php',
         'Mockery\\Matcher\\MultiArgumentClosure' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/MultiArgumentClosure.php',
         'Mockery\\Matcher\\MustBe' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Matcher/MustBe.php',
@@ -4528,6 +4531,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Psy\\Sudo' => __DIR__ . '/..' . '/psy/psysh/src/Sudo.php',
         'Psy\\Sudo\\SudoVisitor' => __DIR__ . '/..' . '/psy/psysh/src/Sudo/SudoVisitor.php',
         'Psy\\SuperglobalsEnv' => __DIR__ . '/..' . '/psy/psysh/src/SuperglobalsEnv.php',
+        'Psy\\SystemEnv' => __DIR__ . '/..' . '/psy/psysh/src/SystemEnv.php',
         'Psy\\TabCompletion\\AutoCompleter' => __DIR__ . '/..' . '/psy/psysh/src/TabCompletion/AutoCompleter.php',
         'Psy\\TabCompletion\\Matcher\\AbstractContextAwareMatcher' => __DIR__ . '/..' . '/psy/psysh/src/TabCompletion/Matcher/AbstractContextAwareMatcher.php',
         'Psy\\TabCompletion\\Matcher\\AbstractDefaultParametersMatcher' => __DIR__ . '/..' . '/psy/psysh/src/TabCompletion/Matcher/AbstractDefaultParametersMatcher.php',
@@ -5008,6 +5012,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Stripe\\Service\\TaxCodeService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/TaxCodeService.php',
         'Stripe\\Service\\TaxRateService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/TaxRateService.php',
         'Stripe\\Service\\Tax\\CalculationService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/Tax/CalculationService.php',
+        'Stripe\\Service\\Tax\\SettingsService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/Tax/SettingsService.php',
         'Stripe\\Service\\Tax\\TaxServiceFactory' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/Tax/TaxServiceFactory.php',
         'Stripe\\Service\\Tax\\TransactionService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/Tax/TransactionService.php',
         'Stripe\\Service\\Terminal\\ConfigurationService' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Service/Terminal/ConfigurationService.php',
@@ -5064,6 +5069,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Stripe\\TaxRate' => __DIR__ . '/..' . '/stripe/stripe-php/lib/TaxRate.php',
         'Stripe\\Tax\\Calculation' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Tax/Calculation.php',
         'Stripe\\Tax\\CalculationLineItem' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Tax/CalculationLineItem.php',
+        'Stripe\\Tax\\Settings' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Tax/Settings.php',
         'Stripe\\Tax\\Transaction' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Tax/Transaction.php',
         'Stripe\\Tax\\TransactionLineItem' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Tax/TransactionLineItem.php',
         'Stripe\\Terminal\\Configuration' => __DIR__ . '/..' . '/stripe/stripe-php/lib/Terminal/Configuration.php',
@@ -5101,6 +5107,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Stripe\\WebhookEndpoint' => __DIR__ . '/..' . '/stripe/stripe-php/lib/WebhookEndpoint.php',
         'Stripe\\WebhookSignature' => __DIR__ . '/..' . '/stripe/stripe-php/lib/WebhookSignature.php',
         'Symfony\\Bridge\\PsrHttpMessage\\ArgumentValueResolver\\PsrServerRequestResolver' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/ArgumentValueResolver/PsrServerRequestResolver.php',
+        'Symfony\\Bridge\\PsrHttpMessage\\ArgumentValueResolver\\ValueResolverInterface' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/ArgumentValueResolver/ValueResolverInterface.php',
         'Symfony\\Bridge\\PsrHttpMessage\\EventListener\\PsrResponseListener' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/EventListener/PsrResponseListener.php',
         'Symfony\\Bridge\\PsrHttpMessage\\Factory\\HttpFoundationFactory' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/Factory/HttpFoundationFactory.php',
         'Symfony\\Bridge\\PsrHttpMessage\\Factory\\PsrHttpFactory' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/Factory/PsrHttpFactory.php',
@@ -6791,6 +6798,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Twilio\\Rest\\FlexApi\\V1\\InteractionContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/InteractionContext.php',
         'Twilio\\Rest\\FlexApi\\V1\\InteractionInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/InteractionInstance.php',
         'Twilio\\Rest\\FlexApi\\V1\\InteractionList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/InteractionList.php',
+        'Twilio\\Rest\\FlexApi\\V1\\InteractionOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/InteractionOptions.php',
         'Twilio\\Rest\\FlexApi\\V1\\InteractionPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/InteractionPage.php',
         'Twilio\\Rest\\FlexApi\\V1\\Interaction\\InteractionChannelContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/Interaction/InteractionChannelContext.php',
         'Twilio\\Rest\\FlexApi\\V1\\Interaction\\InteractionChannelInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/FlexApi/V1/Interaction/InteractionChannelInstance.php',
@@ -7098,6 +7106,10 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Twilio\\Rest\\Messaging\\V1\\Service\\AlphaSenderInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/AlphaSenderInstance.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\AlphaSenderList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/AlphaSenderList.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\AlphaSenderPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/AlphaSenderPage.php',
+        'Twilio\\Rest\\Messaging\\V1\\Service\\ChannelSenderContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/ChannelSenderContext.php',
+        'Twilio\\Rest\\Messaging\\V1\\Service\\ChannelSenderInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/ChannelSenderInstance.php',
+        'Twilio\\Rest\\Messaging\\V1\\Service\\ChannelSenderList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/ChannelSenderList.php',
+        'Twilio\\Rest\\Messaging\\V1\\Service\\ChannelSenderPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/ChannelSenderPage.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\PhoneNumberContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/PhoneNumberContext.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\PhoneNumberInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/PhoneNumberInstance.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\PhoneNumberList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/PhoneNumberList.php',
@@ -7115,6 +7127,11 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Twilio\\Rest\\Messaging\\V1\\Service\\UsAppToPersonUsecaseList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/UsAppToPersonUsecaseList.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\UsAppToPersonUsecaseOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/UsAppToPersonUsecaseOptions.php',
         'Twilio\\Rest\\Messaging\\V1\\Service\\UsAppToPersonUsecasePage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/Service/UsAppToPersonUsecasePage.php',
+        'Twilio\\Rest\\Messaging\\V1\\TollfreeVerificationContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/TollfreeVerificationContext.php',
+        'Twilio\\Rest\\Messaging\\V1\\TollfreeVerificationInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/TollfreeVerificationInstance.php',
+        'Twilio\\Rest\\Messaging\\V1\\TollfreeVerificationList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/TollfreeVerificationList.php',
+        'Twilio\\Rest\\Messaging\\V1\\TollfreeVerificationOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/TollfreeVerificationOptions.php',
+        'Twilio\\Rest\\Messaging\\V1\\TollfreeVerificationPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/TollfreeVerificationPage.php',
         'Twilio\\Rest\\Messaging\\V1\\UsecaseInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/UsecaseInstance.php',
         'Twilio\\Rest\\Messaging\\V1\\UsecaseList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/UsecaseList.php',
         'Twilio\\Rest\\Messaging\\V1\\UsecasePage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Messaging/V1/UsecasePage.php',
@@ -7192,7 +7209,35 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'Twilio\\Rest\\Numbers\\V1\\BulkEligibilityInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/BulkEligibilityInstance.php',
         'Twilio\\Rest\\Numbers\\V1\\BulkEligibilityList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/BulkEligibilityList.php',
         'Twilio\\Rest\\Numbers\\V1\\BulkEligibilityPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/BulkEligibilityPage.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingBulkPortabilityContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingBulkPortabilityContext.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingBulkPortabilityInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingBulkPortabilityInstance.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingBulkPortabilityList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingBulkPortabilityList.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingBulkPortabilityPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingBulkPortabilityPage.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingPortabilityContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingPortabilityContext.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingPortabilityInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingPortabilityInstance.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingPortabilityList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingPortabilityList.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingPortabilityOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingPortabilityOptions.php',
+        'Twilio\\Rest\\Numbers\\V1\\PortingPortabilityPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V1/PortingPortabilityPage.php',
         'Twilio\\Rest\\Numbers\\V2' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocumentContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocumentContext.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocumentInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocumentInstance.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocumentList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocumentList.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocumentOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocumentOptions.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocumentPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocumentPage.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocument\\DependentHostedNumberOrderInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocument/DependentHostedNumberOrderInstance.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocument\\DependentHostedNumberOrderList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocument/DependentHostedNumberOrderList.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocument\\DependentHostedNumberOrderOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocument/DependentHostedNumberOrderOptions.php',
+        'Twilio\\Rest\\Numbers\\V2\\AuthorizationDocument\\DependentHostedNumberOrderPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/AuthorizationDocument/DependentHostedNumberOrderPage.php',
+        'Twilio\\Rest\\Numbers\\V2\\BulkHostedNumberOrderContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/BulkHostedNumberOrderContext.php',
+        'Twilio\\Rest\\Numbers\\V2\\BulkHostedNumberOrderInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/BulkHostedNumberOrderInstance.php',
+        'Twilio\\Rest\\Numbers\\V2\\BulkHostedNumberOrderList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/BulkHostedNumberOrderList.php',
+        'Twilio\\Rest\\Numbers\\V2\\BulkHostedNumberOrderOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/BulkHostedNumberOrderOptions.php',
+        'Twilio\\Rest\\Numbers\\V2\\BulkHostedNumberOrderPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/BulkHostedNumberOrderPage.php',
+        'Twilio\\Rest\\Numbers\\V2\\HostedNumberOrderContext' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/HostedNumberOrderContext.php',
+        'Twilio\\Rest\\Numbers\\V2\\HostedNumberOrderInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/HostedNumberOrderInstance.php',
+        'Twilio\\Rest\\Numbers\\V2\\HostedNumberOrderList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/HostedNumberOrderList.php',
+        'Twilio\\Rest\\Numbers\\V2\\HostedNumberOrderOptions' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/HostedNumberOrderOptions.php',
+        'Twilio\\Rest\\Numbers\\V2\\HostedNumberOrderPage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/HostedNumberOrderPage.php',
         'Twilio\\Rest\\Numbers\\V2\\RegulatoryComplianceInstance' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/RegulatoryComplianceInstance.php',
         'Twilio\\Rest\\Numbers\\V2\\RegulatoryComplianceList' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/RegulatoryComplianceList.php',
         'Twilio\\Rest\\Numbers\\V2\\RegulatoryCompliancePage' => __DIR__ . '/..' . '/twilio/sdk/src/Twilio/Rest/Numbers/V2/RegulatoryCompliancePage.php',
@@ -8387,7 +8432,6 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitab20701a679b1c42dec520a706c176f6::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitab20701a679b1c42dec520a706c176f6::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitab20701a679b1c42dec520a706c176f6::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitab20701a679b1c42dec520a706c176f6::$classMap;
 
         }, null, ClassLoader::class);

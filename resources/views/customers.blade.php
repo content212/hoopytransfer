@@ -27,6 +27,7 @@
                     <th>Email</th>
                     <th>Country Code</th>
                     <th>Phone</th>
+                    <th>Role</th>
                     <th>Created At</th>
                     <th>Edit</th>
                 </tr>
@@ -224,6 +225,10 @@
                     name: 'phone'
                 },
                 {
+                    data: 'role',
+                    name: 'role',
+                },
+                {
                     data: 'created_at',
                     name: 'created_at'
                 },
@@ -291,7 +296,7 @@
                         html += '</div>';
                         $('#modal_result').html(html);
                     }
-                    
+
                     $.each(data.responseJSON.error, function (key, val) {
                         var el = $('#' + key);
                         el.addClass('is-invalid');

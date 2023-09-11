@@ -13,8 +13,6 @@ class Driver extends Model
         'license_date',
         'license_class',
         'license_no',
-        'country',
-        'state',
         'address'
     ];
 

@@ -226,7 +226,6 @@
                 {
                     data: 'role',
                     name: 'role',
-                    searchable: false
                 },
                 {
                     data: 'created_at',

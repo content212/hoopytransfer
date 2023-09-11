@@ -19,7 +19,7 @@ class GoogleMapsApiController extends \App\Http\Controllers\Controller
         $origin = $request->get('origin');
         $destination = $request->get('destination');
 
-        $response = Http::get('https://maps.googleapis.com/maps/api/directions/json?origin=' . $origin . '&destination=' . $destination . '&key=AIzaSyCgPej4NNmAIyRzMathcm1X2IBQHjVkgTM');
+        $response = Http::get('https://maps.googleapis.com/maps/api/directions/json?origin=' . $origin . '&destination=' . $destination . '&key=AIzaSyCIc76iOhe0hi46KWEJwGI8jaruPUlO43o');
         $distance = $response->json()['routes'][0]['legs'][0]['distance']['value'];
         $duration = $response->json()['routes'][0]['legs'][0]['duration']['value'];
         $polyline = $response->json()['routes'][0]['overview_polyline']['points'];

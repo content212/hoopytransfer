@@ -19,8 +19,8 @@ class CreateCarTypesTable extends Migration
             $table->string('image')->nullable();
             $table->integer('person_capacity');
             $table->integer('baggage_capacity');
-            $table->tinyInteger('discount_rate')->default(0);
-            $table->tinyInteger('free_cancellation')->default(0);
+            $table->integer('discount_rate')->default(0);
+            $table->integer('free_cancellation')->default(0);
             $table->timestamps();
         });
     }

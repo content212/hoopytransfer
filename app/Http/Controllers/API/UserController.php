@@ -69,7 +69,7 @@ class UserController extends Controller
     {
         $drivers = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','users.created_at')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','roles.role','users.created_at')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
         return DataTables::of($drivers)
