@@ -260,7 +260,12 @@
                             </button>
                             <input type="hidden" id="booking_id" value="">
                             <input type="hidden" id="status_id" value="">
-                            <button type="button" class="btn btn-primary" id="save">Save changes</button>
+                            <button type="button" class="btn btn-primary" style="display: none" id="save_booking">Save
+                                Changes
+                            </button>
+                            <button type="button" class="btn btn-primary" style="display: none" id="complete_booking">
+                                Complete Booking
+                            </button>
                         </div>
 
                     </div>
@@ -272,13 +277,14 @@
 @endsection
 @section('script')
     <script src="{{ asset('js/jquery.tabledit.js') }}"></script>
+
     <script>
         $(document).on('click', ".edit", function () {
             $(this).addClass('edit-item-trigger-clicked');
             $('#edit-modal').modal('show');
         });
 
-        $('#price').keydown(function(e) {
+        $('#price').keydown(function (e) {
             if (e.keyCode === 190 || e.keyCode === 110) {
                 e.preventDefault();
             }
@@ -297,24 +303,35 @@
 
             }).then((result) => {
                 if (result.isConfirmed) {
-
                     //ajax to cancel
                     //reload data
-
-                    var bookingId = $("#booking_id").val();
+                    const bookingId = $("#booking_id").val();
                     cancelBooking(bookingId);
-
-
                 }
             })
         })
 
-        var token = Cookies.get('token');
-        $.ajaxSetup({
-            headers: {
-                'authorization': "Bearer " + token
-            }
-        });
+        $("#complete_booking").click(function () {
+            Swal.fire({
+                title: 'Do you really want to complete reservation?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirm Complete',
+                cancelButtonText: 'Close',
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //ajax to cancel
+                    //reload data
+                    const bookingId = $("#booking_id").val();
+                    completeBooking(bookingId);
+                }
+            })
+        })
+
 
         $('#edit-modal').on('show.bs.modal', function () {
             const el = $(".edit-item-trigger-clicked");
@@ -354,6 +371,36 @@
             });
         }
 
+        function completeBooking(id) {
+            const token = Cookies.get('token');
+            $.ajax({
+                url: "/api/bookings/" + id + "/complete",
+                type: "POST",
+                headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json",
+                    "authorization": "Bearer " + token
+                },
+                success: function (data) {
+                    $('#booking_table').DataTable().ajax.reload();
+                    $('#edit-modal').modal('hide');
+                    reloadCounts();
+                    Swal.fire(
+                        'Completed!',
+                        'Reservation has been completed.',
+                        'success'
+                    );
+                },
+                error: function (error) {
+                    console.log(error);
+                    Swal.fire(
+                        'Complete Failed!',
+                        error.responseJSON.message,
+                        'warning'
+                    );
+                }
+            });
+        }
 
         function getBookingDetail(id) {
             $("#booking_id").val(id);
@@ -372,7 +419,6 @@
                 }
             });
         }
-
 
         function onlyNumberKey(evt) {
             let ASCIICode = (evt.which) ? evt.which : evt.keyCode
@@ -395,16 +441,31 @@
             }
         }
 
-        function setData(obj) {
-            console.log(obj);
-            if (!obj) {
-                alert("data not found!");
-                return;
+        function showButtons(status) {
+            $("#cancel_booking").hide();
+            $("#save_booking").hide();
+            $("#complete_booking").hide();
+
+            if (status === 1 || status === 2 || status === 9) {
+                $("#cancel_booking").show();
             }
 
+            if (status === 1 || status === 9) {
+                $("#save_booking").show();
+            }
+
+            if (status === 6) {
+                $("#complete_booking").show();
+            }
+
+        }
+
+        function setData(obj) {
+            if (!obj) {
+                return;
+            }
             $("#cardriver-container").hide();
             $("#cardriver-container").hide();
-            $("#cancel_booking").hide();
             $("#price-container").hide();
             $("#payment_info_container").hide();
             $("#service_container").hide();
@@ -433,9 +494,7 @@
                 setCar(carType, carId);
 
                 $("#cardriver-container").show();
-                $("#cancel_booking").show();
                 $("#operation-container").show();
-
             }
 
             if (statusId === 9) {
@@ -444,6 +503,8 @@
                 $("#operation-container").show();
             }
 
+
+            showButtons(statusId);
 
             $('#booking_date').html(obj.booking_date + ' / ' + obj.booking_time)
             $('#status_name').html(obj.status_name)
@@ -498,20 +559,6 @@
             }
         }
 
-        $('#edit-modal').on('hide.bs.modal', function () {
-            $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
-            $('.is-invalid').removeClass('is-invalid');
-            $("#edit-form").trigger("reset");
-            $('#packets_table').DataTable().clear().destroy();
-            $('#modal_result').empty();
-        });
-
-
-        $("#car_type").change(function () {
-            var type = parseInt($(this).val()) || 0;
-            setCar(type, 0);
-        });
-
         function setCar(type, selectedValue) {
             if (type > 0) {
                 var token = Cookies.get('token');
@@ -542,7 +589,30 @@
         }
 
 
-        $('#save').on('click', function (e) {
+        $('#edit-modal').on('hide.bs.modal', function () {
+            $('.edit-item-trigger-clicked').removeClass('edit-item-trigger-clicked')
+            $('.is-invalid').removeClass('is-invalid');
+            $("#edit-form").trigger("reset");
+            $('#modal_result').empty();
+        });
+
+
+        $("#car_type").change(function () {
+            const type = parseInt($(this).val()) || 0;
+            setCar(type, 0);
+        });
+
+        function reloadCounts() {
+            @foreach (\App\Models\Booking::getAllStatus() as  $status)
+            $.get('{{ route('count', $loop->index ) }}').then(function (response) {
+                $('#count' + {{ $loop->index }}).html(
+                    response)
+            });
+            @endforeach
+        }
+
+
+        $('#save_booking').on('click', function (e) {
             e.preventDefault();
             const bookingId = $("#booking_id").val();
             const carType = $("#car_type").val();
@@ -615,14 +685,6 @@
             });
         });
 
-        function reloadCounts() {
-            @foreach (\App\Models\Booking::getAllStatus() as  $status)
-            $.get('{{ route('count', $loop->index ) }}').then(function (response) {
-                $('#count' + {{ $loop->index }}).html(
-                    response)
-            });
-            @endforeach
-        }
 
         $('#booking_table').DataTable({
             processing: true,

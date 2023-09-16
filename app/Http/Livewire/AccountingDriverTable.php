@@ -23,7 +23,7 @@ class AccountingDriverTable extends Component
                     ->orWhere('type', 'booking_payment')
                     ->orWhere('type', 'refund');
             })
-                ->orderBy('id', 'desc')
+                ->orderBy('updated_at', 'desc')
                 ->get(['*',  DB::raw('(case when type = "booking_payment" then amount when type = "driver_payment" then -amount when type = "refund" then -amount end ) as amount')]);
             $this->total = Transaction::all()
                 ->sum(function ($transaction) {
@@ -31,7 +31,7 @@ class AccountingDriverTable extends Component
                 });
         } else {
             $this->driver_id = $driver_id;
-            $this->transactions = Driver::find($driver_id)->transactions()->orderBy('id', 'desc')->get();
+            $this->transactions = Driver::find($driver_id)->transactions()->orderBy('updated_at', 'desc')->get();
             $this->total = Transaction::where('driver_id', $driver_id)
                 ->get()
                 ->sum(function ($transaction) {
@@ -59,11 +59,13 @@ class AccountingDriverTable extends Component
         ];
         Transaction::create($data);
         $this->transactions = Driver::find($this->driver_id)->transactions()->orderBy('id', 'desc')->get();
+
         $this->total = Transaction::where('driver_id', $this->driver_id)
             ->get()
             ->sum(function ($transaction) {
-                return ($transaction->type == 'driver_payment' or $transaction->type == 'refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
             });
+
         $this->amount = '';
         $this->note = '';
     }

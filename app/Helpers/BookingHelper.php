@@ -6,6 +6,7 @@ use App\Models\BookingService;
 use App\Models\CarType;
 use App\Models\Price;
 use App\Models\Setting;
+use App\Models\Transaction;
 
 class BookingHelper
 {
@@ -149,7 +150,20 @@ class BookingHelper
         $booking->update([
             'status' => self::COMPLETED
         ]);
+
         //muhasebe
+        $driver_id = $booking->driver_id;
+        $total = Transaction::where('driver_id', $driver_id)
+            ->get()
+            ->sum(function ($transaction) {
+                return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+            });
+        $transaction = Transaction::where('booking_id', $booking->id)->where('type', 'driver_wage')->first();
+        $transaction->update([
+            'driver_id' => $driver_id,
+            'balance' => ($total - $transaction->amount)
+        ]);
+
         self::SendNotification($booking, self::COMPLETED);
     }
 

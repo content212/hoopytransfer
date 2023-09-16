@@ -186,6 +186,21 @@ class BookingsController extends Controller
         return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
     }
 
+
+    public function complete(Request $request, int $booking)
+    {
+        if (!$bookings = Booking::where('id', '=', $booking)->first())
+            return response()->json(['message' => 'Not Found!'], 404);
+        try {
+            BookingHelper::SetBookingStatus($bookings, 0, 0, 0, 0, 8);
+
+            Log::addToLog('Booking Log.', $request->all(), 'Edit');
+            return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
+        } catch (QueryException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -204,21 +219,7 @@ class BookingsController extends Controller
             $price = intval($request->post('price'));
 
 
-            /*
-            if ($request->post('driver_id') and $request->post('car_id') and $bookings->status == '1') {
-                $request->merge(['status' => '2']);
-                $total = Transaction::where('driver_id', $request->post('driver_id'))
-                    ->get()
-                    ->sum(function ($transaction) {
-                        return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                    });
-                $transaction = Transaction::where('booking_id', $bookings->id)->where('type', 'driver_wage')->first();
-                $transaction->update([
-                    'driver_id' => $request->post('driver_id'),
-                    'balance' => ($total - $transaction->amount)
-                ]);
-            }
-            */
+
 
             BookingHelper::SetBookingStatus($bookings, $carType, $carId, $driverId, $price, $bookings->status);
 
