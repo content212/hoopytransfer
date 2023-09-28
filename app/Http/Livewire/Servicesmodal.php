@@ -156,7 +156,6 @@ class Servicesmodal extends Component
                 }
             }
         } else {
-            $this->validate();
             if (count($this->news) > 0) {
                 $this->validate([
                     'car_type.name' => 'required',

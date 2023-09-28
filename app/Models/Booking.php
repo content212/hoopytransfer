@@ -52,45 +52,59 @@ class Booking extends Model
         '' => null,
     ];
     protected $appends = ['status_name', 'payment_status'];
+
     public static function getCount($status)
     {
         $count = Booking::where('status', $status)->count();
         return self::STATUS[$status] . '(' . $count . ')';
     }
+
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
+
     public function data()
     {
         return $this->hasOne(BookingData::class, 'booking_id', 'id');
     }
+
     public function payment()
     {
         return $this->hasOne(BookingPayment::class, 'booking_id', 'id');
     }
+
     public function service()
     {
         return $this->hasOne(BookingService::class, 'booking_id', 'id');
     }
+
     public static function getAllStatus(): array
     {
         return self::STATUS;
     }
+
     public function getStatus(): string
     {
         return self::STATUS[$this->status];
     }
+
     public function getStatusNameAttribute($value)
     {
         return self::STATUS[$this->status];
     }
+
     public function getPaymentStatusAttribute($value)
     {
-        return self::PAYMENT_STATUS[$this->payment?->status];
+        $status = $this->payment?->status;
+        if (array_key_exists($status, self::PAYMENT_STATUS)) {
+            return self::PAYMENT_STATUS[$status];
+        }
+        return "Not Paid";
     }
+
     public function bookingDate()
     {
-        return Carbon::parse($this->status_date . ' ' .  $this->status_time);
+        return Carbon::parse($this->status_date . ' ' . $this->status_time);
     }
 }

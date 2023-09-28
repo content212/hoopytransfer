@@ -279,6 +279,13 @@
     <script src="{{ asset('js/jquery.tabledit.js') }}"></script>
 
     <script>
+
+        $.ajaxSetup({
+            headers: {
+                'authorization': "Bearer " + Cookies.get('token')
+            }
+        });
+
         $(document).on('click', ".edit", function () {
             $(this).addClass('edit-item-trigger-clicked');
             $('#edit-modal').modal('show');
@@ -300,7 +307,6 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Confirm Cancellation',
                 cancelButtonText: 'Close',
-
             }).then((result) => {
                 if (result.isConfirmed) {
                     //ajax to cancel
