@@ -81,7 +81,8 @@
                                 <input type="text" class="form-control" name="surname" id="surname"
                                        placeholder="Surname">
                             </div>
-                            <div class="form-group">
+
+                            <div class="form-group" >
                                 <label for="email">Email</label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Email">
                             </div>
@@ -116,6 +117,21 @@
                                 <label for="address">Address</label>
                                 <textarea class="form-control" id="address" name="address" rows="3"></textarea>
                             </div>
+
+                            <hr class="mt-2 mb-3" />
+                            <div class="row mb-3">
+
+                                <div class="col-md-6">
+                                    <label for="password">New Password</label>
+                                    <input type="password" class="form-control" name="password" id="password">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="password_confirm">Password Again</label>
+                                    <input type="password" class="form-control" name="password_confirm" id="password_confirm">
+                                </div>
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default pull-left"
                                         data-bs-dismiss="modal">Close
@@ -190,9 +206,11 @@
                 license_class: "required",
                 license_no: "required",
                 address: "required",
+                password_confirm: {
+                    equalTo: "#password"
+                },
             },
         });
-
 
         $('#save').on('click', function (e) {
             e.preventDefault();

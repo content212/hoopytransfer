@@ -22,26 +22,26 @@ class DriverController extends Controller
      */
     public function index()
     {
-       /* $drivers = Driver::select(
-            'drivers.id as id',
-            'users.name as name',
-            'users.surname as surname',
-            'users.phone as phone'
-        )
-            ->join('users', 'users.id', '=', 'drivers.user_id');
-        return DataTables::of($drivers)
-            ->addColumn('edit', function ($row) {
-                $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
-                    '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
-                return $btn;
-            })
-            ->rawColumns(['edit'])
-            ->make(true);*/
+        /* $drivers = Driver::select(
+             'drivers.id as id',
+             'users.name as name',
+             'users.surname as surname',
+             'users.phone as phone'
+         )
+             ->join('users', 'users.id', '=', 'drivers.user_id');
+         return DataTables::of($drivers)
+             ->addColumn('edit', function ($row) {
+                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
+                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
+                 return $btn;
+             })
+             ->rawColumns(['edit'])
+             ->make(true);*/
 
 
         $drivers = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'drivers.id as driver_id' ,'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','roles.role','users.created_at')
+        when 1 then \'Active\' END) as status'), 'users.id', 'drivers.id as driver_id', 'users.name', 'users.surname', 'users.email', 'users.phone', 'users.country_code', 'roles.role', 'users.created_at')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->join('drivers', 'drivers.user_id', '=', 'users.id')
             ->where('roles.role', 'driver');
@@ -61,16 +61,24 @@ class DriverController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         try {
-            $user = (new UserController)->storeDriver($request->all());
-            if ($user['message'])
-                return response()->json(['message' => $user['message']], 400);
+
             $input = $request->all();
+
+            if (empty($input['password'])) {
+                return response()->json(['message' => 'Password is required!'], 400);
+            }
+            $user = (new UserController)->storeDriver($input);
+            if ($user['message'])
+            {
+                return response()->json(['message' => $user['message']], 400);
+            }
+
             $input['user_id'] = $user->id;
             $driver = Driver::create($input);
             Log::addToLog('Driver Log.', $request->all(), 'Create');
@@ -83,7 +91,7 @@ class DriverController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Driver  $driver
+     * @param \App\Models\Driver $driver
      * @return \Illuminate\Http\Response
      */
     public function show(int $driver)
@@ -97,8 +105,8 @@ class DriverController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Driver  $driver
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Driver $driver
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $driver)
@@ -106,8 +114,9 @@ class DriverController extends Controller
         if (!$drivers = Driver::where('id', '=', $driver)->first())
             return response()->json(['message' => 'Not Found!'], 404);
         try {
-            $user = User::where('id', '=', $drivers['user_id']);
+
             $input = $request->all();
+            $user = User::where('id', '=', $drivers['user_id']);
             $user_array = [
                 'name' => $input['name'],
                 'surname' => $input['surname'],
@@ -115,8 +124,11 @@ class DriverController extends Controller
                 'phone' => $input['phone'],
                 'country_code' => $input['country_code'],
             ];
-            $user->update(array_filter($user_array));
 
+            if ($input['password']) {
+                $user_array['password'] = Hash::make($input['password']);
+            }
+            $user->update(array_filter($user_array));
             $drivers->update($input);
             Log::addToLog('Driver Log.', $request->all(), 'Edit');
             return response($drivers->toJson(JSON_PRETTY_PRINT), 200);
@@ -133,7 +145,7 @@ class DriverController extends Controller
             $user = User::where('id', '=', $drivers['user_id']);
             $drivers->delete();
             $user->delete();
-            Log::addToLog('Driver Log.',  $drivers, 'Delete');
+            Log::addToLog('Driver Log.', $drivers, 'Delete');
             return response()->json(['message' => 'Deleted!'], 200);
         } catch (QueryException $e) {
             return response()->json(['message' => $e->getMessage()], 400);

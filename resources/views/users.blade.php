@@ -105,7 +105,6 @@
                                 <label for="password_confirm">Password Again</label>
                                 <input type="password" class="form-control" name="password_confirm">
                             </div>
-
                         </div>
                 </div>
                 <div class="modal-footer">
