@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\BookingService;
 use App\Models\Driver;
 use App\Models\Notification;
 use App\Models\Role;
@@ -96,6 +97,12 @@ class NotificationHelper
     {
         $booking_date_time = $booking->booking_date . ' ' . $booking->booking_time;
         $text = str_replace("{reservation_no}", $booking->track_code, $text);
+        $bookingService = BookingService::where('booking_id',$booking->id)->first();
+        if ($bookingService && $bookingService->free_cancellation) {
+            $text = str_replace("{cancellation_time}", $bookingService->free_cancellation, $text);
+        } else {
+            $text = str_replace("{cancellation_time}", "", $text);
+        }
         return str_replace("{booking_date_time}", $booking_date_time, $text);
     }
 
