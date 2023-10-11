@@ -86,8 +86,7 @@ class ContractController extends Controller
         $contract = Contract::where('id', '=', $id)->first();
         if (!$contract)
             return response()->json(['message' => 'Not Found!'], 404);
-        try
-        {
+        try {
             $contract->delete();
             return response()->json(['message' => 'Deleted!'], 200);
         } catch (QueryException $e) {
@@ -95,11 +94,19 @@ class ContractController extends Controller
         }
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $contracts = Contract::where('active', '=', 1)->select('id','name','prefix','suffix','selected','required','display_order','position')
-        ->orderBy('display_order','asc')
-        ->get();
+        $lang = "en";
+
+        if ($request->query("lang")) {
+            $lang = $request->query("lang");
+        }
+
+        $contracts = Contract::where('active', 1)
+            ->where('lang',$lang)
+            ->select('id', 'name', 'prefix', 'suffix', 'selected', 'required', 'display_order', 'position', 'lang')
+            ->orderBy('display_order', 'asc')
+            ->get();
         return response($contracts, 200);
     }
 
@@ -107,22 +114,19 @@ class ContractController extends Controller
     {
         $contract = Contract::where('id', '=', $id)->first();
 
-        if (!$contract)
-        {
-            return response('',404);
+        if (!$contract) {
+            return response('', 404);
         }
 
         $booking = null;
 
-        if (request()->has('bookingId'))
-        {
+        if (request()->has('bookingId')) {
             $booking = Booking::where('id', '=', request()->query('bookingId'))->first();
         }
 
         $paymentType = "";
 
-        if (request()->has('paymentType'))
-        {
+        if (request()->has('paymentType')) {
             $paymentType = request()->query('paymentType');
         }
 
@@ -131,7 +135,7 @@ class ContractController extends Controller
         $layout .= '<meta name="viewport" content="width=device-width, initial-scale=1">';
         $layout .= '</head>';
         $layout .= '<body style="white-space: pre">';
-        $layout .= ContractHelper::BuildContract($contract, $booking, $paymentType );
+        $layout .= ContractHelper::BuildContract($contract, $booking, $paymentType);
         $layout .= '</body>';
         $layout .= '</html>';
 
@@ -139,17 +143,17 @@ class ContractController extends Controller
     }
 
     //test
-    public function generateUserContract( Request $request)
+    public function generateUserContract(Request $request)
     {
 
-        $booking;
+        $booking = null;
 
         $user = $request->user();
 
         if ($request->booking_id) {
-            $booking = Booking::where('id', $request->booking_id )
-            ->where('user_id', $user->id)
-            ->first();
+            $booking = Booking::where('id', $request->booking_id)
+                ->where('user_id', $user->id)
+                ->first();
 
             if (!$booking) {
                 return response()->json(['message' => 'Booking not found!'], 400);
@@ -158,7 +162,7 @@ class ContractController extends Controller
 
         foreach ($request->contract_ids as $contract_id) {
             $contract = Contract::where('id', $contract_id)
-            ->first();
+                ->first();
 
             if (!$contract) {
                 return response()->json(['message' => 'Contract not found!'], 400);
@@ -167,13 +171,13 @@ class ContractController extends Controller
 
         foreach ($request->contract_ids as $contract_id) {
             $contract = Contract::where('id', $contract_id)
-            ->first();
+                ->first();
 
             ContractHelper::SaveContract($contract, $booking, $user, $request->payment_type);
         }
 
 
-        return response('',200);
+        return response('', 200);
 
     }
 
@@ -182,16 +186,16 @@ class ContractController extends Controller
         $user = Auth::user();
 
         if (!$user) {
-            return response('',403);
+            return response('', 403);
         }
 
-        $userContract = UserContract::where('id',$user_contract_id)
-        ->where('user_id',$user->id)
-        ->select('contract')
-        ->first();
+        $userContract = UserContract::where('id', $user_contract_id)
+            ->where('user_id', $user->id)
+            ->select('contract')
+            ->first();
 
-        if (!$userContract){
-            return response('',404);
+        if (!$userContract) {
+            return response('', 404);
         }
 
 

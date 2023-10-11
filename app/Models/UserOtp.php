@@ -24,7 +24,10 @@ class UserOtp extends Model
      */
     public function sendSMS($receiverNumber)
     {
-        $message = "Login verification number is " . $this->otp;
+        //$message = "Login verification number is " . $this->otp;
+
+        $message = "Login Verification Code / Verifizierungs-Code : " . $this->otp . " - Hoopy Transfer - www.hoopytransfer.com";
+
         try {
 
             $account_sid = getenv("TWILIO_SID");
@@ -41,14 +44,5 @@ class UserOtp extends Model
             info("Error: " . $e->getMessage());
             return $e->getMessage();
         }
-        //try {
-        //
-        //    $client = new Netgsm();
-        //    $response = $client->sendSMS($receiverNumber, $message);
-        //    error_log($message);
-        //
-        //} catch (Exception $e) {
-        //    info("Error: " . $e->getMessage());
-        //}
     }
 }

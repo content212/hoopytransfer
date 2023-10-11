@@ -10,6 +10,7 @@ class Contract extends Model
 
     protected $fillable = [
         'name',
+        'lang',
         'prefix',
         'suffix',
         'contract',
@@ -19,7 +20,7 @@ class Contract extends Model
         'required',
         'selected'
     ];
-    
+
     protected $casts = [
         'selected' => 'boolean',
         'active' => 'boolean',
