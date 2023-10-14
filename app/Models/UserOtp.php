@@ -24,10 +24,7 @@ class UserOtp extends Model
      */
     public function sendSMS($receiverNumber)
     {
-        //$message = "Login verification number is " . $this->otp;
-
         $message = "Login Verification Code / Verifizierungs-Code : " . $this->otp . " - Hoopy Transfer - www.hoopytransfer.com";
-
         try {
 
             $account_sid = getenv("TWILIO_SID");

@@ -276,8 +276,6 @@
 
 @endsection
 @section('script')
-    <script src="{{ asset('js/jquery.tabledit.js') }}"></script>
-
     <script>
 
         $.ajaxSetup({

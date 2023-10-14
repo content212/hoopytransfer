@@ -186,6 +186,43 @@ class BookingsController extends Controller
         return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
     }
 
+    public function showDriverBooking(int $booking)
+    {
+        $user = Auth::user();
+
+
+        if (!$user) {
+            return response()->json(['message' => 'UNAUTHORIZED'], 401);
+        }
+
+        if ($user->role->role == "admin") {
+
+            $bookings = Booking::where('id', '=', $booking)
+                ->with('service', 'user','data')
+                ->first();
+
+        } else {
+
+            $driver = Driver::where('user_id', $user->id);
+
+            if (!$driver) {
+                return response()->json(['message' => 'UNAUTHORIZED'], 401);
+            }
+
+            $bookings = Booking::where('id', '=', $booking)
+                ->where('driver_id', $driver->id)
+                ->with('service', 'user','data')
+                ->first();
+        }
+
+        if (!$bookings)
+            return response()->json(['message' => 'Not Found!'], 404);
+        if ($bookings['status'] == 9) {
+            $bookings['car_type'] = 'request';
+        }
+        return response($bookings->toJson(JSON_PRETTY_PRINT), 200);
+    }
+
 
     public function complete(Request $request, int $booking)
     {
@@ -217,8 +254,6 @@ class BookingsController extends Controller
             $carId = intval($request->post('car_id'));
             $driverId = intval($request->post('driver_id'));
             $price = intval($request->post('price'));
-
-
 
 
             BookingHelper::SetBookingStatus($bookings, $carType, $carId, $driverId, $price, $bookings->status);

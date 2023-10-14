@@ -255,10 +255,11 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin,editor'])->get('/bookings/{booking}', 'API\BookingsController@show');
     Route::middleware(['scope:admin,editor'])->post('/bookings/{booking}', 'API\BookingsController@update');
     Route::middleware(['scope:admin,editor'])->post('/bookings/{booking}/complete', 'API\BookingsController@complete');
-    Route::middleware(['scope:admin,customer,driver'])->post('/bookings/{booking}/cancel', 'API\BookingsController@cancel');
+    Route::middleware(['scope:admin,customer'])->post('/bookings/{booking}/cancel', 'API\BookingsController@cancel');
 
     Route::middleware(['scope:admin'])->delete('/bookings/{booking}', 'API\BookingsController@destroy');
     Route::middleware(['scope:admin,driver'])->get('/caledarEvents', "API\BookingsController@calendarEvents");
+    Route::middleware(['scope:admin,driver'])->get('/driver-bookings/{booking}', 'API\BookingsController@showDriverBooking');
 
 
     Route::middleware(['scope:admin,editor'])->get('/bookingscount/{status}', 'API\BookingsController@getBookingsCount')->name('count');;
