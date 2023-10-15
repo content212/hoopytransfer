@@ -11,7 +11,6 @@
         .popover {
             z-index: 999999;
         }
-
         #service_name_container {
             border-bottom: 3px solid #02b9ff;
             display: flex;
@@ -160,6 +159,12 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
+
+                                                <div class="col-md-3">
+                                                    <h5 class="card-title">Type / Status</h5>
+                                                    <p class="card-text" id="payment_type"></p>
+                                                </div>
+
                                                 <div class="col-md-3">
                                                     <h5 class="card-title" id="p3_title"></h5>
                                                     <p class="card-text" id="p3"></p>
@@ -173,11 +178,11 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="display: flex; justify-content:flex-end">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <input type="hidden" id="booking_id" value="">
-                    <input type="hidden" id="status_id" value="">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <input type="hidden" id="booking_id" value="">
+                        <input type="hidden" id="status_id" value="">
                 </div>
             </div>
         </div>
@@ -212,15 +217,15 @@
                         },
                         success: function (data) {
                             successCallback(
-                                $.map(data, function (item) {
-                                    return {
-                                        id: item.id,
-                                        title: item.title,
-                                        start: item.start,
-                                        backgroundColor: item.backgroundColor,
-                                        allDay: item.allDay
-                                    }
-                                }))
+                            $.map(data, function (item) {
+                                return {
+                                    id: item.id,
+                                    title: item.title,
+                                    start: item.start,
+                                    backgroundColor: item.backgroundColor,
+                                    allDay: item.allDay
+                                }
+                            }))
                         }
                     })
                 },
@@ -318,13 +323,23 @@
             $("#distance").html(obj.km + " km");
 
             if (obj.data) {
-                $("#payment_info_container").show();
-                $("#payment_type").html(obj.data.payment_type + ' / ' + obj.payment_status)
-                $("#p3_title").html("Driver Payment");
-                $("#p3").html("$" + obj.data.driver_payment);
-            } else {
+
+                if (obj.data.payment_type === "Pre") {
+                    $("#payment_type").html(obj.data.payment_type + ' / ' + obj.payment_status)
+                    $("#payment_info_container").show();
+                    $("#p3_title").html("Paid After Trip");
+                    $("#p3").html("$" + obj.data.driver_payment);
+                }else {
+                    $("#payment_info_container").hide();
+                    $("#p3").html("");
+                    $("#p3_title").html("");
+                    $("#payment_type").html("");
+                }
+            }else {
                 $("#payment_info_container").hide();
                 $("#p3").html("");
+                $("#p3_title").html("");
+                $("#payment_type").html("");
             }
 
 

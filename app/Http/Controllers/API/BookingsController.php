@@ -203,7 +203,7 @@ class BookingsController extends Controller
 
         } else {
 
-            $driver = Driver::where('user_id', $user->id);
+            $driver = Driver::where('user_id', $user->id)->first();
 
             if (!$driver) {
                 return response()->json(['message' => 'UNAUTHORIZED'], 401);

@@ -106,6 +106,8 @@ class NotificationHelper
         return str_replace("{booking_date_time}", $booking_date_time, $text);
     }
 
+
+
     public static function SendSms($receiverNumber, $message)
     {
         $account_sid = env("TWILIO_SID");
