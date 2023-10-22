@@ -64,17 +64,17 @@ class ContractHelper
                 //pre
                 $discount_amount = $bookingData->discount_price * $bookingData->full_discount / 100;
                 $html .= "Payment Type: Full Payment<br>";
-                $html .= "Sub Total: $" .  number_format($bookingData->discount_price, 2, ',', '.') . "<br>";
-                $html .= "Discount: $" . number_format($discount_amount, 2, ',', '.') . " (% " . intval($bookingData->full_discount) . ")<br>";
-                $html .= "Total Price: $" . number_format($bookingData->full_discount_price, 2, ',', '.') . "<br>";
+                $html .= "Sub Total: CHF" .  number_format($bookingData->discount_price, 2, ',', '.') . "<br>";
+                $html .= "Discount: CHF" . number_format($discount_amount, 2, ',', '.') . " (% " . intval($bookingData->full_discount) . ")<br>";
+                $html .= "Total Price: CHF" . number_format($bookingData->full_discount_price, 2, ',', '.') . "<br>";
             }
             else if ($paymentType == 'pre')
             {
                 //full
                 $html .= "Payment Type: Pre Payment<br>";
-                $html .= "Total Amount: $" .  number_format($bookingData->total, 2, ',', '.') . "<br>";
-                $html .= "Pre Payment: $" . number_format($bookingData->system_payment, 2, ',', '.') . "<br>";
-                $html .= "Paid After Trip: $" . number_format($bookingData->driver_payment, 2, ',', '.') ."<br>";
+                $html .= "Total Amount: CHF" .  number_format($bookingData->total, 2, ',', '.') . "<br>";
+                $html .= "Pre Payment: CHF" . number_format($bookingData->system_payment, 2, ',', '.') . "<br>";
+                $html .= "Paid After Trip: CHF" . number_format($bookingData->driver_payment, 2, ',', '.') ."<br>";
             }
         }
 
