@@ -41,8 +41,16 @@ class AuthOtpController extends Controller
         $user = User::where('phone', $request->phone)
             ->where('country_code', $request->country_code)
             ->first();
+
         if (!$user)
+        {
             return $this->CreateBadResponse("User not found!");
+        }
+
+        if ($user->isDeleted()) {
+            return $this->CreateBadResponse("User not found!");
+        }
+
         $phone = $request->country_code . $request->phone;
         /* Generate An verification number */
         $userOtp = $this->generateOtp($request->phone);
@@ -170,6 +178,17 @@ class AuthOtpController extends Controller
 
     public function registerGenerate(Request $request)
     {
+
+        $user = User::where('phone', $request->phone)
+            ->where('country_code', $request->country_code)
+            ->first();
+
+        if ($user) {
+            if ($user->isDeleted()) {
+                return $this->CreateBadResponse("Invalid Request!");
+            }
+        }
+
         $rules = array(
             'name' => 'required',
             'surname' => 'required',
@@ -198,9 +217,6 @@ class AuthOtpController extends Controller
         }
 
 
-        $user = User::where('phone', $request->phone)
-            ->where('country_code', $request->country_code)
-            ->first();
 
         if ($user) {
             $request = new Request([

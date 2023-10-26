@@ -37,6 +37,8 @@ Route::get('/drivers', 'DriversController@index');
 
 Route::get('/customers', 'CustomersController@index');
 
+Route::get('/customers/deleted', 'CustomersController@deletedCustomers');
+
 Route::get('/users', 'UsersController@index');
 
 Route::get('/contracts', 'ContractController@index');

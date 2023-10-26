@@ -65,14 +65,23 @@ class UserController extends Controller
             })->rawColumns(['edit'])
             ->make(true);
     }
-    public function getCustomers()
+    public function getCustomers(Request $request )
     {
-        $drivers = User::select(DB::raw('(CASE users.status
+
+        $deleted = $request->get("deleted");
+
+        $users = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','roles.role','users.created_at')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','roles.role','users.created_at','users.deleted_at', 'users.delete_reason')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
-        return DataTables::of($drivers)
+
+
+        if ($deleted == "1") {
+            $users = $users->where('deleted_at','<>', null);
+        }
+
+        return DataTables::of($users)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
                     '<a data-id="' . $row->id . '" class="delete m-1 btn btn-danger btn-sm ">Delete</a>';
@@ -80,6 +89,9 @@ class UserController extends Controller
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at ? with(new Carbon($row->created_at))->format('d/m/Y H:i:s') : '';
+            })
+            ->editColumn('deleted_at', function ($row) {
+                return $row->deleted_at ? with(new Carbon($row->deleted_at))->format('d/m/Y H:i:s') : '';
             })
             ->rawColumns(['edit'])
             ->make(true);
@@ -98,7 +110,11 @@ class UserController extends Controller
         if (!$user)
             return response()->json(['message' => 'Not Found!'], 404);
 
-        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email','country_code')->firstWhere('id', $user->id);
+        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email','country_code','deleted_at')->firstWhere('id', $user->id);
+
+        if ($dbUser->isDeleted()) {
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
 
         $userRole = $user->role()->first();
 
@@ -111,6 +127,28 @@ class UserController extends Controller
             'email' => $dbUser->email,
             'role' => $userRole->role,
         ]);
+    }
+
+    public function DeleteAccount(Request $request) {
+        $user = $request->user('api');
+
+        if (!$user){
+            return response()->json(['message' => 'Not Found!'], 404);
+        }
+        $userRole = $user->role()->first();
+
+        if ($userRole->role != "customer") {
+            return response()->json(['message' => 'Invalid Request!'], 400);
+        }
+
+        $delete_reason = $request->get("delete_reason");
+        $user->deleted_at = date('Y-m-d H:i:s');
+        $user->delete_reason = $delete_reason;
+        $user->status = 0;
+        $user->save();
+
+        return response()->json(['message' => 'Successfully deleted']);
+
     }
 
     public function FrontEndCustomerUpdate(Request $request)

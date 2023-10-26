@@ -17,7 +17,10 @@ class User extends Authenticatable
         return $this->hasOne(Role::class);
     }
 
-
+    public function isDeleted()
+    {
+        return $this->deleted_at != null;
+    }
     public function sendNotification($title, $body, $booking)
     {
         $SERVER_API_KEY = env('FIREBASE_SERVER_API_KEY');
@@ -54,13 +57,14 @@ class User extends Authenticatable
             $response = curl_exec($ch);
         }
     }
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'email', 'password', 'phone', 'status', 'country_code'
+        'name', 'surname', 'email', 'password', 'phone', 'status', 'country_code', 'deleted_at', 'delete_reason'
     ];
 
     /**

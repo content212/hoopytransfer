@@ -241,6 +241,7 @@ Route::middleware(['auth:api', 'role'])->group(function () {
 
     Route::middleware(['scope:customer,driver,admin'])->get('/userContractDetail/{user_contract_id}', 'API\ContractController@getUserContractDetail');
     Route::middleware(['scope:customer,driver,admin'])->get('/getCustomer', 'API\UserController@FrontEndCustomer');
+    Route::middleware(['scope:customer,driver,admin'])->post('/deleteaccount', 'API\UserController@DeleteAccount');
     Route::middleware(['scope:customer,admin'])->post('/updateCustomer', 'API\UserController@FrontEndCustomerUpdate');
     Route::middleware(['scope:customer,driver,admin'])->get('/getBookings', 'API\BookingsController@FrontEndCustomerBookings');
     Route::middleware(['scope:customer,driver,admin'])->get('/getBookingsDetail/{id}', 'API\BookingsController@FrontEndCustomerBookingsDetail');

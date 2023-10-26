@@ -270,14 +270,39 @@
                         </a>
                     </li>
                 @endif
-                @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
-                    <li class="side-nav-item">
-                        <a href="/customers" class="side-nav-link">
-                            <i class="uil-user"></i>
-                            <span>Customers</span>
-                        </a>
-                    </li>
-                @endif
+
+
+                    @if (trim($__env->yieldContent('role') == 'Admin') || trim($__env->yieldContent('role') == 'DriverManager'))
+                        <li class="side-nav-item">
+                            <a style="position:relative;" data-bs-toggle="collapse" href="#customersmenu"
+                               aria-expanded="false"
+                               aria-controls="sidebarDashboards" class="side-nav-link">
+                                <i class="uil-user"></i>
+                                <span> Customers </span>
+                                <i class="uil-angle-down menu-arrow-down"></i>
+                            </a>
+                            <div class="collapse" id="customersmenu">
+                                <ul class="side-nav-second-level">
+                                    <li class="side-nav-item">
+                                        <a href="/customers" class="side-nav-link">
+                                            <i class="uil-user"></i>
+                                            <span>Customers</span>
+                                        </a>
+                                    </li>
+                                    <li class="side-nav-item">
+                                        <a href="/customers/deleted" class="side-nav-link">
+                                            <i class="mdi mdi-account-cancel"></i>
+                                            <span>Deleted Customers</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    @endif
+
+
+
+
                 @if (trim($__env->yieldContent('role') == 'Admin') ||
                         trim($__env->yieldContent('role') == 'DriverManager'))
                     <li class="side-nav-title side-nav-item">Services</li>
@@ -409,7 +434,6 @@
                             </ul>
                         </div>
                     </li>
-
                 @endif
             </ul>
             <!-- End Sidebar -->

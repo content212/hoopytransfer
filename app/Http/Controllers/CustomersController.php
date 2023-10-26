@@ -43,4 +43,20 @@ class CustomersController extends Controller
             return redirect('/');
         }
     }
+
+    public function deletedCustomers()
+    {
+        $role = str_replace(' ', '', $this->role());
+
+        $name = $this->name();
+        if ($role) {
+            if ($role == 'Admin') {
+                return view('deleted-customers', ['role' => $role, 'name' => $name]);
+            } else {
+                return redirect('/forbidden');
+            }
+        } else {
+            return redirect('/');
+        }
+    }
 }
