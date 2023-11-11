@@ -102,7 +102,7 @@ class PaymentController extends Controller
                 } else {
                     $paymentIntent = $this->stripe->paymentIntents->create([
                         'amount' => floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price)) * 100,
-                        'currency' => 'usd',
+                        'currency' => 'CHF',
                         'automatic_payment_methods' => [
                             'enabled' => true,
                         ],
@@ -159,7 +159,7 @@ class PaymentController extends Controller
             } else {
                 $paymentIntent = $this->stripe->paymentIntents->create([
                     'amount' => floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price)) * 100,
-                    'currency' => 'usd',
+                    'currency' => 'CHF',
                     'automatic_payment_methods' => [
                         'enabled' => true,
                     ],
