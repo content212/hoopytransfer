@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Companies;
+use App\Helpers\BookingHelper;
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Log;
 use App\Models\Role;
 use App\Models\User;
@@ -20,6 +23,12 @@ use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
 {
+    public function TestNotification()
+    {
+        $booking = Booking::where('id',546)->first();
+        BookingHelper::SendNotification($booking, 0);
+    }
+
     public function index()
     {
         $users = User::join('roles', 'roles.user_id', '=', 'users.id')

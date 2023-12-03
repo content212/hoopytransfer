@@ -7,6 +7,7 @@ use App\Models\CarType;
 use App\Models\Price;
 use App\Models\Setting;
 use App\Models\Transaction;
+use Exception;
 
 class BookingHelper
 {
@@ -30,6 +31,7 @@ class BookingHelper
 
         switch ($status) {
             case self::WAITING_FOR_BOOKING:
+                self::SendNotification($booking, self::WAITING_FOR_BOOKING);
                 break;
             case self::WAITING_FOR_CONFIRMATION:
                 self::WaitingForConfirmation($booking, $driver_id, $car_id, $car_type);
@@ -65,10 +67,26 @@ class BookingHelper
 
     public static function SendNotification($booking, $status): void
     {
-        NotificationHelper::SendNotificationToDriver($booking, $status);
-        NotificationHelper::SendNotificationToCustomer($booking, $status);
-        NotificationHelper::SendNotificationToAdmins($booking, $status);
-        NotificationHelper::SendNotificationToDriverManagers($booking, $status);
+        try {
+            NotificationHelper::SendNotificationToAdmins($booking, $status);
+        } catch (Exception $e) {
+        }
+
+        try {
+            NotificationHelper::SendNotificationToCustomer($booking, $status);
+        } catch (Exception $e) {
+        }
+
+        try {
+            NotificationHelper::SendNotificationToDriver($booking, $status);
+        } catch (Exception $e) {
+        }
+
+        try {
+            NotificationHelper::SendNotificationToDriverManagers($booking, $status);
+        } catch (Exception $e) {
+        }
+
     }
 
     public static function WaitingForConfirmation($booking, $driver_id, $car_id, $car_type): void
@@ -77,6 +95,7 @@ class BookingHelper
         //booking i trip is expected yap
         //bildirim sms mail
         if ($driver_id > 0 && $car_id > 0 && $car_type > 0) {
+            self::SendNotification($booking, self::WAITING_FOR_CONFIRMATION);
             $booking->update([
                 'driver_id' => $driver_id,
                 'car_id' => $car_id,
