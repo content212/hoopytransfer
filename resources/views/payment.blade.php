@@ -196,6 +196,7 @@
                 clientSecret
             } = await fetch("{{ route('payment.create') }}", {
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json"
                 },

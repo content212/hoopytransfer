@@ -23,7 +23,14 @@ class BookingData extends Model
         'full_discount',
         'full_discount_price',
         'full_discount_system_payment',
-        'full_discount_driver_payment'
+        'full_discount_driver_payment',
+        'use_credit',
+        'used_credit_amount'
+    ];
+
+    protected $casts = [
+        'used_credit_amount' => 'float',
+        'use_credit' => 'boolean'
     ];
 
     public function booking()

@@ -396,7 +396,7 @@
                     </li>
                 @endif
                 @if (trim($__env->yieldContent('role') == 'Admin'))
-                    <li class="side-nav-item">
+                    <li class="side-nav-item" style="display: none">
                         <a href="/giftcards" class="side-nav-link">
                             <i class="uil-file"></i>
                             <span>Gift Cards</span>

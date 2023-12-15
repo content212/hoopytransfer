@@ -9,6 +9,8 @@ use App\Models\BookingPayment;
 use App\Models\Price;
 use App\Models\Setting;
 use App\Models\Transaction;
+use App\Models\User;
+use App\Models\UserCreditActivity;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -40,6 +42,7 @@ class PaymentController extends Controller
 
     public function payment(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'bookingId' => 'required|exists:bookings,id',
             'paymentType' => 'required'
@@ -55,15 +58,14 @@ class PaymentController extends Controller
         try {
             $data = $request->all();
             $booking = Booking::find($data['bookingId']);
-            $user = $request->user('api');
+            $user = User::find($booking->user_id);
 
             $useCredit = '0';
-            if (isset($input['useCredit'])) {
-                $useCredit = $input['useCredit'];
+            if (isset($data['useCredit'])) {
+                $useCredit = $data['useCredit'];
             }
 
             $credit = floatval($user->credit);
-
 
             if (!in_array($booking->status, [0, 9]))
                 return response()->json([
@@ -116,7 +118,6 @@ class PaymentController extends Controller
                         'charge' => null
                     ]);
                 } else {
-
                     $amount = floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price));
                     $paymentIntent = $this->stripe->paymentIntents->create([
                         'amount' => $amount * 100,
@@ -136,37 +137,98 @@ class PaymentController extends Controller
 
             $price = Price::find($booking->price_id);
 
-            if ($price) {
+            $paymentType = $data['paymentType'];
+            $full_discount = Setting::firstWhere('code', 'full_discount')->value;
+            $total = ($price->opening_fee + ($price->km_fee * $booking->km));
+            $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
+            $driver_payment = $discount_price * 0.7;
+            $system_payment = $discount_price - $driver_payment;
+            $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
+            $full_discount_system_payment = $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3);
+            $full_discount_driver_payment = $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7);
+            $used_credit_amount = 0.0;
+            $continue_payment = true;
+            if ($useCredit == '1') {
+                if ($paymentType == "Full") {
+                    if ($credit >= $full_discount_price) {
+                        $used_credit_amount = $full_discount_price;
+                        $continue_payment = false;
+                    } else {
+                        $used_credit_amount = $credit;
+                    }
+                } else {
+                    if ($credit >= $system_payment) {
+                        $used_credit_amount = $system_payment;
+                        $continue_payment = false;
+                    } else {
+                        $used_credit_amount = $credit;
+                    }
+                }
+            }
 
-                $full_discount = Setting::firstWhere('code', 'full_discount')->value;
-                $total = ($price->opening_fee + ($price->km_fee * $booking->km));
-                $discount_price = $total * (1.0 - ($price->carType->discount_rate / 100.0));
-                $driver_payment = $discount_price * 0.7;
-                $system_payment = $discount_price - $driver_payment;
-                $full_discount_price = $discount_price * (1.0 - ($full_discount / 100.0));
-                $inputs = [
-                    'booking_id' => $booking->id,
-                    'km' => $booking->km,
-                    'opening_fee' => $price->opening_fee,
-                    'km_fee' => $price->km_fee,
-                    'payment_type' => $data['paymentType'],
-                    'discount_rate' => $price->carType->discount_rate,
-                    'discount_price' => $discount_price,
-                    'system_payment' => $system_payment,
-                    'driver_payment' => $driver_payment,
-                    'total' => $total,
-                    'full_discount' => $full_discount,
-                    'full_discount_price' => $full_discount_price,
-                    'full_discount_system_payment' => $system_payment - (($discount_price * ($full_discount / 100.0)) * 0.3),
-                    'full_discount_driver_payment' => $driver_payment - (($discount_price * ($full_discount / 100.0)) * 0.7)
-                ];
 
-                $booking->data->update($inputs);
+            $inputs = [
+                'booking_id' => $booking->id,
+                'km' => $booking->km,
+                'opening_fee' => $price->opening_fee,
+                'km_fee' => $price->km_fee,
+                'payment_type' => $paymentType,
+                'discount_rate' => $price->carType->discount_rate,
+                'discount_price' => $discount_price,
+                'system_payment' => $system_payment,
+                'driver_payment' => $driver_payment,
+                'total' => $total,
+                'full_discount' => $full_discount,
+                'full_discount_price' => $full_discount_price,
+                'full_discount_system_payment' => $full_discount_system_payment,
+                'full_discount_driver_payment' => $full_discount_driver_payment,
+                'use_credit' => $useCredit == '1',
+                'used_credit_amount' => $used_credit_amount
+            ];
+
+            $booking->data->update($inputs);
+
+            if ($useCredit == '1') {
+
+                if (!$continue_payment) {
+
+                    $user->update([
+                        'credit' => ($credit - $used_credit_amount)]);
+
+                    UserCreditActivity::create([
+                        'user_id' => $user->id,
+                        'booking_id' => $booking->id,
+                        'activity_type' => 'spend',
+                        'credit' => $used_credit_amount,
+                        'note' => $booking->track_code,
+                    ]);
+
+
+                    if ($booking->payment) {
+                        $booking->payment->update([
+                            'paymentIntent' => "CREDIT",
+                            'status' => "succeeded"
+                        ]);
+                    } else {
+                        BookingPayment::create([
+                            'booking_id' => $booking->id,
+                            'paymentIntent' => "CREDIT",
+                            'status' => "succeeded"
+                        ]);
+                    }
+
+                    $booking->update(['status' => 1]);
+
+                    return response()->json([
+                        "url" => env('FRONTED_URL') . '//reservations//' . $booking->id
+                    ]);
+                }
             }
 
 
             if ($booking->payment) {
-                $amount =  floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price));
+                $amount = floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price));
+                $amount = $amount - $used_credit_amount;
                 $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
                     'amount' => $amount * 100
                 ]);
@@ -177,6 +239,7 @@ class PaymentController extends Controller
                 ]);
             } else {
                 $amount = floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price));
+                $amount = $amount - $used_credit_amount;
                 $paymentIntent = $this->stripe->paymentIntents->create([
                     'amount' => $amount * 100,
                     'currency' => 'CHF',
@@ -207,8 +270,43 @@ class PaymentController extends Controller
         }
         try {
             $input = $request->all();
-            $status = $this->stripe->paymentIntents->retrieve($input['payment_intent'])->status;
+            $payment_intent = $input['payment_intent'];
+            $status = $this->stripe->paymentIntents->retrieve($payment_intent)->status;
             if ($status == 'succeeded') {
+
+                $bookingPayment = BookingPayment::where('payment_intent', $payment_intent)->first();
+
+                if ($bookingPayment) {
+
+                    $booking = Booking::where('id', $bookingPayment->booking_id);
+
+                    if ($booking) {
+
+                        $bookingData = BookingData::where('booking_id', $booking->id)->first();
+
+                        if ($bookingData && $bookingData->use_credit) {
+                            $user = User::where('id', $booking->id)->first();
+
+                            if ($user) {
+
+                                $credit = floatval($user->credit);
+                                $used_credit_amount = floatval($bookingData->used_credit_amount);
+
+                                $user->update([
+                                    'credit' => ($credit - $used_credit_amount)]);
+
+                                UserCreditActivity::create([
+                                    'user_id' => $user->id,
+                                    'booking_id' => $booking->id,
+                                    'activity_type' => 'spend',
+                                    'credit' => $used_credit_amount,
+                                    'note' => $booking->track_code,
+                                ]);
+                            }
+                        }
+                    }
+                }
+
                 return view('paymentSuccess');
             }
         } catch (\Throwable $th) {
