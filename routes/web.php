@@ -42,6 +42,7 @@ Route::get('/customers/deleted', 'CustomersController@deletedCustomers');
 Route::get('/users', 'UsersController@index');
 
 Route::get('/contracts', 'ContractController@index');
+Route::get('/couponcodes', 'CouponCodeController@index');
 
 Route::get('/notifications', 'NotificationController@index');
 Route::post('/notifications', 'NotificationController@store');

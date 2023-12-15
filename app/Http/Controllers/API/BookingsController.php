@@ -198,7 +198,7 @@ class BookingsController extends Controller
         if ($user->role->role == "admin") {
 
             $bookings = Booking::where('id', '=', $booking)
-                ->with('service', 'user','data')
+                ->with('service', 'user', 'data')
                 ->first();
 
         } else {
@@ -211,7 +211,7 @@ class BookingsController extends Controller
 
             $bookings = Booking::where('id', '=', $booking)
                 ->where('driver_id', $driver->id)
-                ->with('service', 'user','data')
+                ->with('service', 'user', 'data')
                 ->first();
         }
 
@@ -343,7 +343,7 @@ class BookingsController extends Controller
             'sender_name',
             DB::raw('(CASE status when 0 then \'Waiting\' when 1 then \'Preparing\' when 2 then \'Shipped\' when 3 then \'Trip is not Completed\' END) as status'),
             'track_code',
-            'company_name',
+            'company_name'
         )
             ->where('track_code', $request->track_code)->first();
         if ($booking) {

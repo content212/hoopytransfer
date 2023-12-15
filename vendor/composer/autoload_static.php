@@ -438,8 +438,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
-            1 => __DIR__ . '/..' . '/league/uri/src',
+            0 => __DIR__ . '/..' . '/league/uri/src',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
         ),
         'League\\OAuth2\\Server\\' => 
         array (
@@ -593,7 +593,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Http\\Controllers\\API\\CarController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/CarController.php',
         'App\\Http\\Controllers\\API\\CarTypeController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/CarTypeController.php',
         'App\\Http\\Controllers\\API\\ContractController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/ContractController.php',
-        'App\\Http\\Controllers\\API\\CustomersController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/CustomersController.php',
+        'App\\Http\\Controllers\\API\\CouponCodeController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/CouponCodeController.php',
         'App\\Http\\Controllers\\API\\DriverController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/DriverController.php',
         'App\\Http\\Controllers\\API\\DriverJobController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/DriverJobController.php',
         'App\\Http\\Controllers\\API\\GoogleMapsApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/GoogleMapsApiController.php',
@@ -605,6 +605,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Http\\Controllers\\API\\ShiftController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/ShiftController.php',
         'App\\Http\\Controllers\\API\\StationController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/StationController.php',
         'App\\Http\\Controllers\\API\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/UserController.php',
+        'App\\Http\\Controllers\\API\\UserCreditActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/API/UserCreditActivityController.php',
         'App\\Http\\Controllers\\AccountingController' => __DIR__ . '/../..' . '/app/Http/Controllers/AccountingController.php',
         'App\\Http\\Controllers\\BookingsController' => __DIR__ . '/../..' . '/app/Http/Controllers/BookingsController.php',
         'App\\Http\\Controllers\\CalendarController' => __DIR__ . '/../..' . '/app/Http/Controllers/CalendarController.php',
@@ -612,6 +613,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Http\\Controllers\\CompaniesController' => __DIR__ . '/../..' . '/app/Http/Controllers/CompaniesController.php',
         'App\\Http\\Controllers\\ContractController' => __DIR__ . '/../..' . '/app/Http/Controllers/ContractController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\CouponCodeController' => __DIR__ . '/../..' . '/app/Http/Controllers/CouponCodeController.php',
         'App\\Http\\Controllers\\CustomersController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomersController.php',
         'App\\Http\\Controllers\\DriversController' => __DIR__ . '/../..' . '/app/Http/Controllers/DriversController.php',
         'App\\Http\\Controllers\\ExcelController' => __DIR__ . '/../..' . '/app/Http/Controllers/ExcelController.php',
@@ -651,6 +653,7 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Models\\CarType' => __DIR__ . '/../..' . '/app/Models/CarType.php',
         'App\\Models\\Contract' => __DIR__ . '/../..' . '/app/Models/Contract.php',
         'App\\Models\\Country' => __DIR__ . '/../..' . '/app/Models/Country.php',
+        'App\\Models\\CouponCode' => __DIR__ . '/../..' . '/app/Models/CouponCode.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Models/Customer.php',
         'App\\Models\\Driver' => __DIR__ . '/../..' . '/app/Models/Driver.php',
         'App\\Models\\Log' => __DIR__ . '/../..' . '/app/Models/Log.php',
@@ -665,6 +668,8 @@ class ComposerStaticInitab20701a679b1c42dec520a706c176f6
         'App\\Models\\Transaction' => __DIR__ . '/../..' . '/app/Models/Transaction.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\UserContract' => __DIR__ . '/../..' . '/app/Models/UserContract.php',
+        'App\\Models\\UserCouponCode' => __DIR__ . '/../..' . '/app/Models/UserCouponCode.php',
+        'App\\Models\\UserCreditActivity' => __DIR__ . '/../..' . '/app/Models/UserCreditActivity.php',
         'App\\Models\\UserDevice' => __DIR__ . '/../..' . '/app/Models/UserDevice.php',
         'App\\Models\\UserOtp' => __DIR__ . '/../..' . '/app/Models/UserOtp.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',

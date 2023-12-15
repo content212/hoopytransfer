@@ -25,14 +25,14 @@ class UserController extends Controller
 {
     public function TestNotification()
     {
-        $booking = Booking::where('id',546)->first();
+        $booking = Booking::where('id', 546)->first();
         BookingHelper::SendNotification($booking, 0);
     }
 
     public function index()
     {
         $users = User::join('roles', 'roles.user_id', '=', 'users.id')
-            ->where ('roles.role', '<>', 'customer')
+            ->where('roles.role', '<>', 'customer')
             ->select(
                 'users.id',
                 DB::raw('(CASE users.status
@@ -48,7 +48,6 @@ class UserController extends Controller
             );
 
 
-
         return DataTables::of($users)
             ->addColumn('edit', function ($row) {
                 $btn = '<a data-id="' . $row->id . '" class="edit m-1 btn btn-primary btn-sm">View</a>' .
@@ -61,9 +60,10 @@ class UserController extends Controller
             ->rawColumns(['edit'])
             ->make(true);
     }
+
     public function getDrivers()
     {
-        $drivers = User::select('id', 'name', 'email', 'phone','country_code')
+        $drivers = User::select('id', 'name', 'email', 'phone', 'country_code')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'driver');
         return DataTables::of($drivers)
@@ -74,20 +74,21 @@ class UserController extends Controller
             })->rawColumns(['edit'])
             ->make(true);
     }
-    public function getCustomers(Request $request )
+
+    public function getCustomers(Request $request)
     {
 
         $deleted = $request->get("deleted");
 
         $users = User::select(DB::raw('(CASE users.status
         when 0 then \'Passive\'
-        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone','users.country_code','roles.role','users.created_at','users.deleted_at', 'users.delete_reason')
+        when 1 then \'Active\' END) as status'), 'users.id', 'users.name', 'users.surname', 'users.email', 'users.phone', 'users.country_code', 'roles.role', 'users.created_at', 'users.deleted_at', 'users.delete_reason')
             ->join('roles', 'roles.user_id', '=', 'users.id')
             ->where('roles.role', 'customer');
 
 
         if ($deleted == "1") {
-            $users = $users->where('deleted_at','<>', null);
+            $users = $users->where('deleted_at', '<>', null);
         }
 
         return DataTables::of($users)
@@ -105,21 +106,23 @@ class UserController extends Controller
             ->rawColumns(['edit'])
             ->make(true);
     }
+
     public function getCustomer($id)
     {
-        return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone','users.country_code' ,'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
+        return User::select('users.status', 'users.id', 'users.name', 'users.email', 'users.phone', 'users.country_code', 'customers.discount', 'customers.type', 'companies.company_name', 'companies.tax_department', 'companies.tax_number', 'companies.organization_number', 'companies.address')
             ->join('customers', 'customers.user_id', '=', 'users.id')
             ->join('companies', 'companies.customer_id', '=', 'customers.id')
             ->where('users.id', '=', $id)
             ->first();
     }
+
     public function FrontEndCustomer(Request $request)
     {
         $user = $request->user('api');
         if (!$user)
             return response()->json(['message' => 'Not Found!'], 404);
 
-        $dbUser =  User::select('id', 'name', 'surname', 'phone', 'email','country_code','deleted_at')->firstWhere('id', $user->id);
+        $dbUser = User::select('id', 'name', 'surname', 'phone', 'email', 'country_code', 'deleted_at', 'credit')->firstWhere('id', $user->id);
 
         if ($dbUser->isDeleted()) {
             return response()->json(['message' => 'Not Found!'], 404);
@@ -135,13 +138,15 @@ class UserController extends Controller
             'country_code' => $dbUser->country_code,
             'email' => $dbUser->email,
             'role' => $userRole->role,
+            'credit' => $dbUser->credit,
         ]);
     }
 
-    public function DeleteAccount(Request $request) {
+    public function DeleteAccount(Request $request)
+    {
         $user = $request->user('api');
 
-        if (!$user){
+        if (!$user) {
             return response()->json(['message' => 'Not Found!'], 404);
         }
         $userRole = $user->role()->first();
@@ -189,9 +194,9 @@ class UserController extends Controller
 
         if ($user->phone != $request->phone || $user->country_code != $request->country_code) {
             //phone is changed
-            $checkPhoneUser = User::where('phone',$request->phone)
-            ->where('country_code',$request->country_code)
-            ->first();
+            $checkPhoneUser = User::where('phone', $request->phone)
+                ->where('country_code', $request->country_code)
+                ->first();
             if ($checkPhoneUser) {
                 return response()->json(['message' => 'This phone number is used by another user!'], 400);
             }
@@ -261,6 +266,7 @@ class UserController extends Controller
             return response($user->toJson(JSON_PRETTY_PRINT), 200);
         }
     }
+
     public function driversAction(Request $request)
     {
         if ($request->ajax()) {
@@ -303,6 +309,7 @@ class UserController extends Controller
             return ['message' => $e->errorInfo];
         }
     }
+
     public function storeCustomer(Request $request)
     {
         try {
@@ -331,6 +338,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     public function action(Request $request)
     {
         if ($request->id != -1) {
@@ -387,6 +395,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     public function destroy($id)
     {
         if (!$user = User::where('id', '=', $id)->first())
@@ -403,6 +412,7 @@ class UserController extends Controller
     {
         return Auth::user();
     }
+
     public function updateAcc(Request $request)
     {
         try {
@@ -423,11 +433,12 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
     public function addDevice(Request $request)
     {
         try {
             $user_id = Auth::user()->id;
-            $input  = $request->all();
+            $input = $request->all();
             $rules = array(
                 'device_token' => 'required'
             );
@@ -440,23 +451,20 @@ class UserController extends Controller
                 ], 400);
             }
 
-            $user_device = UserDevice::where('device_token','=',$input['device_token'])->first();
+            $user_device = UserDevice::where('device_token', '=', $input['device_token'])->first();
 
-            if ($user_device)
-            {
+            if ($user_device) {
                 //update
                 DB::table('user_devices')
-                    ->where('device_token','=', $input['device_token'])
+                    ->where('device_token', '=', $input['device_token'])
                     ->update([
-                    'user_id' => $user_id,
-                    'platform' => $input['platform'],
-                    'version' => $input['version'],
-                    'build_number' => $input['build_number'],
-                    'updated_at' => Carbon::now(),
-                ]);
-            }
-            else
-            {
+                        'user_id' => $user_id,
+                        'platform' => $input['platform'],
+                        'version' => $input['version'],
+                        'build_number' => $input['build_number'],
+                        'updated_at' => Carbon::now(),
+                    ]);
+            } else {
                 //insert
                 DB::table('user_devices')->insert([
                     'user_id' => $user_id,

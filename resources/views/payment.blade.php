@@ -184,6 +184,7 @@
         const stripe = Stripe("{{ env('STRIPE_KEY') }}");
         const bookingId = new URLSearchParams(window.location.search).get("bookingId");
         const paymentType = new URLSearchParams(window.location.search).get("paymentType");
+        const useCredit = new URLSearchParams(window.location.search).get("useCredit");
         let elements;
         initialize();
         console.log(document.getElementById("payment-form"));
@@ -200,6 +201,7 @@
                 },
                 body: JSON.stringify({
                     bookingId: bookingId,
+                    useCredit: useCredit,
                     paymentType: paymentType
                 }),
             }).then((r) => r.json());
@@ -221,11 +223,11 @@
             };
 
             const paymentElement = elements.create("payment", paymentElementOptions);
-            
+
             console.log(paymentElement);
             //document.getElementById('Field-emailInput').value = "{{ $email }}";
             paymentElement.mount("#payment-element");
-            
+
         }
 
         async function handleSubmit(e) {

@@ -28,8 +28,14 @@ class PaymentController extends Controller
         $input = $request->all();
         if (!isset($input['bookingId']) or !isset($input['paymentType']) or ($input['paymentType'] != 'Full' and $input['paymentType'] != 'Pre'))
             abort(404);
+
+        $useCredit = '0';
+        if (isset($input['useCredit'])) {
+            $useCredit = $input['useCredit'];
+        }
+
         $email = Booking::find($input['bookingId'])->user->email;
-        return view('payment')->with(['email' => $email, 'bookingId' => $input['bookingId']]);
+        return view('payment')->with(['email' => $email, 'useCredit' => $useCredit, 'bookingId' => $input['bookingId']]);
     }
 
     public function payment(Request $request)
@@ -49,13 +55,22 @@ class PaymentController extends Controller
         try {
             $data = $request->all();
             $booking = Booking::find($data['bookingId']);
+            $user = $request->user('api');
+
+            $useCredit = '0';
+            if (isset($input['useCredit'])) {
+                $useCredit = $input['useCredit'];
+            }
+
+            $credit = floatval($user->credit);
+
+
             if (!in_array($booking->status, [0, 9]))
                 return response()->json([
                     'error' => 'Payment not created for this booking!'
                 ]);
 
             if ($data['paymentType'] == 'No') {
-                $user = $request->user('api');
                 if (!$user || $user->role->role != "admin") {
                     abort(403);
                 }
@@ -91,8 +106,9 @@ class PaymentController extends Controller
 
             if ($booking->status == 9) {
                 if ($booking->payment) {
+                    $amount = floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price));
                     $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
-                        'amount' => floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price)) * 100
+                        'amount' => $amount * 100
                     ]);
                     $booking->payment->update([
                         'status' => $paymentIntent->status,
@@ -100,8 +116,10 @@ class PaymentController extends Controller
                         'charge' => null
                     ]);
                 } else {
+
+                    $amount = floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price));
                     $paymentIntent = $this->stripe->paymentIntents->create([
-                        'amount' => floatval((($data['paymentType'] == 'Pre') ? $booking->data->system_payment : $booking->data->discount_price)) * 100,
+                        'amount' => $amount * 100,
                         'currency' => 'CHF',
                         'automatic_payment_methods' => [
                             'enabled' => true,
@@ -148,8 +166,9 @@ class PaymentController extends Controller
 
 
             if ($booking->payment) {
+                $amount =  floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price));
                 $paymentIntent = $this->stripe->paymentIntents->update($booking->payment->paymentIntent, [
-                    'amount' => floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price)) * 100
+                    'amount' => $amount * 100
                 ]);
                 $booking->payment->update([
                     'status' => $paymentIntent->status,
@@ -157,8 +176,9 @@ class PaymentController extends Controller
                     'charge' => null
                 ]);
             } else {
+                $amount = floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price));
                 $paymentIntent = $this->stripe->paymentIntents->create([
-                    'amount' => floatval((($booking->data->payment_type == 'Pre') ? $booking->data->system_payment : $booking->data->full_discount_price)) * 100,
+                    'amount' => $amount * 100,
                     'currency' => 'CHF',
                     'automatic_payment_methods' => [
                         'enabled' => true,

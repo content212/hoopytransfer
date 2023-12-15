@@ -314,6 +314,13 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->get('/shifts/{date}', 'API\ShiftController@show');
     Route::middleware(['scope:admin'])->post('/shifts', 'API\ShiftController@store');
 
+    Route::middleware(['scope:admin'])->get('/couponcodes', 'API\CouponCodeController@index');
+    Route::middleware(['scope:admin'])->get('/couponcodes/{id}', 'API\CouponCodeController@show');
+    Route::middleware(['scope:admin'])->post('/couponcodes', 'API\CouponCodeController@store');
+    Route::middleware(['scope:admin'])->delete('/couponcodes/{id}', 'API\CouponCodeController@destroy');
+    Route::middleware(['scope:customer,driver,admin'])->get('/getUserCreditActivity', 'API\UserCreditActivityController@GetUserCreditActivities');
+    Route::middleware(['scope:customer,driver,admin'])->post('/addCouponToUser', 'API\CouponCodeController@addCouponToUser');
+
 
     Route::post('/bookings', 'API\BookingsController@store');
 

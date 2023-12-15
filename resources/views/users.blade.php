@@ -6,15 +6,6 @@
 
 @section('name', $name)
 
-@section('css')
-    <style>
-        .popover {
-            z-index: 999999;
-        }
-
-    </style>
-@endsection
-
 @section('content')
     <div class="table-responsive">
         <table id="users_table" class="table table-striped table-sm" style="width: 100%">
