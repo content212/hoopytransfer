@@ -33,7 +33,7 @@
                         style="background-color: rgb(49, 58, 70);"></i>
                 </div>
                 <h5 class="fw-normal mt-0" title="Total">TOTAL</h5>
-                <h3 class="mt-3 mb-3">${{ $total, 2 }}</h3>
+                <h3 class="mt-3 mb-3">${{ $total }}</h3>
                 <h5 class="fw-normal mt-0"><a href="/accountingdetail" >Detail</a></h3>
 
             </div>

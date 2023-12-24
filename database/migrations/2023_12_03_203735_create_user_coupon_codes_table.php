@@ -20,12 +20,15 @@ class CreateUserCouponCodesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->bigInteger('coupon_code_id')->unsigned()->nullable();
             $table->foreign('coupon_code_id')->references('id')->on('coupon_codes')->onDelete('set null');
-            $table->timestamp('start_date');
-            $table->timestamp('expiration_date');
+            $table->bigInteger('coupon_code_group_id')->unsigned()->nullable();
+            $table->foreign('coupon_code_group_id')->references('id')->on('coupon_code_groups')->onDelete('set null');
             $table->timestamp('date_of_use')->nullable();
-            $table->integer('credit');
-            $table->string('code',50);
+            $table->decimal('credit');
+            $table->decimal('price');
+            $table->string('code', 250);
+            $table->unique('code');
             $table->uuid('guid')->default(DB::raw('(UUID())'));
+            $table->boolean('is_gift')->default(0);
             $table->timestamps();
         });
     }

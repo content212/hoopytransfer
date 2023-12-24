@@ -88,7 +88,7 @@ class NotificationHelper
             }
 
             if ($notification->email_enabled && $notification->email_subject && $notification->email_body) {
-                self::SendEmail($user, $booking, self::Replace($notification->email_subject, $booking), self::Replace($notification->email_body, $booking));
+                self::SendEmail($user, self::Replace($notification->email_subject, $booking), self::Replace($notification->email_body, $booking));
             }
         }
     }
@@ -127,7 +127,7 @@ class NotificationHelper
         curl_close($ch);
     }
 
-    public static function SendEmail($user, $booking, $subject, $mail)
+    public static function SendEmail($user, $subject, $mail)
     {
 
         $SENDGRID_API_KEY = env('SENDGRID_API_KEY');

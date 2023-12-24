@@ -21,9 +21,14 @@ class CreateUserCreditActivitiesTable extends Migration
             $table->foreign('user_coupon_code_id')->references('id')->on('user_coupon_codes')->onDelete('set null');
             $table->bigInteger('booking_id')->unsigned()->nullable();
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('set null');
-            $table->integer('credit');
+            $table->decimal('credit');
             $table->string('note', 250)->nullable();
+            $table->string('note2', 250)->nullable();
+            $table->string('payment_intent')->nullable();
+            $table->string('payment_status')->nullable();
+            $table->string('refund')->nullable();
             $table->enum('activity_type', ['charge', 'spend']);
+            $table->boolean('is_gift')->default(0);
             $table->timestamps();
         });
     }

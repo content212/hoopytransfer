@@ -43,6 +43,12 @@ Route::get('/users', 'UsersController@index');
 
 Route::get('/contracts', 'ContractController@index');
 Route::get('/couponcodes', 'CouponCodeController@index');
+Route::get('/couponcodes/online', 'CouponCodeController@online');
+Route::get('/couponcodes/giftcards', 'CouponCodeController@giftcards');
+Route::get('/couponcodes/offline', 'CouponCodeController@offline');
+Route::get('/couponcodes/offline/{id}', 'CouponCodeController@offlineDetail');
+Route::get('/couponcodes/offline/export/{id}', 'API\CouponCodeController@exportCouponCodes');
+
 
 Route::get('/notifications', 'NotificationController@index');
 Route::post('/notifications', 'NotificationController@store');

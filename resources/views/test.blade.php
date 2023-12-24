@@ -396,13 +396,46 @@
                     </li>
                 @endif
                 @if (trim($__env->yieldContent('role') == 'Admin'))
-                    <li class="side-nav-item" style="display: none">
-                        <a href="/giftcards" class="side-nav-link">
-                            <i class="uil-file"></i>
-                            <span>Gift Cards</span>
+                    <li class="side-nav-item">
+                        <a style="position:relative;" data-bs-toggle="collapse" href="#couponcodes"
+                           aria-expanded="false"
+                           aria-controls="sidebarDashboards" class="side-nav-link">
+                            <i class="uil-envelope"></i>
+                            <span> Coupon Codes </span>
+                            <i class="uil-angle-down menu-arrow-down"></i>
+
                         </a>
+                        <div class="collapse" id="couponcodes">
+                            <ul class="side-nav-second-level">
+                                <li>
+                                    <a aria-current="page"
+                                       href="/couponcodes">
+                                        Coupon Codes
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/couponcodes/online">
+                                        Online Coupon Codes
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/couponcodes/offline">
+                                        Offline Coupon Codes
+                                    </a>
+                                </li>
+                                <li>
+                                    <a aria-current="page"
+                                       href="/couponcodes/giftcards">
+                                        Gift Cards
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 @endif
+
                 @if (trim($__env->yieldContent('role') == 'Admin'))
                     <li class="side-nav-item">
                         <a style="position:relative;" data-bs-toggle="collapse" href="#notifications"

@@ -14,9 +14,15 @@ class UserCreditActivity extends Model
         'booking_id',
         'credit',
         'note',
+        'note2',
         'activity_type',
+        'payment_intent',
+        'payment_status',
+        'refund',
+        'is_gift'
     ];
     protected $casts = [
-        'credit' => 'integer'
+        'credit' => 'float',
+        'is_gift' => 'boolean'
     ];
 }

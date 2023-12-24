@@ -11,17 +11,18 @@ class UserCouponCode extends Model
     protected $fillable = [
         'user_id',
         'coupon_code_id',
-        'start_date',
-        'expiration_date',
+        'coupon_code_group_id',
         'date_of_use',
         'credit',
         'code',
+        'price',
         'guid',
+        'is_gift'
     ];
     protected $casts = [
-        'credit' => 'integer',
-        'start_date' => 'datetime',
-        'expiration_date' => 'datetime',
+        'credit' => 'float',
+        'price' => 'float',
         'date_of_use' => 'datetime',
+        'is_gift' => 'boolean'
     ];
 }

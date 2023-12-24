@@ -1,12 +1,16 @@
 <?php
 
+use App\Helpers\CouponCodeHelper;
+use App\Http\Controllers\API\CreditPaymentController;
 use App\Http\Controllers\API\GoogleMapsApiController;
 use App\Http\Controllers\API\PaymentController;
 use App\Models\Booking;
 use App\Models\BookingPayment;
+use App\Models\CouponCode;
 use App\Models\Setting;
 use App\Models\Shift;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +48,11 @@ Route::post('/payment', [PaymentController::class, 'payment'])->name('payment.cr
 Route::get('/paymentsuccess', [PaymentController::class, 'success'])->name('payment.success');
 
 
+Route::get('/payment/credit', [CreditPaymentController::class, 'index']);
+Route::post('/payment/credit', [CreditPaymentController::class, 'payment'])->name('credit.payment.create');
+Route::get('/payment/credit/paymentsuccess', [CreditPaymentController::class, 'success'])->name('credit.payment.success');
+
+
 Route::post('/webhook', function (Request $request) {
 
     $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
@@ -64,156 +73,187 @@ Route::post('/webhook', function (Request $request) {
         return response()->json([], 400);
     }
 
-    // Handle the event
-    switch ($event->type) {
-        case 'payment_intent.created':
-            BookingPayment::create([
-                'booking_id' => $event->data->object->metadata->booking_id,
-                'paymentIntent' => $event->data->object->id,
-                'status' => $event->data->object->status
-            ]);
-            break;
-        case 'payment_intent.succeeded':
-            $booking_data = Booking::find($event->data->object->metadata->booking_id)->data;
-            Transaction::create([
-                'type' => 'booking_payment',
-                'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
-                'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
-                'booking_id' => $booking_data->booking->id
-            ]);
-            Transaction::create([
-                'type' => 'driver_wage',
-                'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
-                'balance' => 0,
-                'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
-                'driver_id' => $booking_data->booking->driver_id,
-                'booking_id' => $booking_data->booking->id
-            ]);
-            $booking_data->booking->update(['status' => 1]);
 
-            $shift_start_time_string = Setting::where('code', '=', 'shift_start_time')->first();
-            $shift_end_time_string = Setting::where('code', '=', 'shift_end_time')->first();
-            $booking_time_rule = Setting::where('code', '=', 'booking_time')->first();
-            if ($shift_start_time_string != null and $shift_end_time_string != null) {
-                $shift_start_time = Carbon::createFromTimeString($shift_start_time_string->value);
-                $shift_end_time = Carbon::createFromTimeString($shift_end_time_string->value);
-                $now = Carbon::now();
+    if ($event->data->object->metadata->booking_id) {
+        // Handle the event
+        switch ($event->type) {
+            case 'payment_intent.created':
+                BookingPayment::create([
+                    'booking_id' => $event->data->object->metadata->booking_id,
+                    'paymentIntent' => $event->data->object->id,
+                    'status' => $event->data->object->status
+                ]);
+                break;
+            case 'payment_intent.succeeded':
+                $booking_data = Booking::find($event->data->object->metadata->booking_id)->data;
+                Transaction::create([
+                    'type' => 'booking_payment',
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
+                    'note' => 'Payment from #' . $booking_data->booking->id . ' booking.',
+                    'booking_id' => $booking_data->booking->id
+                ]);
+                Transaction::create([
+                    'type' => 'driver_wage',
+                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                    'balance' => 0,
+                    'note' => 'Wage for #' . $booking_data->booking->id . ' booking.',
+                    'driver_id' => $booking_data->booking->driver_id,
+                    'booking_id' => $booking_data->booking->id
+                ]);
+                $booking_data->booking->update(['status' => 1]);
 
-                if ($shift_start_time_string->value == "00:00") {
-                    $shift_start_time->addDay();
-                    $shift_end_time->addDay();
-                } else if ($shift_end_time < $shift_start_time) {
-                    $shift_end_time->addDay();
-                }
-                $booking_time_rule_time = $shift_start_time->copy()->subHours($booking_time_rule->value);
-                $booking_datetime = Carbon::createFromTimeString($booking_data->booking->booking_date . ' ' . $booking_data->booking->booking_time);
-                if ($now->between($booking_time_rule_time, $shift_start_time)) {
-                    if ($booking_datetime->between($shift_start_time, $shift_end_time)) {
-                        $shift = Shift::where('shift_date', '=', $now->format('Y-m-d'))
-                            ->where('isAssigned', '=', false)
-                            ->whereNotNull('driver_id')
-                            ->orderBy('queue')
-                            ->first();
-                        if ($shift) {
-                            $shift->update([
-                                'booking_id' => $booking_data->booking->id,
-                                'isAssigned' => true
-                            ]);
-                            $total = Transaction::where('driver_id', $shift->driver_id)
-                                ->get()
-                                ->sum(function ($transaction) {
-                                    return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                                });
-                            $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
-                            $transaction->update([
-                                'driver_id' => $request->post('driver_id'),
-                                'balance' => ($total - $transaction->amount)
-                            ]);
-                            $booking_data->booking->update([
-                                'status' => 2,
-                                'driver_id' => $shift->driver_id
-                            ]);
+                $shift_start_time_string = Setting::where('code', '=', 'shift_start_time')->first();
+                $shift_end_time_string = Setting::where('code', '=', 'shift_end_time')->first();
+                $booking_time_rule = Setting::where('code', '=', 'booking_time')->first();
+                if ($shift_start_time_string != null and $shift_end_time_string != null) {
+                    $shift_start_time = Carbon::createFromTimeString($shift_start_time_string->value);
+                    $shift_end_time = Carbon::createFromTimeString($shift_end_time_string->value);
+                    $now = Carbon::now();
+
+                    if ($shift_start_time_string->value == "00:00") {
+                        $shift_start_time->addDay();
+                        $shift_end_time->addDay();
+                    } else if ($shift_end_time < $shift_start_time) {
+                        $shift_end_time->addDay();
+                    }
+                    $booking_time_rule_time = $shift_start_time->copy()->subHours($booking_time_rule->value);
+                    $booking_datetime = Carbon::createFromTimeString($booking_data->booking->booking_date . ' ' . $booking_data->booking->booking_time);
+                    if ($now->between($booking_time_rule_time, $shift_start_time)) {
+                        if ($booking_datetime->between($shift_start_time, $shift_end_time)) {
+                            $shift = Shift::where('shift_date', '=', $now->format('Y-m-d'))
+                                ->where('isAssigned', '=', false)
+                                ->whereNotNull('driver_id')
+                                ->orderBy('queue')
+                                ->first();
+                            if ($shift) {
+                                $shift->update([
+                                    'booking_id' => $booking_data->booking->id,
+                                    'isAssigned' => true
+                                ]);
+                                $total = Transaction::where('driver_id', $shift->driver_id)
+                                    ->get()
+                                    ->sum(function ($transaction) {
+                                        return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                                    });
+                                $transaction = Transaction::where('booking_id', $booking_data->booking->id)->where('type', 'driver_wage')->first();
+                                $transaction->update([
+                                    'driver_id' => $request->post('driver_id'),
+                                    'balance' => ($total - $transaction->amount)
+                                ]);
+                                $booking_data->booking->update([
+                                    'status' => 2,
+                                    'driver_id' => $shift->driver_id
+                                ]);
+                            }
                         }
                     }
                 }
-            }
-        case 'payment_intent.payment_failed':
-            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->id);
-            $payment->update([
-                'status' => $event->data->object->last_payment_error->code ?? $event->data->object->status,
-                'charge' => $event->data->object->latest_charge,
-                'last_message' => $event->data->object->last_payment_error->message ?? null
-            ]);
-            break;
-        case 'charge.refunded':
-            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
-            $refund = $stripe->refunds->retrieve($payment->refund);
-            $booking_data = $payment->booking->data;
-            $payment->update([
-                'status' => 'refund_' . $refund->status,
-                'last_message' => null
-            ]);
-            if ($refund->status == 'succeeded') {
-                Transaction::create([
-                    'type' => 'refund',
-                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
-                    'note' => 'Refund from #' . $payment->booking_id . ' booking.',
-                    'booking_id' => $payment->booking_id
+                break;
+            case 'payment_intent.payment_failed':
+                $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->id);
+                $payment->update([
+                    'status' => $event->data->object->last_payment_error->code ?? $event->data->object->status,
+                    'charge' => $event->data->object->latest_charge,
+                    'last_message' => $event->data->object->last_payment_error->message ?? null
                 ]);
-                if ($payment->booking->driver_id) {
-                    $total = Transaction::where('driver_id', $payment->booking->driver_id)
-                        ->get()
-                        ->sum(function ($transaction) {
-                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                        });
-                    Transaction::create([
-                        'type' => 'driver_refund',
-                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
-                        'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
-                        'note' => 'Refund for #' . $payment->booking->id . ' booking.',
-                        'driver_id' => $payment->booking->driver_id,
-                        'booking_id' => $payment->booking->id
-                    ]);
-                }
-            }
-            break;
-        case 'charge.refund.updated':
-            $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
-            $refund = $stripe->refunds->retrieve($payment->refund);
-            $booking_data = $payment->booking->data;
-            $payment->update([
-                'status' => 'refund_' . $event->data->object->status,
-                'last_message' => null
-            ]);
-            if ($refund->status == 'succeeded') {
-                Transaction::create([
-                    'type' => 'refund',
-                    'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
-                    'note' => 'Refund from #' . $payment->booking_id . ' booking.',
-                    'booking_id' => $payment->booking_id
+                break;
+            case 'charge.refunded':
+                $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
+                $refund = $stripe->refunds->retrieve($payment->refund);
+                $booking_data = $payment->booking->data;
+                $payment->update([
+                    'status' => 'refund_' . $refund->status,
+                    'last_message' => null
                 ]);
-                if ($payment->booking->driver_id) {
-                    $total = Transaction::where('driver_id', $payment->booking->driver_id)
-                        ->get()
-                        ->sum(function ($transaction) {
-                            return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
-                        });
+                if ($refund->status == 'succeeded') {
                     Transaction::create([
-                        'type' => 'driver_refund',
-                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
-                        'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
-                        'note' => 'Refund for #' . $payment->booking->id . ' booking.',
-                        'driver_id' => $payment->booking->driver_id,
-                        'booking_id' => $payment->booking->id
+                        'type' => 'refund',
+                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
+                        'note' => 'Refund from #' . $payment->booking_id . ' booking.',
+                        'booking_id' => $payment->booking_id
                     ]);
+                    if ($payment->booking->driver_id) {
+                        $total = Transaction::where('driver_id', $payment->booking->driver_id)
+                            ->get()
+                            ->sum(function ($transaction) {
+                                return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                            });
+                        Transaction::create([
+                            'type' => 'driver_refund',
+                            'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                            'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
+                            'note' => 'Refund for #' . $payment->booking->id . ' booking.',
+                            'driver_id' => $payment->booking->driver_id,
+                            'booking_id' => $payment->booking->id
+                        ]);
+                    }
                 }
-            }
-            break;
-        default:
-            info('Received unknown event type ' . $event->type);
+                break;
+            case 'charge.refund.updated':
+                $payment = BookingPayment::firstWhere('paymentIntent', $event->data->object->payment_intent);
+                $refund = $stripe->refunds->retrieve($payment->refund);
+                $booking_data = $payment->booking->data;
+                $payment->update([
+                    'status' => 'refund_' . $event->data->object->status,
+                    'last_message' => null
+                ]);
+                if ($refund->status == 'succeeded') {
+                    Transaction::create([
+                        'type' => 'refund',
+                        'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_price : $booking_data->system_payment,
+                        'note' => 'Refund from #' . $payment->booking_id . ' booking.',
+                        'booking_id' => $payment->booking_id
+                    ]);
+                    if ($payment->booking->driver_id) {
+                        $total = Transaction::where('driver_id', $payment->booking->driver_id)
+                            ->get()
+                            ->sum(function ($transaction) {
+                                return ($transaction->type == 'driver_payment' or $transaction->type == 'driver_refund') ? $transaction->amount : (($transaction->type == 'driver_wage') ? -$transaction->amount : 0);
+                            });
+                        Transaction::create([
+                            'type' => 'driver_refund',
+                            'amount' => $booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment,
+                            'balance' => ($total + ($booking_data->payment_type == 'Full' ? $booking_data->full_discount_driver_payment : $booking_data->driver_payment)),
+                            'note' => 'Refund for #' . $payment->booking->id . ' booking.',
+                            'driver_id' => $payment->booking->driver_id,
+                            'booking_id' => $payment->booking->id
+                        ]);
+                    }
+                }
+                break;
+            default:
+                info('Received unknown event type ' . $event->type);
+        }
+    }
+    if ($event->data->object->metadata->coupon_code_id && $event->data->object->metadata->user_id) {
+//
+
+        $user_id = $event->data->object->metadata->user_id;
+        $coupon_code_id = $event->data->object->metadata->coupon_code_id;
+        $is_gift = $event->data->object->metadata->is_gift;
+
+        switch ($event->type) {
+            case 'charge.refund.updated':
+            case 'charge.refunded':
+            case 'payment_intent.payment_failed':
+            case 'payment_intent.created':
+                break;
+            case 'payment_intent.succeeded':
+                $user = User::where('id', $user_id)->first();
+                $couponCode = CouponCode::where('id', $coupon_code_id)->first();
+                if ($user && $couponCode) {
+                    $paymentIntent = $event->data->object->id;
+                    $paymentStatus = $event->data->object->status;
+                    return CouponCodeHelper::addCreditWithMoney($user, $couponCode, $paymentIntent, $paymentStatus, $is_gift);
+                }
+                break;
+            default:
+                info('Received unknown event type ' . $event->type);
+        }
+
     }
 
-    return 200;
+    return "OK";
 });
 
 
@@ -315,11 +355,20 @@ Route::middleware(['auth:api', 'role'])->group(function () {
     Route::middleware(['scope:admin'])->post('/shifts', 'API\ShiftController@store');
 
     Route::middleware(['scope:admin'])->get('/couponcodes', 'API\CouponCodeController@index');
+    Route::middleware(['scope:admin'])->get('/couponcodes/groups', 'API\CouponCodeController@groups');
+    Route::middleware(['scope:admin'])->get('/couponcodes/online', 'API\CouponCodeController@online');
+    Route::middleware(['scope:admin'])->get('/couponcodes/giftcards', 'API\CouponCodeController@giftcards');
+    Route::middleware(['scope:admin'])->get('/couponcodes/groups/{id}', 'API\CouponCodeController@groupDetail');
     Route::middleware(['scope:admin'])->get('/couponcodes/{id}', 'API\CouponCodeController@show');
     Route::middleware(['scope:admin'])->post('/couponcodes', 'API\CouponCodeController@store');
     Route::middleware(['scope:admin'])->delete('/couponcodes/{id}', 'API\CouponCodeController@destroy');
+    Route::middleware(['scope:admin'])->post('/generatecouponcodes', 'API\CouponCodeController@generate');
+    Route::middleware(['scope:admin'])->get('/couponcodes/{id}', 'API\CouponCodeController@show');
+
+
     Route::middleware(['scope:customer,driver,admin'])->get('/getUserCreditActivity', 'API\UserCreditActivityController@GetUserCreditActivities');
     Route::middleware(['scope:customer,driver,admin'])->post('/addCouponToUser', 'API\CouponCodeController@addCouponToUser');
+    Route::middleware(['scope:customer,driver,admin'])->get('/getCouponCodes', 'API\CouponCodeController@getCouponCodes');
 
 
     Route::post('/bookings', 'API\BookingsController@store');

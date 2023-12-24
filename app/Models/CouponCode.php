@@ -12,12 +12,12 @@ class CouponCode extends Model
         'name',
         'active',
         'credit',
-        'validity',
+        'price',
     ];
 
     protected $casts = [
         'active' => 'boolean',
-        'validity' => 'integer',
-        'credit' => 'integer'
+        'price' => 'float',
+        'credit' => 'float'
     ];
 }

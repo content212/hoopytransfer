@@ -16,8 +16,8 @@ class CreateCouponCodesTable extends Migration
         Schema::create('coupon_codes', function (Blueprint $table) {
             $table->id();
             $table->string('name',500);
-            $table->integer('credit');
-            $table->integer('validity');
+            $table->decimal('credit');
+            $table->decimal('price');
             $table->boolean('active');
             $table->timestamps();
         });

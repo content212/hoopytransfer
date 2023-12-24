@@ -200,7 +200,8 @@ class PaymentController extends Controller
                         'booking_id' => $booking->id,
                         'activity_type' => 'spend',
                         'credit' => $used_credit_amount,
-                        'note' => $booking->track_code,
+                        'note' => 'Booking Spend',
+                        'note2' => $booking->track_code,
                     ]);
 
 
@@ -300,7 +301,8 @@ class PaymentController extends Controller
                                     'booking_id' => $booking->id,
                                     'activity_type' => 'spend',
                                     'credit' => $used_credit_amount,
-                                    'note' => $booking->track_code,
+                                    'note' => 'Booking Spend',
+                                    'note2' => $booking->track_code,
                                 ]);
                             }
                         }

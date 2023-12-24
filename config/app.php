@@ -176,6 +176,7 @@
             App\Providers\RouteServiceProvider::class,
 
             Yajra\DataTables\DataTablesServiceProvider::class,
+            Maatwebsite\Excel\ExcelServiceProvider::class,
 
         ],
 
@@ -230,6 +231,7 @@
             'View' => Illuminate\Support\Facades\View::class,
             'DataTables' => Yajra\DataTables\Facades\DataTables::class,
             'Utils' => App\Helpers\Utils::class,
+            'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         ],
 
     ];
